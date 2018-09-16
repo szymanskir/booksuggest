@@ -3,6 +3,21 @@ Recommendation-system
 
 Recommendation system for books. Bachelor thesis.
 
+# Instruction for reproducing the analysis (current state of the project)
+
+Start by creating a new conda environment:
+```bash
+make create_environment
+```
+
+Next download the dataset using the following command:
+```bash
+make data
+```
+
+This command will install all required packages and download the raw data.
+
+
 Project Organization
 ------------
 
