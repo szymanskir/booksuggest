@@ -10,6 +10,12 @@ Start by creating a new conda environment:
 make create_environment
 ```
 
+Now just activate the environment and add the conda forge channel:
+```bash
+source activate recommendation-system
+conda config --add channels conda-forge
+```
+
 Next download the dataset using the following command:
 ```bash
 make data
