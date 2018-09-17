@@ -5,10 +5,11 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = recommendation-system
 PYTHON_INTERPRETER = python3
+
+RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -25,8 +26,7 @@ requirements: test_environment
 	conda install --yes --file requirements.txt
 
 ## Make Dataset
-raw_data_files = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
-data: requirements $(raw_data_files)
+data: requirements $(RAW_DATA_FILES)
 
 ## Delete all compiled Python files
 clean:
@@ -37,22 +37,6 @@ clean:
 ## Lint using flake8
 lint:
 	flake8 src
-
-## Upload Data to S3
-sync_data_to_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
-
-## Download Data from S3
-sync_data_from_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
 
 ## Set up python interpreter environment
 create_environment:
@@ -76,11 +60,13 @@ endif
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
 
-#################################################################################
-# Dataset downloading rules							#
-#################################################################################
+################################################################################
+#
+# Dataset downloading rules
+#
+################################################################################
 
-# urls for downloading data
+# Provide urls for downloading data
 book_tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/book_tags.csv
 books_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv
 ratings_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/ratings.csv
