@@ -59,6 +59,14 @@ endif
 ## Test if python environment is setup correctly
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
+################################################################################
+#
+# Dataset cleaning rules 
+#
+################################################################################
+
+clean_data: data src/data/parse_xml_files.py
+	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip aaa
 
 ################################################################################
 #
