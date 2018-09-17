@@ -5,10 +5,11 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-BUCKET = [OPTIONAL] your-bucket-for-syncing-data (do not include 's3://')
 PROFILE = default
 PROJECT_NAME = recommendation-system
 PYTHON_INTERPRETER = python3
+
+RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -22,37 +23,20 @@ endif
 
 ## Install Python Dependencies
 requirements: test_environment
-	pip install -U pip setuptools wheel
-	pip install -r requirements.txt
+	conda install --yes --file requirements.txt
 
 ## Make Dataset
-data: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+data: requirements $(RAW_DATA_FILES)
 
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	rm data/*/*
 
 ## Lint using flake8
 lint:
 	flake8 src
-
-## Upload Data to S3
-sync_data_to_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync data/ s3://$(BUCKET)/data/
-else
-	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
-endif
-
-## Download Data from S3
-sync_data_from_s3:
-ifeq (default,$(PROFILE))
-	aws s3 sync s3://$(BUCKET)/data/ data/
-else
-	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
-endif
 
 ## Set up python interpreter environment
 create_environment:
@@ -72,15 +56,42 @@ else
 	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
 endif
 
-## Test python environment is setup correctly
+## Test if python environment is setup correctly
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
 
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
+################################################################################
+#
+# Dataset downloading rules
+#
+################################################################################
+
+# Provide urls for downloading data
+book_tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/book_tags.csv
+books_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv
+ratings_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/ratings.csv
+tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/tags.csv
+to_read_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/to_read.csv
+books_xml_zip = https://github.com/zygmuntz/goodbooks-10k/raw/master/books_xml/books_xml.zip
 
 
+data/raw/book_tags.csv: src/data/download_dataset.py 
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(book_tags_url) $@
+
+data/raw/book.csv: src/data/download_dataset.py
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_url) $@
+
+data/raw/ratings.csv: src/data/download_dataset.py
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(ratings_url) $@
+
+data/raw/tags.csv: src/data/download_dataset.py
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(tags_url) $@
+
+data/raw/to_read.csv: src/data/download_dataset.py
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(to_read_url) $@
+
+data/raw/books_xml.zip: src/data/download_dataset.py
+	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_xml_zip) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
