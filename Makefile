@@ -25,8 +25,10 @@ endif
 requirements: test_environment
 	conda install --yes --file requirements.txt
 
+process_raw_data: $(RAW_DATA_FILES)
+
 ## Make Dataset
-data: requirements $(RAW_DATA_FILES)
+data: requirements process_raw_data
 
 ## Delete all compiled Python files
 clean:
@@ -66,7 +68,7 @@ test_environment:
 ################################################################################
 
 clean_data: data src/data/parse_xml_files.py
-	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip aaa
+	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 
 ################################################################################
 #
