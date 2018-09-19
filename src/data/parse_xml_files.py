@@ -26,7 +26,7 @@ def unzip_archive(xml_archive_path):
     zip_reference.extractall(output_file)
     zip_reference.close()
 
-    logger.info(f"Extracted files into {output_file}...")
+    logger.info(f"Extracted files into {output_file}")
     return(output_file)
 
 
@@ -52,7 +52,7 @@ def process(xmls_dir, output_dir):
             if hasattr(root.book, 'similar_books'):
                 for similar_book in root.book.similar_books.iterchildren():
                     similar_books_rows.append(
-                        [root.book.work.id, similar_book.id])
+                        [root.book.work.id, similar_book.work.id])
 
     book_info_labels = ['work_id', 'isbn13', 'description']
     book_info_df = pandas.DataFrame.from_records(
@@ -61,7 +61,7 @@ def process(xmls_dir, output_dir):
     book_info_file = os.path.join(output_dir, 'book_info.csv')
     book_info_df.to_csv(book_info_file, index=False)
 
-    similar_book_labels = ['book_goodreads_id', 'similar_book_goodreads_id']
+    similar_book_labels = ['work_id', 'similar_book_work_id']
     similar_book_df = pandas.DataFrame.from_records(
         similar_books_rows, columns=similar_book_labels)
 
