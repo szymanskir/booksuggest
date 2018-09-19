@@ -69,6 +69,7 @@ test_environment:
 
 clean_data: data src/data/parse_xml_files.py
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
+	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
 
 ################################################################################
 #
