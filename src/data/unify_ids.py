@@ -7,15 +7,19 @@ import pandas
 logger = logging.getLogger(__name__)
 
 
-def unify_book(book_df, book_info_df, output_data_dir):
+def unify_book(book_df, book_additional_info_df, output_data_dir):
     """
     Append additional data columns to book.csv
     """
 
     book_df = book_df.drop(columns=['isbn13'])
-    merged_df = book_df.merge(book_info_df, on='work_id')
+    merged_df = book_df.merge(book_additional_info_df, on='work_id')
 
-    merged_df.to_csv(os.path.join(output_data_dir, 'book.csv'), index=False)
+    merged_df.original_publication_year = merged_df.original_publication_year.astype(
+        str).str.replace('.0', '')
+
+    merged_df.to_csv(os.path.join(
+        output_data_dir, 'book-unified_ids.csv'), index=False)
 
 
 def unify_book_tags(book_df, book_tags_df, output_data_dir):
@@ -28,7 +32,7 @@ def unify_book_tags(book_df, book_tags_df, output_data_dir):
     merged_df = merged_df.drop(columns=['goodreads_book_id'])
 
     merged_df.to_csv(os.path.join(
-        output_data_dir, 'book_tags.csv'), index=False)
+        output_data_dir, 'book_tags-unified_ids.csv'), index=False)
 
 
 def unify_similar_books(book_df, similar_books_df, output_data_dir):
@@ -51,7 +55,7 @@ def unify_similar_books(book_df, similar_books_df, output_data_dir):
         columns={'tmp_book_id': 'similar_book_id'})
 
     merged_similar_book_df.to_csv(
-        os.path.join(output_data_dir, 'similar_books.csv'), index=False)
+        os.path.join(output_data_dir, 'similar_books-unified_ids.csv'), index=False)
 
 
 @click.command()
@@ -73,14 +77,15 @@ def main(raw_data_dir, interim_data_dir, output_data_dir):
 
     logger.info(f"Unifying ids in data files...")
 
-    book_df = pandas.read_csv(os.path.join(raw_data_dir, 'book.csv'))
-    book_info_df = pandas.read_csv(
-        os.path.join(interim_data_dir, 'book_info.csv'))
+    book_df = pandas.read_csv(os.path.join(raw_data_dir, 'book.csv'), dtype={
+                              'original_publication_year': object})
+    book_additional_info_df = pandas.read_csv(os.path.join(
+        interim_data_dir, 'book-additional_info.csv'), dtype={'isbn13': object})
     book_tags_df = pandas.read_csv(os.path.join(raw_data_dir, 'book_tags.csv'))
     similar_books_df = pandas.read_csv(
         os.path.join(interim_data_dir, 'similar_books.csv'))
 
-    unify_book(book_df, book_info_df, output_data_dir)
+    unify_book(book_df, book_additional_info_df, output_data_dir)
     unify_book_tags(book_df, book_tags_df, output_data_dir)
     unify_similar_books(book_df, similar_books_df, output_data_dir)
 

@@ -63,7 +63,7 @@ def process(xmls_dir, output_dir):
     book_info_df.description = book_info_df.description.astype(
         str).str.replace(html_tag_regexp, '')
 
-    book_info_file = os.path.join(output_dir, 'book_info.csv')
+    book_info_file = os.path.join(output_dir, 'book-additional_info.csv')
     book_info_df.to_csv(book_info_file, index=False)
 
     similar_book_labels = ['work_id', 'similar_book_work_id']
