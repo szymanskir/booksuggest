@@ -1,3 +1,5 @@
+![Travis](https://travis-ci.com/szymanskir/Recommendation-system.svg?token=vMgapB9HzV6RFvox4Fiq&branch=master)
+
 Recommendation-system
 ==============================
 
