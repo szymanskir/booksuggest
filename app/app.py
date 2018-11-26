@@ -1,9 +1,12 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import json
 import pandas as pd
 
 import components
+
+from dash.dependencies import Input, State, Output
 
 data = pd.read_csv('assets/book.csv')
 
@@ -37,11 +40,12 @@ def serve_layout():
                         style={
                             'overflow': 'auto',
                         },
-                        children=components.rated_books_layout(
-                            data,
-                            {x: x for x in range(1, 3)})
                     ),
                     components.get_rating_form(data),
+                    html.Button(
+                        'Submit',
+                        id='add-book-review',
+                    )
                 ]
             ),
             html.Div(
@@ -75,12 +79,7 @@ def serve_layout():
                     html.Div(
                         id='recomended-books-cf',
                         className='border mb-5',
-                        style={
-                            'overflow': 'auto',
-                        },
-                        children=components.rated_books_layout(
-                            data,
-                            {x: x for x in range(44, 49)})
+                        style={'overflow': 'auto'}
                     )
                 ]
             ),
@@ -115,17 +114,13 @@ def serve_layout():
                     html.Div(
                         id='recomended-books-cb',
                         className='border mb-5',
-                        style={
-                            'overflow': 'auto',
-                        },
-                        children=components.rated_books_layout(
-                            data,
-                            {x: x for x in range(48, 58)})
+                        style={'overflow': 'auto'}
                     )
                 ]
             ),
 
-
+            # Hidden div inside the app that stores ratings
+            html.Div(id='rated-books-data', style={'display': 'none'})
         ]
     )
 
@@ -140,7 +135,26 @@ app = dash.Dash(__name__,
                 external_stylesheets=external_stylesheets)
 
 app.layout = serve_layout
-app.config['suppress_callback_exceptions'] = True
+
+
+@app.callback(Output('rated-books', 'children'),
+              [Input('rated-books-data', 'children')])
+def render_reviewed_books(rated_books):
+    rated_books = dict() if rated_books is None else json.loads(rated_books)
+    print(rated_books)
+    return components.rated_books_layout(data, rated_books)
+
+
+@app.callback(Output('rated-books-data', 'children'),
+              [Input('add-book-review', 'n_clicks')],
+              [State('rated-books-data', 'children'),
+               State('book-title', 'value'),
+               State('book-rating', 'value')])
+def add_book_review(n_clicks, rated_books, book_id, rating):
+    rated_books = dict() if rated_books is None else json.loads(rated_books)
+    rated_books[int(book_id)] = rating
+
+    return json.dumps(rated_books)
 
 
 if __name__ == '__main__':

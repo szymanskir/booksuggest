@@ -131,10 +131,6 @@ def get_rating_form(book_data):
         children=[
             book_selection(book_data),
             _RATING_SELECTION,
-            html.Button(
-                id='add-book-review',
-                children='Submit'
-            )
         ]
     )
 
