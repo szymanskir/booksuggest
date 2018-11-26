@@ -64,7 +64,7 @@ PAGE_HEADER = html.Nav(
 )
 
 ############################################################
-# Book rating component
+# Components data
 ############################################################
 
 
@@ -78,6 +78,19 @@ def books_to_dropdown(book_data):
         dropdown_items.append(book_to_dropdown_item(book_data.iloc[k, :]))
 
     return dropdown_items
+
+
+def _model_to_dropdown(cb_model_label):
+    return {'label': cb_model_label, 'value': cb_model_label}
+
+
+def models_to_dropdown(cb_models):
+    return [_model_to_dropdown(cb_model_label)
+            for cb_model_label, _ in cb_models.items()]
+
+############################################################
+# Rating form
+############################################################
 
 
 def book_selection(book_data):
@@ -118,12 +131,18 @@ _RATING_SELECTION = html.Div(
                     id='book-rating',
                     type='number',
                     min=0,
-                    max=5
+                    max=5,
+                    value=0
                 )
             ]
         )
     ]
 )
+
+
+############################################################
+# Book rendering
+############################################################
 
 
 def get_rating_form(book_data):
@@ -135,24 +154,31 @@ def get_rating_form(book_data):
     )
 
 
-def render_book(book_data):
+def render_book(book_data, rating):
     book_layout = html.Div(
-        className='two columns',
-        children=html.Img(src=book_data['image_url']),
-        style={'padding': '20', 'margin': '10'}
+        className='col-sm-2 d-flex flex-column align-items-center',
+        children=[
+            html.Img(src=book_data['image_url']),
+            html.Small(book_data['authors'], style={'color': '#999999'}),
+            html.Strong(book_data['original_title']),
+            html.Small(f'Rating: {rating}', style={'color': '#F9A602'}),
+        ],
+        style={'padding': '20', 'text-align': 'center'}
     )
 
     return book_layout
 
 
-def rated_books_layout(book_data, rated_books):
-    rated_books = book_data[book_data.book_id.isin(rated_books.keys())]
+def rated_books_layout(book_data, book_ratings):
+    rated_books = book_data[book_data.book_id.isin(book_ratings.keys())]
 
     layout = html.Div(
         className='d-flex flex-row',
-        children=[render_book(book) for _, book in rated_books.iterrows()],
+        children=[render_book(book, book_ratings[str(book.book_id)])
+                  for _, book in rated_books.iterrows()],
         style={
-            'width': '100%'
+            'width': '100%',
+            'margin': 10
         }
     )
 

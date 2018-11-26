@@ -2,13 +2,12 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import json
-import pandas as pd
+import random
 
 import components
+import resources
 
 from dash.dependencies import Input, State, Output
-
-data = pd.read_csv('assets/book.csv')
 
 
 def serve_layout():
@@ -41,7 +40,7 @@ def serve_layout():
                             'overflow': 'auto',
                         },
                     ),
-                    components.get_rating_form(data),
+                    components.get_rating_form(resources.DATA),
                     html.Button(
                         'Submit',
                         id='add-book-review',
@@ -71,6 +70,9 @@ def serve_layout():
                                         id='model-selection-cf',
                                         className='flex-fill',
                                         placeholder='Select model...',
+                                        options=components.models_to_dropdown(
+                                            resources.CF_MODELS
+                                        )
                                     )
                                 ]
                             )
@@ -96,7 +98,7 @@ def serve_layout():
                                 className='col-4 d-flex flex-row align-items-center',
                                 children=[
                                     html.I(className='fas fa-star px-3'),
-                                    html.H4('Similar to X')
+                                    html.H4(id='cb-title', children='Similar to X')
                                 ]
                             ),
                             html.Div(
@@ -106,6 +108,9 @@ def serve_layout():
                                         id='model-selection-cb',
                                         className='flex-fill',
                                         placeholder='Select model...',
+                                        options=components.models_to_dropdown(
+                                            resources.CB_MODELS
+                                        )
                                     )
                                 ]
                             )
@@ -141,8 +146,7 @@ app.layout = serve_layout
               [Input('rated-books-data', 'children')])
 def render_reviewed_books(rated_books):
     rated_books = dict() if rated_books is None else json.loads(rated_books)
-    print(rated_books)
-    return components.rated_books_layout(data, rated_books)
+    return components.rated_books_layout(resources.DATA, rated_books)
 
 
 @app.callback(Output('rated-books-data', 'children'),
@@ -151,10 +155,29 @@ def render_reviewed_books(rated_books):
                State('book-title', 'value'),
                State('book-rating', 'value')])
 def add_book_review(n_clicks, rated_books, book_id, rating):
+    if rating is None or book_id is None:
+        return None
+
     rated_books = dict() if rated_books is None else json.loads(rated_books)
     rated_books[int(book_id)] = rating
 
     return json.dumps(rated_books)
+
+
+@app.callback(Output('cb-title', 'children'),
+              [Input('model-selection-cb', 'value')],
+              [State('rated-books-data', 'children')])
+def cb_recommendations(model, rated_books):
+    if rated_books is None:
+        book_title = 'X'
+    else:
+        rated_books_keys = list(json.loads(rated_books).keys())
+        random_index = random.randint(0, len(rated_books_keys) - 1)
+        book_title_index = int(rated_books_keys[random_index]) - 1
+        book_title = resources.DATA.loc[book_title_index,
+                                        'original_title']
+
+    return f'Similar to {book_title}'
 
 
 if __name__ == '__main__':
