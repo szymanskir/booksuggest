@@ -7,4 +7,7 @@ setup(
     description='Recommendation system for books. Bachelor thesis.',
     author='Paweł Rzepiński, Ryszard Szymański',
     license='',
+    package_data={
+        'models': ['*.pkl']    
+    }
 )

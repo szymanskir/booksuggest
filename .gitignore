@@ -1,2 +1,6 @@
 data/*
 .vscode/*
+src.egg-info/*
+dist/*
+build/*
+__pycache__/
