@@ -125,7 +125,10 @@ def serve_layout():
             ),
 
             # Hidden div inside the app that stores ratings
-            html.Div(id='rated-books-data', style={'display': 'none'})
+            html.Div(id='rated-books-data', style={'display': 'none'}),
+
+            # Hidden div storing the book selected for cb recommendations
+            html.Div(id='cb-selected-book', style={'display': 'none'})
         ]
     )
 
@@ -144,8 +147,8 @@ app.layout = serve_layout
 
 @app.callback(Output('rated-books', 'children'),
               [Input('rated-books-data', 'children')])
-def render_reviewed_books(rated_books):
-    rated_books = dict() if rated_books is None else json.loads(rated_books)
+def display_reviewed_books(rated_books_data):
+    rated_books = json2dict(rated_books_data)
     return components.rated_books_layout(resources.DATA, rated_books)
 
 
@@ -154,30 +157,75 @@ def render_reviewed_books(rated_books):
               [State('rated-books-data', 'children'),
                State('book-title', 'value'),
                State('book-rating', 'value')])
-def add_book_review(n_clicks, rated_books, book_id, rating):
-    if rating is None or book_id is None:
-        return None
+def add_book_review(n_clicks, rated_books_data, book_id, rating):
+    rated_books = json2dict(rated_books_data)
 
-    rated_books = dict() if rated_books is None else json.loads(rated_books)
-    rated_books[int(book_id)] = rating
+    if book_id is not None and rating is not None:
+        rated_books[book_id] = rating
 
-    return json.dumps(rated_books)
+    return dict2json(rated_books)
+
+
+@app.callback(Output('recomended-books-cf', 'children'),
+              [Input('model-selection-cf', 'value')],
+              [State('rated-books-data', 'children')])
+def display_cf_recommendations(model, rated_books_data):
+    rated_books = json2dict(rated_books_data)
+
+    recommended_books = resources.CF_MODELS[model].recommend(
+        rated_books
+    ) if rated_books and model else list()
+
+    return components.recommended_books_layout(resources.DATA,
+                                               recommended_books)
+
+
+@app.callback(Output('cb-selected-book', 'children'),
+              [Input('model-selection-cb', 'value')],
+              [State('rated-books-data', 'children')])
+def select_book_for_cb(model, rated_books_data):
+    rated_books = json2dict(rated_books_data)
+    random_index = random.choice(
+        list(rated_books.keys())
+    ) if rated_books else None
+
+    return json.dumps(random_index)
+
+
+@app.callback(Output('recomended-books-cb', 'children'),
+              [Input('cb-selected-book', 'children')],
+              [State('model-selection-cb', 'value'),
+               State('rated-books-data', 'children')])
+def display_cb_recommendation(book, model, rated_books_data):
+    book_index = json.loads(book)
+    rated_books = json2dict(rated_books_data)
+
+    recommended_books = resources.CB_MODELS[model].recommend({
+        book_index: rated_books[book_index]
+    }) if rated_books and model else list()
+
+    return components.recommended_books_layout(resources.DATA,
+                                               recommended_books)
 
 
 @app.callback(Output('cb-title', 'children'),
-              [Input('model-selection-cb', 'value')],
-              [State('rated-books-data', 'children')])
-def cb_recommendations(model, rated_books):
-    if rated_books is None:
-        book_title = 'X'
-    else:
-        rated_books_keys = list(json.loads(rated_books).keys())
-        random_index = random.randint(0, len(rated_books_keys) - 1)
-        book_title_index = int(rated_books_keys[random_index]) - 1
-        book_title = resources.DATA.loc[book_title_index,
-                                        'original_title']
+              [Input('cb-selected-book', 'children')])
+def update_cb_title(book):
+    book_index = json.loads(book)
+
+    book_title = resources.DATA.loc[
+        book_index, 'original_title'
+    ] if book_index else 'X'
 
     return f'Similar to {book_title}'
+
+
+def json2dict(json_data):
+    return dict(json.loads(json_data)) if json_data else dict()
+
+
+def dict2json(dictionary):
+    return json.dumps(list(dictionary.items()))
 
 
 if __name__ == '__main__':

@@ -68,16 +68,9 @@ PAGE_HEADER = html.Nav(
 ############################################################
 
 
-def book_to_dropdown_item(book):
-    return {'label': book['original_title'], 'value': int(book['book_id'])}
-
-
 def books_to_dropdown(book_data):
-    dropdown_items = list()
-    for k in range(0, len(book_data)):
-        dropdown_items.append(book_to_dropdown_item(book_data.iloc[k, :]))
-
-    return dropdown_items
+    return [{'label': row['original_title'], 'value': idx}
+            for idx, row in book_data.iterrows()]
 
 
 def _model_to_dropdown(cb_model_label):
@@ -154,14 +147,20 @@ def get_rating_form(book_data):
     )
 
 
-def render_book(book_data, rating):
+def render_book(book_data, rating=None):
+    if rating is None:
+        html_rating = html.Div()
+    else:
+        html_rating = html.Small(f'Rating: {rating}',
+                                 style={'color': '#F9A602'})
+
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
         children=[
             html.Img(src=book_data['image_url']),
             html.Small(book_data['authors'], style={'color': '#999999'}),
             html.Strong(book_data['original_title']),
-            html.Small(f'Rating: {rating}', style={'color': '#F9A602'}),
+            html_rating
         ],
         style={'padding': '20', 'text-align': 'center'}
     )
@@ -170,12 +169,28 @@ def render_book(book_data, rating):
 
 
 def rated_books_layout(book_data, book_ratings):
-    rated_books = book_data[book_data.book_id.isin(book_ratings.keys())]
+    rated_books = book_data.loc[book_ratings.keys()]
 
     layout = html.Div(
         className='d-flex flex-row',
-        children=[render_book(book, book_ratings[str(book.book_id)])
-                  for _, book in rated_books.iterrows()],
+        children=[render_book(book, book_ratings[idx])
+                  for idx, book in rated_books.iterrows()],
+        style={
+            'width': '100%',
+            'margin': 10
+        }
+    )
+
+    return layout
+
+
+def recommended_books_layout(book_data, book_ids):
+    recommended_books = book_data.loc[book_ids]
+
+    layout = html.Div(
+        className='d-flex flex-row',
+        children=[render_book(book)
+                  for _, book in recommended_books.iterrows()],
         style={
             'width': '100%',
             'margin': 10
