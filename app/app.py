@@ -231,11 +231,11 @@ def display_cb_recommendation(book, model, rated_books_data):
     methods and a layout of recommended books is created
     and displayed.
     """
-    book_index = json.loads(book)
+    book_id = json.loads(book)
     rated_books = json2dict(rated_books_data)
 
     recommended_books = resources.CB_MODELS[model].recommend({
-        book_index: rated_books[book_index]
+        book_id: rated_books[book_id]
     }) if rated_books and model else list()
 
     return components.recommended_books_layout(resources.DATA,
@@ -253,11 +253,11 @@ def update_cb_title(book):
     E.g. if Harry Potter is the selected book than the title of the window
     would be 'Similar to Harry Potter'
     """
-    book_index = json.loads(book)
+    book_id = json.loads(book)
 
     book_title = resources.DATA.loc[
-        book_index, 'original_title'
-    ] if book_index else 'X'
+        book_id, 'original_title'
+    ] if book_id else 'X'
 
     return f'Similar to {book_title}'
 
