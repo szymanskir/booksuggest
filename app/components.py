@@ -68,25 +68,23 @@ PAGE_HEADER = html.Nav(
 ############################################################
 
 
-def book_to_dropdown_item(book):
-    return {'label': book['original_title'], 'value': int(book['book_id'])}
-
-
 def books_to_dropdown(book_data):
-    dropdown_items = list()
-    for k in range(0, len(book_data)):
-        dropdown_items.append(book_to_dropdown_item(book_data.iloc[k, :]))
+    """Converts book data to the dash dropdown values format
 
-    return dropdown_items
-
-
-def _model_to_dropdown(cb_model_label):
-    return {'label': cb_model_label, 'value': cb_model_label}
+    The labels in the dropdown are book titles and the values
+    are the ids from the dataset.
+    """
+    return [{'label': row['original_title'], 'value': idx}
+            for idx, row in book_data.iterrows()]
 
 
 def models_to_dropdown(cb_models):
-    return [_model_to_dropdown(cb_model_label)
-            for cb_model_label, _ in cb_models.items()]
+    """Converts available models to the dash dropdown values format
+
+    Both labels and values in the dropdown are model names.
+    """
+    return [{'label': cb_model_label, 'value': cb_model_label}
+            for cb_model_label in cb_models.keys()]
 
 ############################################################
 # Rating form
@@ -94,6 +92,8 @@ def models_to_dropdown(cb_models):
 
 
 def book_selection(book_data):
+    """Creates an html form for selecting books to review.
+    """
     return html.Div(
         className='form-group row',
         children=[
@@ -146,6 +146,8 @@ _RATING_SELECTION = html.Div(
 
 
 def get_rating_form(book_data):
+    """Creates an html rating form component.
+    """
     return html.Form(
         children=[
             book_selection(book_data),
@@ -154,14 +156,21 @@ def get_rating_form(book_data):
     )
 
 
-def render_book(book_data, rating):
+def render_book(book_data, rating=None):
+    """Creates an html representation of a book.
+    """
+    html_rating = html.Small(
+        f'Rating: {rating}',
+        style={'color': '#F9A602'}
+    ) if rating else html.Div()
+
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
         children=[
             html.Img(src=book_data['image_url']),
             html.Small(book_data['authors'], style={'color': '#999999'}),
             html.Strong(book_data['original_title']),
-            html.Small(f'Rating: {rating}', style={'color': '#F9A602'}),
+            html_rating
         ],
         style={'padding': '20', 'text-align': 'center'}
     )
@@ -170,12 +179,32 @@ def render_book(book_data, rating):
 
 
 def rated_books_layout(book_data, book_ratings):
-    rated_books = book_data[book_data.book_id.isin(book_ratings.keys())]
+    """Creates an html layout composed of reviewed books.
+    """
+    rated_books = book_data.loc[book_ratings.keys()]
 
     layout = html.Div(
         className='d-flex flex-row',
-        children=[render_book(book, book_ratings[str(book.book_id)])
-                  for _, book in rated_books.iterrows()],
+        children=[render_book(book, book_ratings[idx])
+                  for idx, book in rated_books.iterrows()],
+        style={
+            'width': '100%',
+            'margin': 10
+        }
+    )
+
+    return layout
+
+
+def recommended_books_layout(book_data, book_ids):
+    """Creates an html layout composed of recommended books.
+    """
+    recommended_books = book_data.loc[book_ids]
+
+    layout = html.Div(
+        className='d-flex flex-row',
+        children=[render_book(book)
+                  for _, book in recommended_books.iterrows()],
         style={
             'width': '100%',
             'margin': 10
