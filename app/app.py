@@ -148,6 +148,11 @@ app.layout = serve_layout
 @app.callback(Output('rated-books', 'children'),
               [Input('rated-books-data', 'children')])
 def display_reviewed_books(rated_books_data):
+    """Displays reviewed book
+    
+    Based on the json data saved in a hidden a div
+    a layout of reviewed books is created and displayed.
+    """
     rated_books = json2dict(rated_books_data)
     return components.rated_books_layout(resources.DATA, rated_books)
 
@@ -158,6 +163,11 @@ def display_reviewed_books(rated_books_data):
                State('book-title', 'value'),
                State('book-rating', 'value')])
 def add_book_review(n_clicks, rated_books_data, book_id, rating):
+    """Adds a book review
+
+    Adds a book review to a dictionary stored in a hidden div
+    and saves it back to that hidden div.
+    """
     rated_books = json2dict(rated_books_data)
 
     if book_id is not None and rating is not None:
@@ -170,6 +180,14 @@ def add_book_review(n_clicks, rated_books_data, book_id, rating):
               [Input('model-selection-cf', 'value')],
               [State('rated-books-data', 'children')])
 def display_cf_recommendations(model, rated_books_data):
+    """Displays recommendations that were obtained using
+    collaborative filtering methods.
+    
+    Based on the rated books saved in a hidden div,
+    recommendations are calculated using collaborative
+    filtering methods and a layout of recommended books
+    is created and displayed.
+    """
     rated_books = json2dict(rated_books_data)
 
     recommended_books = resources.CF_MODELS[model].recommend(
@@ -184,6 +202,14 @@ def display_cf_recommendations(model, rated_books_data):
               [Input('model-selection-cb', 'value')],
               [State('rated-books-data', 'children')])
 def select_book_for_cb(model, rated_books_data):
+    """Selects a specific book from all reviewed books.
+
+    Based on the reviewed books saved in a hidden div
+    a random book is selected for content based methods.
+
+    E.g. Harry Potter is selected for 'Similar to Harry Potter'
+    recommendations.
+    """
     rated_books = json2dict(rated_books_data)
     random_index = random.choice(
         list(rated_books.keys())
@@ -197,6 +223,14 @@ def select_book_for_cb(model, rated_books_data):
               [State('model-selection-cb', 'value'),
                State('rated-books-data', 'children')])
 def display_cb_recommendation(book, model, rated_books_data):
+    """Displays recommendations that were obtained using
+    content based methods.
+
+    Based on the rated books saved in a hidden div,
+    recommendations are calculated using content based
+    methods and a layout of recommended books is created
+    and displayed.
+    """
     book_index = json.loads(book)
     rated_books = json2dict(rated_books_data)
 
@@ -211,6 +245,14 @@ def display_cb_recommendation(book, model, rated_books_data):
 @app.callback(Output('cb-title', 'children'),
               [Input('cb-selected-book', 'children')])
 def update_cb_title(book):
+    """Updated the title of content based recommendations
+
+    Based on the book selected for content-based recommendations
+    the title of the window displaying those recommendations is updated.
+
+    E.g. if Harry Potter is the selected book than the title of the window
+    would be 'Similar to Harry Potter'
+    """
     book_index = json.loads(book)
 
     book_title = resources.DATA.loc[
@@ -221,10 +263,20 @@ def update_cb_title(book):
 
 
 def json2dict(json_data):
+    """Converts json_data to dictionary
+
+    Wrapper around json.loads in order to handle Nones as an empty
+    dictionary.
+    """
     return dict(json.loads(json_data)) if json_data else dict()
 
 
 def dict2json(dictionary):
+    """Converts dictionary to json
+
+    Wrapper around json.dumps, because json.dumps does not
+    conserve the type of keys. They get casted to str by default.
+    """
     return json.dumps(list(dictionary.items()))
 
 
