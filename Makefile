@@ -30,6 +30,9 @@ process_raw_data: $(RAW_DATA_FILES)
 ## Make Dataset
 data: requirements process_raw_data
 
+## Train models
+models: models/dummy_model.pkl
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
@@ -103,6 +106,15 @@ data/raw/to_read.csv: src/data/download_dataset.py
 
 data/raw/books_xml.zip: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_xml_zip) $@
+
+################################################################################
+#
+# Model training rules
+#
+################################################################################
+
+models/dummy_model.pkl: src/models/dummy_model.py
+	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
