@@ -1,4 +1,1 @@
-data/raw/*
-data/interim/*
-data/processed/*
-.vscode/*
+data/*
