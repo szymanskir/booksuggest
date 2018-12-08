@@ -99,6 +99,17 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
+cb-tf-idf: data/interim/cb-tf-idf/book.csv
+
+################################################################################
+#
+# Data prepartaion rules
+#
+################################################################################
+
+data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/processed/book.csv
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/processed/book.csv $@
+
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
