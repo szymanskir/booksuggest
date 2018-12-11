@@ -1,7 +1,11 @@
 data/*
 .vscode/*
+src/src.egg-info/*
 src.egg-info/*
 dist/*
 build/*
 __pycache__/
 rs-venv/*
+.mypy_cache/*
+models/*
+notebooks/.ipynb_checkpoints
