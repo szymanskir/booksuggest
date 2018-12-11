@@ -11,6 +11,8 @@ PYTHON_INTERPRETER = python3
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
+MODELS = models/dummy_model.pkl models/content-based-models/basic-tf-idf-model.pkl
+
 ifeq (,$(shell which conda))
 HAS_CONDA=False
 else
@@ -31,7 +33,7 @@ process_raw_data: $(RAW_DATA_FILES)
 data: requirements process_raw_data
 
 ## Train models
-models: models/dummy_model.pkl
+models: $(MODELS)
 
 ## Delete all compiled Python files
 clean:
@@ -113,14 +115,16 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 #
 ################################################################################
 
+
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
-cb-tf-idf: data/interim/cb-tf-idf/book.csv
+models/content-based-models/basic-tf-idf-model.pkl: data/interim/cb-tf-idf/book.csv src/models/tf_idf_models.py 
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
 
 ################################################################################
 #
-# Data prepartaion rules
+# Data preparation rules
 #
 ################################################################################
 
