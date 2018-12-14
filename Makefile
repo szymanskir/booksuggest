@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+.PHONY: clean data lint requirements
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -7,28 +7,24 @@
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
 PROJECT_NAME = recommendation-system
-PYTHON_INTERPRETER = python3
+VENV_NAME = rs-venv
+PYTHON_INTERPRETER = python3.7
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
-
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
 
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
 
 ## Install Python Dependencies
-requirements: test_environment
-	conda install --yes --file requirements.txt
+requirements:
+	pip install -r requirements.txt
+	$(PYTHON_INTERPRETER) setup.py install
 
 process_raw_data: $(RAW_DATA_FILES)
 
 ## Make Dataset
-data: requirements process_raw_data
+data: process_raw_data
 
 ## Train models
 models: models/dummy_model.pkl
@@ -45,25 +41,8 @@ lint:
 
 ## Set up python interpreter environment
 create_environment:
-ifeq (True,$(HAS_CONDA))
-		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
-	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
-endif
-		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
-else
-	@pip install -q virtualenv virtualenvwrapper
-	@echo ">>> Installing virtualenvwrapper if not already intalled.\nMake sure the following lines are in shell startup file\n\
-	export WORKON_HOME=$$HOME/.virtualenvs\nexport PROJECT_HOME=$$HOME/Devel\nsource /usr/local/bin/virtualenvwrapper.sh\n"
-	@bash -c "source `which virtualenvwrapper.sh`;mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER)"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
-endif
+	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-## Test if python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
 ################################################################################
 #
 # Dataset cleaning rules 
