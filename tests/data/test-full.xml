@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GoodreadsResponse>
+    <Request>
+        <authentication>true</authentication>
+        <key><![CDATA[all_men_must_serve]]></key>
+        <method><![CDATA[book_show]]></method>
+    </Request>
+    <book>
+        <id>350</id>
+        <title>Stranger in a Strange Land</title>
+        <isbn><![CDATA[0441788386]]></isbn>
+        <isbn13><![CDATA[9780441788385]]></isbn13>
+        <asin><![CDATA[]]></asin>
+        <kindle_asin><![CDATA[]]></kindle_asin>
+        <marketplace_id><![CDATA[]]></marketplace_id>
+        <country_code><![CDATA[GB]]></country_code>
+        <image_url>https://images.gr-assets.com/books/1156897088m/350.jpg</image_url>
+        <small_image_url>https://images.gr-assets.com/books/1156897088s/350.jpg</small_image_url>
+        <publication_year>1991</publication_year>
+        <publication_month>10</publication_month>
+        <publication_day>1</publication_day>
+        <publisher>Ace</publisher>
+        <language_code>eng</language_code>
+        <is_ebook>false</is_ebook>
+        <description><![CDATA[<b>NAME: Valentine Michael Smith<br />ANCESTRY: Human<br />ORIGIN: Mars</b><br /><br />Valentine Michael Smith is a human being raised on Mars, newly returned to Earth. Among his people for the first time, he struggles to understand the social mores and prejudices of human nature that are so alien to him, while teaching them his own fundamental beliefs in grokking, watersharing, and love.]]></description>
+        <work>
+            <id type="integer">908211</id>
+            <books_count type="integer">130</books_count>
+            <best_book_id type="integer">350</best_book_id>
+            <reviews_count type="integer">352857</reviews_count>
+            <ratings_sum type="integer">895757</ratings_sum>
+            <ratings_count type="integer">229358</ratings_count>
+            <text_reviews_count type="integer">6305</text_reviews_count>
+            <original_publication_year type="integer">1961</original_publication_year>
+            <original_publication_month type="integer">7</original_publication_month>
+            <original_publication_day type="integer">1</original_publication_day>
+            <original_title>Stranger in a Strange Land</original_title>
+            <original_language_id type="integer" nil="true" />
+            <media_type>book</media_type>
+            <rating_dist>5:87373|4:69985|3:45367|2:16218|1:10415|total:229358</rating_dist>
+            <desc_user_id type="integer">17406605</desc_user_id>
+            <default_chaptering_book_id type="integer" nil="true" />
+            <default_description_language_code nil="true" />
+        </work>
+        <average_rating>3.91</average_rating>
+        <num_pages><![CDATA[528]]></num_pages>
+        <format><![CDATA[Paperback]]></format>
+        <edition_information><![CDATA[]]></edition_information>
+        <ratings_count><![CDATA[220424]]></ratings_count>
+        <text_reviews_count><![CDATA[5294]]></text_reviews_count>
+        <url><![CDATA[https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land]]></url>
+        <link><![CDATA[https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land]]></link>
+        <authors>
+            <author>
+                <id>205</id>
+                <name>Robert A. Heinlein</name>
+                <role></role>
+                <image_url nophoto="false"><![CDATA[https://images.gr-assets.com/authors/1192826560p5/205.jpg]]></image_url>
+                <small_image_url nophoto="false"><![CDATA[https://images.gr-assets.com/authors/1192826560p2/205.jpg]]></small_image_url>
+                <link><![CDATA[https://www.goodreads.com/author/show/205.Robert_A_Heinlein]]></link>
+                <average_rating>3.92</average_rating>
+                <ratings_count>912993</ratings_count>
+                <text_reviews_count>26894</text_reviews_count>
+            </author>
+        </authors>
+        <reviews_widget><![CDATA[
+        <style>
+  #goodreads-widget {
+    font-family: georgia, serif;
+    padding: 18px 0;
+    width:565px;
+  }
+  #goodreads-widget h1 {
+    font-weight:normal;
+    font-size: 16px;
+    border-bottom: 1px solid #BBB596;
+    margin-bottom: 0;
+  }
+  #goodreads-widget a {
+    text-decoration: none;
+    color:#660;
+  }
+  iframe{
+    background-color: #fff;
+  }
+  #goodreads-widget a:hover { text-decoration: underline; }
+  #goodreads-widget a:active {
+    color:#660;
+  }
+  #gr_footer {
+    width: 100%;
+    border-top: 1px solid #BBB596;
+    text-align: right;
+  }
+  #goodreads-widget .gr_branding{
+    color: #382110;
+    font-size: 11px;
+    text-decoration: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+</style>
+<div id="goodreads-widget">
+  <div id="gr_header"><h1><a rel="nofollow" href="https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land">Stranger in a Strange Land Reviews</a></h1></div>
+  <iframe id="the_iframe" src="https://www.goodreads.com/api/reviews_widget_iframe?did=DEVELOPER_ID&amp;format=html&amp;isbn=0441788386&amp;links=660&amp;min_rating=&amp;review_back=fff&amp;stars=000&amp;text=000" width="565" height="400" frameborder="0"></iframe>
+  <div id="gr_footer">
+    <a class="gr_branding" target="_blank" rel="nofollow" href="https://www.goodreads.com/book/show/350.Stranger_in_a_Strange_Land?utm_medium=api&amp;utm_source=reviews_widget">Reviews from Goodreads.com</a>
+  </div>
+</div>
+
+      ]]></reviews_widget>
+        <popular_shelves>
+            <shelf name="science-fiction" count="4665" />
+            <shelf name="to-read" count="4020" />
+            <shelf name="sci-fi" count="3641" />
+            <shelf name="currently-reading" count="3012" />
+            <shelf name="fiction" count="2069" />
+            <shelf name="favorites" count="1291" />
+            <shelf name="classics" count="914" />
+            <shelf name="scifi" count="846" />
+            <shelf name="sci-fi-fantasy" count="480" />
+            <shelf name="owned" count="445" />
+            <shelf name="fantasy" count="424" />
+            <shelf name="sf" count="397" />
+            <shelf name="classic" count="264" />
+            <shelf name="scifi-fantasy" count="207" />
+            <shelf name="default" count="178" />
+            <shelf name="books-i-own" count="162" />
+            <shelf name="science-fiction-fantasy" count="154" />
+            <shelf name="novels" count="144" />
+            <shelf name="philosophy" count="136" />
+            <shelf name="speculative-fiction" count="135" />
+            <shelf name="audiobook" count="132" />
+            <shelf name="fantasy-sci-fi" count="130" />
+            <shelf name="1001-books" count="125" />
+            <shelf name="science" count="125" />
+            <shelf name="library" count="121" />
+            <shelf name="religion" count="118" />
+            <shelf name="abandoned" count="113" />
+            <shelf name="1001" count="105" />
+            <shelf name="to-buy" count="104" />
+            <shelf name="hugo" count="104" />
+            <shelf name="heinlein" count="101" />
+            <shelf name="literature" count="87" />
+            <shelf name="kindle" count="86" />
+            <shelf name="sci-fi-and-fantasy" count="82" />
+            <shelf name="owned-books" count="79" />
+            <shelf name="hugo-award" count="79" />
+            <shelf name="american" count="79" />
+            <shelf name="hugo-winners" count="75" />
+            <shelf name="book-club" count="75" />
+            <shelf name="sf-fantasy" count="74" />
+            <shelf name="novel" count="74" />
+            <shelf name="audiobooks" count="72" />
+            <shelf name="adult" count="70" />
+            <shelf name="ebook" count="67" />
+            <shelf name="audio" count="67" />
+            <shelf name="aliens" count="66" />
+            <shelf name="1001-books-to-read-before-you-die" count="63" />
+            <shelf name="wish-list" count="60" />
+            <shelf name="robert-a-heinlein" count="58" />
+            <shelf name="sff" count="58" />
+            <shelf name="science-fiction-and-fantasy" count="56" />
+            <shelf name="unfinished" count="56" />
+            <shelf name="favourites" count="54" />
+            <shelf name="fantasy-scifi" count="52" />
+            <shelf name="my-library" count="50" />
+            <shelf name="hugo-award-winners" count="49" />
+            <shelf name="to-read-fiction" count="49" />
+            <shelf name="sciencefiction" count="48" />
+            <shelf name="classic-sci-fi" count="47" />
+            <shelf name="did-not-finish" count="46" />
+            <shelf name="ebooks" count="44" />
+            <shelf name="audible" count="43" />
+            <shelf name="20th-century" count="43" />
+            <shelf name="re-read" count="42" />
+            <shelf name="english" count="41" />
+            <shelf name="to-re-read" count="40" />
+            <shelf name="books" count="40" />
+            <shelf name="robert-heinlein" count="39" />
+            <shelf name="1960s" count="38" />
+            <shelf name="shelfari-favorites" count="36" />
+            <shelf name="fantascienza" count="36" />
+            <shelf name="didn-t-finish" count="36" />
+            <shelf name="all-time-favorites" count="36" />
+            <shelf name="sci-fi-to-read" count="35" />
+            <shelf name="to-read-sci-fi" count="35" />
+            <shelf name="dystopia" count="35" />
+            <shelf name="dnf" count="34" />
+            <shelf name="mars" count="34" />
+            <shelf name="1001-import" count="33" />
+            <shelf name="favorite" count="33" />
+            <shelf name="sf-f" count="33" />
+            <shelf name="my-books" count="32" />
+            <shelf name="1001-books-to-read" count="32" />
+            <shelf name="adult-fiction" count="32" />
+            <shelf name="own-it" count="31" />
+            <shelf name="dystopian" count="31" />
+            <shelf name="gave-up-on" count="30" />
+            <shelf name="recommended" count="30" />
+            <shelf name="i-own" count="30" />
+            <shelf name="maybe" count="29" />
+            <shelf name="audio-books" count="29" />
+            <shelf name="1001-books-you-must-read-before-you" count="29" />
+            <shelf name="american-literature" count="28" />
+            <shelf name="audio-book" count="28" />
+            <shelf name="on-hold" count="27" />
+            <shelf name="gave-up" count="27" />
+            <shelf name="classic-literature" count="27" />
+            <shelf name="favorite-books" count="26" />
+            <shelf name="classic-scifi" count="26" />
+            <shelf name="hugo-winner" count="26" />
+        </popular_shelves>
+        <book_links>
+            <book_link>
+                <id>8</id>
+                <name>Libraries</name>
+                <link>https://www.goodreads.com/book_link/follow/8</link>
+            </book_link>
+        </book_links>
+        <buy_links>
+            <buy_link>
+                <id>1</id>
+                <name>Amazon</name>
+                <link>https://www.goodreads.com/book_link/follow/1</link>
+            </buy_link>
+            <buy_link>
+                <id>10</id>
+                <name>Audible</name>
+                <link>https://www.goodreads.com/book_link/follow/10</link>
+            </buy_link>
+            <buy_link>
+                <id>3</id>
+                <name>Barnes &amp; Noble</name>
+                <link>https://www.goodreads.com/book_link/follow/3</link>
+            </buy_link>
+            <buy_link>
+                <id>1027</id>
+                <name>Kobo</name>
+                <link>https://www.goodreads.com/book_link/follow/1027</link>
+            </buy_link>
+            <buy_link>
+                <id>2102</id>
+                <name>Apple iBooks</name>
+                <link>https://www.goodreads.com/book_link/follow/2102</link>
+            </buy_link>
+            <buy_link>
+                <id>8036</id>
+                <name>Google Play</name>
+                <link>https://www.goodreads.com/book_link/follow/8036</link>
+            </buy_link>
+            <buy_link>
+                <id>4</id>
+                <name>Abebooks</name>
+                <link>https://www.goodreads.com/book_link/follow/4</link>
+            </buy_link>
+            <buy_link>
+                <id>882</id>
+                <name>Book Depository</name>
+                <link>https://www.goodreads.com/book_link/follow/882</link>
+            </buy_link>
+            <buy_link>
+                <id>9</id>
+                <name>Indigo</name>
+                <link>https://www.goodreads.com/book_link/follow/9</link>
+            </buy_link>
+            <buy_link>
+                <id>2</id>
+                <name>Half.com</name>
+                <link>https://www.goodreads.com/book_link/follow/2</link>
+            </buy_link>
+            <buy_link>
+                <id>5</id>
+                <name>Alibris</name>
+                <link>https://www.goodreads.com/book_link/follow/5</link>
+            </buy_link>
+            <buy_link>
+                <id>107</id>
+                <name>Better World Books</name>
+                <link>https://www.goodreads.com/book_link/follow/107</link>
+            </buy_link>
+            <buy_link>
+                <id>7</id>
+                <name>IndieBound</name>
+                <link>https://www.goodreads.com/book_link/follow/7</link>
+            </buy_link>
+        </buy_links>
+        <series_works></series_works>
+        <similar_books>
+            <book>
+                <id>99245</id>
+                <title>Nightfall</title>
+                <title_without_series>Nightfall</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/99245.Nightfall]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1368557860s/99245.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1368557860m/99245.jpg]]></image_url>
+                <num_pages>339</num_pages>
+                <work>
+                    <id>858297</id>
+                </work>
+                <isbn>0553290991</isbn>
+                <isbn13>9780553290998</isbn13>
+                <average_rating>4.01</average_rating>
+                <ratings_count>22619</ratings_count>
+                <publication_year>2012</publication_year>
+                <publication_month>1</publication_month>
+                <publication_day>27</publication_day>
+                <authors>
+                    <author>
+                        <id>16667</id>
+                        <name>Isaac Asimov</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/16667.Isaac_Asimov]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>77504</id>
+                <title>Blue Mars (Mars Trilogy, #3)</title>
+                <title_without_series>Blue Mars</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/77504.Blue_Mars]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>761</num_pages>
+                <work>
+                    <id>40711</id>
+                </work>
+                <isbn>0553573357</isbn>
+                <isbn13>9780553573350</isbn13>
+                <average_rating>3.92</average_rating>
+                <ratings_count>20924</ratings_count>
+                <publication_year>1997</publication_year>
+                <publication_month>6</publication_month>
+                <publication_day>2</publication_day>
+                <authors>
+                    <author>
+                        <id>1858</id>
+                        <name>Kim Stanley Robinson</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/1858.Kim_Stanley_Robinson]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>189147</id>
+                <title><![CDATA[To Your Scattered Bodies Go (Riverworld, #1)]]></title>
+                <title_without_series>To Your Scattered Bodies Go</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/189147.To_Your_Scattered_Bodies_Go]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1327657439s/189147.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1327657439m/189147.jpg]]></image_url>
+                <num_pages>220</num_pages>
+                <work>
+                    <id>3171254</id>
+                </work>
+                <isbn>0345419677</isbn>
+                <isbn13>9780345419675</isbn13>
+                <average_rating>3.94</average_rating>
+                <ratings_count>24005</ratings_count>
+                <publication_year></publication_year>
+                <publication_month></publication_month>
+                <publication_day></publication_day>
+                <authors>
+                    <author>
+                        <id>10089</id>
+                        <name>Philip José Farmer</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/10089.Philip_Jos_Farmer]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>49838</id>
+                <title>Titan (Gaea, #1)</title>
+                <title_without_series>Titan</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/49838.Titan]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>309</num_pages>
+                <work>
+                    <id>2777504</id>
+                </work>
+                <isbn>0441813046</isbn>
+                <isbn13>9780441813049</isbn13>
+                <average_rating>3.94</average_rating>
+                <ratings_count>6670</ratings_count>
+                <publication_year>1987</publication_year>
+                <publication_month>4</publication_month>
+                <publication_day>15</publication_day>
+                <authors>
+                    <author>
+                        <id>27341</id>
+                        <name>John Varley</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/27341.John_Varley]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>13827</id>
+                <title>This Immortal</title>
+                <title_without_series>This Immortal</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/13827.This_Immortal]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1304429213s/13827.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1304429213m/13827.jpg]]></image_url>
+                <num_pages>216</num_pages>
+                <work>
+                    <id>1174485</id>
+                </work>
+                <isbn>0671698486</isbn>
+                <isbn13>9780671698485</isbn13>
+                <average_rating>3.94</average_rating>
+                <ratings_count>8179</ratings_count>
+                <publication_year>1989</publication_year>
+                <publication_month></publication_month>
+                <publication_day></publication_day>
+                <authors>
+                    <author>
+                        <id>3619</id>
+                        <name>Roger Zelazny</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/3619.Roger_Zelazny]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>156724</id>
+                <title><![CDATA[The Collected Stories of Philip K. Dick 4: The Minority Report]]></title>
+                <title_without_series><![CDATA[The Collected Stories of Philip K. Dick 4: The Minority Report]]></title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/156724.The_Collected_Stories_of_Philip_K_Dick_4]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>396</num_pages>
+                <work>
+                    <id>3590796</id>
+                </work>
+                <isbn>0806512768</isbn>
+                <isbn13>9780806512761</isbn13>
+                <average_rating>4.18</average_rating>
+                <ratings_count>7794</ratings_count>
+                <publication_year>1998</publication_year>
+                <publication_month>1</publication_month>
+                <publication_day>27</publication_day>
+                <authors>
+                    <author>
+                        <id>4764</id>
+                        <name>Philip K. Dick</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/4764.Philip_K_Dick]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>264946</id>
+                <title><![CDATA[Hominids (Neanderthal Parallax, #1)]]></title>
+                <title_without_series>Hominids</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/264946.Hominids]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>444</num_pages>
+                <work>
+                    <id>1500323</id>
+                </work>
+                <isbn>0765345005</isbn>
+                <isbn13>9780765345004</isbn13>
+                <average_rating>3.77</average_rating>
+                <ratings_count>9792</ratings_count>
+                <publication_year>2003</publication_year>
+                <publication_month>2</publication_month>
+                <publication_day>17</publication_day>
+                <authors>
+                    <author>
+                        <id>25883</id>
+                        <name>Robert J. Sawyer</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/25883.Robert_J_Sawyer]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>823062</id>
+                <title>The Light of Other Days</title>
+                <title_without_series>The Light of Other Days</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/823062.The_Light_of_Other_Days]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1315596650s/823062.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1315596650m/823062.jpg]]></image_url>
+                <num_pages></num_pages>
+                <work>
+                    <id>924161</id>
+                </work>
+                <isbn>0812576403</isbn>
+                <isbn13>9780812576405</isbn13>
+                <average_rating>3.98</average_rating>
+                <ratings_count>5417</ratings_count>
+                <publication_year></publication_year>
+                <publication_month></publication_month>
+                <publication_day></publication_day>
+                <authors>
+                    <author>
+                        <id>7779</id>
+                        <name>Arthur C. Clarke</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/7779.Arthur_C_Clarke]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>85867</id>
+                <title>Dhalgren</title>
+                <title_without_series>Dhalgren</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/85867.Dhalgren]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1320531180s/85867.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1320531180m/85867.jpg]]></image_url>
+                <num_pages>801</num_pages>
+                <work>
+                    <id>873021</id>
+                </work>
+                <isbn>0375706682</isbn>
+                <isbn13>9780375706684</isbn13>
+                <average_rating>3.79</average_rating>
+                <ratings_count>6727</ratings_count>
+                <publication_year>2001</publication_year>
+                <publication_month>5</publication_month>
+                <publication_day>15</publication_day>
+                <authors>
+                    <author>
+                        <id>49111</id>
+                        <name>Samuel R. Delany</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/49111.Samuel_R_Delany]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>76740</id>
+                <title>The Demolished Man</title>
+                <title_without_series>The Demolished Man</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/76740.The_Demolished_Man]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1360171879s/76740.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1360171879m/76740.jpg]]></image_url>
+                <num_pages>250</num_pages>
+                <work>
+                    <id>1247570</id>
+                </work>
+                <isbn>1857988221</isbn>
+                <isbn13>9781857988222</isbn13>
+                <average_rating>3.99</average_rating>
+                <ratings_count>22494</ratings_count>
+                <publication_year>1999</publication_year>
+                <publication_month>7</publication_month>
+                <publication_day>8</publication_day>
+                <authors>
+                    <author>
+                        <id>10992</id>
+                        <name>Alfred Bester</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/10992.Alfred_Bester]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>61179</id>
+                <title>Ringworld (Ringworld, #1)</title>
+                <title_without_series>Ringworld</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/61179.Ringworld]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1408793358s/61179.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1408793358m/61179.jpg]]></image_url>
+                <num_pages>288</num_pages>
+                <work>
+                    <id>924711</id>
+                </work>
+                <isbn>0575077026</isbn>
+                <isbn13>9780575077027</isbn13>
+                <average_rating>3.96</average_rating>
+                <ratings_count>82628</ratings_count>
+                <publication_year>2005</publication_year>
+                <publication_month>6</publication_month>
+                <publication_day>9</publication_day>
+                <authors>
+                    <author>
+                        <id>12534</id>
+                        <name>Larry Niven</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/12534.Larry_Niven]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>190999</id>
+                <title>Way Station</title>
+                <title_without_series>Way Station</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/190999.Way_Station]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1326490682s/190999.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1326490682m/190999.jpg]]></image_url>
+                <num_pages>210</num_pages>
+                <work>
+                    <id>348798</id>
+                </work>
+                <isbn>0020248717</isbn>
+                <isbn13>9780020248712</isbn13>
+                <average_rating>4.03</average_rating>
+                <ratings_count>15127</ratings_count>
+                <publication_year>1992</publication_year>
+                <publication_month></publication_month>
+                <publication_day></publication_day>
+                <authors>
+                    <author>
+                        <id>23012</id>
+                        <name>Clifford D. Simak</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/23012.Clifford_D_Simak]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>761449</id>
+                <title>Destination Void</title>
+                <title_without_series>Destination Void</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/761449.Destination_Void]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>276</num_pages>
+                <work>
+                    <id>3634673</id>
+                </work>
+                <isbn>042507465X</isbn>
+                <isbn13>9780425074657</isbn13>
+                <average_rating>3.60</average_rating>
+                <ratings_count>2929</ratings_count>
+                <publication_year>1984</publication_year>
+                <publication_month>7</publication_month>
+                <publication_day>15</publication_day>
+                <authors>
+                    <author>
+                        <id>58</id>
+                        <name>Frank Herbert</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/58.Frank_Herbert]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>830990</id>
+                <title><![CDATA[The Science Fiction Hall of Fame: Volume II A (The Science Fiction Hall of Fame, #2A)]]></title>
+                <title_without_series><![CDATA[The Science Fiction Hall of Fame: Volume II A]]></title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/830990.The_Science_Fiction_Hall_of_Fame]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1264768351s/830990.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1264768351m/830990.jpg]]></image_url>
+                <num_pages></num_pages>
+                <work>
+                    <id>816647</id>
+                </work>
+                <isbn>0380000385</isbn>
+                <isbn13>9780380000388</isbn13>
+                <average_rating>4.34</average_rating>
+                <ratings_count>3298</ratings_count>
+                <publication_year>1976</publication_year>
+                <publication_month>6</publication_month>
+                <publication_day>1</publication_day>
+                <authors>
+                    <author>
+                        <id>12407</id>
+                        <name>Ben Bova</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/12407.Ben_Bova]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>96471</id>
+                <title>Earth</title>
+                <title_without_series>Earth</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/96471.Earth]]></link>
+                <small_image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png]]></small_image_url>
+                <image_url><![CDATA[https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png]]></image_url>
+                <num_pages>704</num_pages>
+                <work>
+                    <id>1218966</id>
+                </work>
+                <isbn>055329024X</isbn>
+                <isbn13>9780553290240</isbn13>
+                <average_rating>3.90</average_rating>
+                <ratings_count>5944</ratings_count>
+                <publication_year>1991</publication_year>
+                <publication_month>5</publication_month>
+                <publication_day>1</publication_day>
+                <authors>
+                    <author>
+                        <id>14078</id>
+                        <name>David Brin</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/14078.David_Brin]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>968827</id>
+                <title><![CDATA[Where Late the Sweet Birds Sang]]></title>
+                <title_without_series><![CDATA[Where Late the Sweet Birds Sang]]></title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/968827.Where_Late_the_Sweet_Birds_Sang]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1460999710s/968827.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1460999710m/968827.jpg]]></image_url>
+                <num_pages>251</num_pages>
+                <work>
+                    <id>953721</id>
+                </work>
+                <isbn>0060146540</isbn>
+                <isbn13>9780060146542</isbn13>
+                <average_rating>3.87</average_rating>
+                <ratings_count>7045</ratings_count>
+                <publication_year>1977</publication_year>
+                <publication_month>12</publication_month>
+                <publication_day>1</publication_day>
+                <authors>
+                    <author>
+                        <id>48885</id>
+                        <name>Kate Wilhelm</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/48885.Kate_Wilhelm]]></link>
+                    </author>
+                </authors>
+            </book>
+            <book>
+                <id>834518</id>
+                <title>Cyteen (Cyteen, #1-3)</title>
+                <title_without_series>Cyteen</title_without_series>
+                <link><![CDATA[https://www.goodreads.com/book/show/834518.Cyteen]]></link>
+                <small_image_url><![CDATA[https://images.gr-assets.com/books/1316469389s/834518.jpg]]></small_image_url>
+                <image_url><![CDATA[https://images.gr-assets.com/books/1316469389m/834518.jpg]]></image_url>
+                <num_pages>680</num_pages>
+                <work>
+                    <id>820134</id>
+                </work>
+                <isbn>0446671274</isbn>
+                <isbn13>9780446671279</isbn13>
+                <average_rating>3.99</average_rating>
+                <ratings_count>8423</ratings_count>
+                <publication_year>1995</publication_year>
+                <publication_month>9</publication_month>
+                <publication_day>1</publication_day>
+                <authors>
+                    <author>
+                        <id>989968</id>
+                        <name>C.J. Cherryh</name>
+                        <link><![CDATA[https://www.goodreads.com/author/show/989968.C_J_Cherryh]]></link>
+                    </author>
+                </authors>
+            </book>
+        </similar_books>
+    </book>
+</GoodreadsResponse>

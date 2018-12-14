@@ -9,3 +9,4 @@ install:
 script:
   - make data
   - make clean_data
+  - make tests

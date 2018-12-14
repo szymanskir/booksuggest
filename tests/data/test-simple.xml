@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GoodreadsResponse>
+    <book>
+        <id>1</id>
+        <title><![CDATA[Harry Potter and the Half-Blood Prince (Harry Potter, #6)]]></title>
+        <isbn><![CDATA[0439785960]]></isbn>
+        <isbn13><![CDATA[9780439785969]]></isbn13>
+        <description><![CDATA[The war against Voldemort is not going well]]></description>
+        <work>
+            <id type="integer">41335427</id>
+            <best_book_id type="integer">1</best_book_id>
+        </work>
+        <similar_books>
+            <book>
+                <work>
+                    <id>1003876</id>
+                </work>
+            </book>
+            <book>
+                <work>
+                    <id>946088</id>
+                </work>
+            </book>
+        </similar_books>
+    </book>
+</GoodreadsResponse>

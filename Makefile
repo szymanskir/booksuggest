@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements
+.PHONY: clean data lint requirements tests
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -28,6 +28,10 @@ data: process_raw_data
 
 ## Train models
 models: models/dummy_model.pkl
+
+## Run all tests
+tests: 
+	pytest
 
 ## Delete all compiled Python files
 clean:
