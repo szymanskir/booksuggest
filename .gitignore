@@ -4,3 +4,4 @@ src.egg-info/*
 dist/*
 build/*
 __pycache__/
+rs-venv/*
