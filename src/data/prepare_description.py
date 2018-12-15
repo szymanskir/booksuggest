@@ -1,5 +1,6 @@
 import click
 import logging
+import numpy as np
 import pandas as pd
 
 from langdetect import detect
@@ -15,7 +16,7 @@ def clean_single_description(description: str) -> str:
         stemming and lemmatization.
     """
     if detect(description) != 'en':
-        return 'NaN'
+        return np.nan
 
     word_list = description.split()
     word_list = [word.lower() for word in word_list
@@ -32,9 +33,10 @@ def clean_single_description(description: str) -> str:
 
 def clean_descriptions(input_filepath: str) -> pd.DataFrame:
     data = pd.read_csv(input_filepath, index_col='book_id')
-    data['description'] = data['description'].dropna().apply(clean_single_description)
+    descriptions = data['description'].dropna()
+    data['description'] = descriptions.apply(clean_single_description)
 
-    return data
+    return data.dropna()
 
 
 @click.command()

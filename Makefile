@@ -11,7 +11,13 @@ PYTHON_INTERPRETER = python3
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
-MODELS = models/dummy_model.pkl models/content-based-models/basic-tf-idf-model.pkl
+BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
+MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
+
+BASIC_TF_IDF_PREDICTION = models/predictions/basic-tf-idf-predictions.csv
+PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
+
+RESULT_FILES = results/cb-results.csv
 
 ifeq (,$(shell which conda))
 HAS_CONDA=False
@@ -30,20 +36,28 @@ requirements: test_environment
 process_raw_data: $(RAW_DATA_FILES)
 
 ## Make Dataset
-data: requirements process_raw_data
+data: process_raw_data
 
 ## Train models
 models: $(MODELS)
+
+## Predict models
+predictions: $(PREDICTIONS)
+
+## Evaluate models
+scores: $(RESULT_FILES) 
 
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
-	rm data/*/*
+	rm -rf .mypy_cache
 
-## Lint using flake8
+## Lint using flake8 and check types with mypy
 lint:
 	flake8 src
+	pylint src
+	mypy src --ignore-missing-imports
 
 ## Set up python interpreter environment
 create_environment:
@@ -66,15 +80,19 @@ endif
 ## Test if python environment is setup correctly
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
+
 ################################################################################
 #
 # Dataset cleaning rules 
 #
 ################################################################################
 
-clean_data: data src/data/parse_xml_files.py
+clean_data: data/interim/book_info.csv data/interim/similar_books.csv
+
+data/interim/book_info.csv data/interim/similar_books.csv: src/data/parse_xml_files.py
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
+
 
 ################################################################################
 #
@@ -119,8 +137,29 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
-models/content-based-models/basic-tf-idf-model.pkl: data/interim/cb-tf-idf/book.csv src/models/tf_idf_models.py 
+$(BASIC_TF_IDF_MODEL): data/interim/cb-tf-idf/book.csv src/models/tf_idf_models.py src/models/recommendation_models.py src/models/predict_models.py
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+
+################################################################################
+#
+# Model predictions rules
+#
+################################################################################
+CB_TEST_CASES = data/interim/book.csv
+
+$(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
+	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
+
+################################################################################
+#
+# Model evaluation rules
+#
+################################################################################
+
+CB_DIRECTORY = models/content-based-models
+
+results/cb-results.csv: src/models/evaluation.py models/content-based-models/*.pkl
+	$(PYTHON_INTERPRETER) -m src.models.evaluation $(CB_DIRECTORY) data/interim/similar_books.csv $@
 
 ################################################################################
 #
@@ -128,8 +167,8 @@ models/content-based-models/basic-tf-idf-model.pkl: data/interim/cb-tf-idf/book.
 #
 ################################################################################
 
-data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/processed/book.csv
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/processed/book.csv $@
+data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book.csv
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/book.csv $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
