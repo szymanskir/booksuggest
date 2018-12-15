@@ -40,6 +40,7 @@ models: $(MODELS)
 ## Run all tests
 tests: 
 	pytest
+
 ## Predict models
 predictions: $(PREDICTIONS)
 

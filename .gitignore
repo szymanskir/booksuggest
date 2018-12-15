@@ -9,5 +9,4 @@ rs-venv/*
 .mypy_cache/*
 models/*
 notebooks/.ipynb_checkpoints
-rs-env/*
 results/*
