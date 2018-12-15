@@ -37,7 +37,7 @@ def evaluate_content_based_models(
 
 
 def prepare_test_case(similar_books_filepath: str) -> Dict[int, List[int]]:
-    similar_books = pd.read_csv(similar_books_filepath)
+    similar_books = pd.read_csv(similar_books_filepath).head(1)
     test_cases = similar_books.groupby('book_id').groups
 
     return test_cases

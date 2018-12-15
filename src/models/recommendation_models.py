@@ -3,8 +3,13 @@ import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
-from typing import Dict, List
+from typing import Callable, Dict, List, Tuple
 from scipy.spatial import distance
+from sklearn.metrics import pairwise_distances
+from sklearn.neighbors import NearestNeighbors
+from statistics import mean
+
+from ..validation.metrics import precision, recall
 
 
 class IRecommendationModel(metaclass=ABCMeta):
@@ -19,13 +24,42 @@ class IRecommendationModel(metaclass=ABCMeta):
         pass
 
 
+class IContentBasedRecommendationModelValidation(IRecommendationModel):
+    def _score_for_given_metric(
+            self,
+            results: Dict[int, List[int]],
+            test_cases: Dict[int, List[int]],
+            metric: Callable[[List[int], List[int]], int]
+    ) -> int:
+        """Calculates the average score for a given metric.
+        """
+        score = [metric(results[key], test_cases[key])
+                 for key in test_cases.keys()]
+
+        return mean(score)
+
+    def score(self, test_cases: Dict[int, List[int]]) -> Tuple[int, int]:
+        """Calculates the precision and recall score of the model
+        """
+        results = {key: list(self.recommend({key: None}).keys())
+                   for key in test_cases.keys()}
+        precision_score = self._score_for_given_metric(
+            results, test_cases, precision
+        )
+        recall_score = self._score_for_given_metric(
+            results, test_cases, recall
+        )
+
+        return (precision_score, recall_score)
+
+
 class DummyModel(IRecommendationModel):
     def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
         books: List[int] = list(user_ratings.keys())
         return books[0:6]
 
 
-class TfIdfRecommendationModel(IRecommendationModel):
+class TfIdfRecommendationModel(IContentBasedRecommendationModelValidation):
     """Recommendation model using the tf-idf method for
     feature extraction. Later uses the cosine similarity
     in order to select the most similar books
@@ -33,23 +67,21 @@ class TfIdfRecommendationModel(IRecommendationModel):
 
     def __init__(self, input_filepath: str, recommendation_count):
         self.data = pd.read_csv(input_filepath, index_col='book_id')
-        self.recommendation_count = recommendation_count
+        self.content_analyzer = TfidfVectorizer()
+        self.filtering_component = NearestNeighbors(
+            n_neighbors = recommendation_count + 1,
+            metric = 'cosine'
+        )
 
     def train(self):
         """Prepares tf_idf feature vectors
         """
 
-        # TODO fix initial data cleaning so no NAs are present
-        descriptions = self.data['description'].dropna()
-        vectorizer = TfidfVectorizer()
-        result = vectorizer.fit_transform(descriptions)
-        feature_vectors = [result[i, :] for i in range(result.shape[0])]
-        self.features = pd.DataFrame(
-            data={'feature_vector': feature_vectors},
-            index=descriptions.index
-        )
+        descriptions = self.data['description']
+        result = self.content_analyzer.fit_transform(descriptions)
+        self.filtering_component.fit(result)
 
-    def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
+    def recommend(self, user_ratings: Dict[int, int]) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
         book ids and their ratings recommendations are determined.
 
@@ -58,22 +90,14 @@ class TfIdfRecommendationModel(IRecommendationModel):
         which books are similar.
         """
         selected_book_id = next(iter(user_ratings))
-        selected_book_features = self.features.loc[
-            selected_book_id, 'feature_vector'
-        ].toarray()
 
-        remove_selected_book = self.features.index.isin([selected_book_id])
-        candidate_features = self.features[~remove_selected_book]
-        distances = candidate_features.apply(
-            lambda x: distance.cosine(
-                x.loc['feature_vector'].toarray(),
-                selected_book_features
-            ),
-            axis=1
-        )
+        try:
+            selected_book_description = self.data['description'].loc[selected_book_id]
+        except KeyError:
+            return dict()
 
-        recommendation_ids = distances.sort_values().index.tolist()
-        recommendation_ids = recommendation_ids[:self.recommendation_count]
-        return dict(zip(
-            recommendation_ids, distances.loc[recommendation_ids].tolist()
-        ))
+        feature_vec = self.content_analyzer.transform([selected_book_description])
+        distances, ids = self.filtering_component.kneighbors(feature_vec)
+        recommendations = self.data['description'].index[ids.flatten()[1:]]
+
+        return dict(zip(recommendations, distances.flatten()))
