@@ -26,8 +26,8 @@ RESULT_FILES = results/cb-results.csv
 
 ## Install Python Dependencies
 requirements:
-	pip install -r requirements.txt
 	$(PYTHON_INTERPRETER) setup.py install
+	pip install -r requirements.txt
 
 process_raw_data: $(RAW_DATA_FILES)
 
