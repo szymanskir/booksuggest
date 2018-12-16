@@ -7,6 +7,6 @@ build/*
 __pycache__/
 rs-venv/*
 .mypy_cache/*
-models/*
+models/*.pkl
 notebooks/.ipynb_checkpoints
 results/*
