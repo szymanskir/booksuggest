@@ -73,9 +73,9 @@ test_environment:
 #
 ################################################################################
 
-clean_data: data/interim/book_info.csv data/interim/similar_books.csv
+clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
 
-data/interim/book-additional_info.csv data/interim/similar_books.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
+data/interim/book-unified_ids.csv data/interim/similar_books.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
 
@@ -153,8 +153,8 @@ results/cb-results.csv: src/validation/evaluation.py data/interim/similar_books-
 #
 ################################################################################
 
-data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book-additional_info.csv data/interim/similar_books-unified_ids.csv
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/similar_books-unified_ids.csv $@
+data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/book-unified_ids.csv $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
