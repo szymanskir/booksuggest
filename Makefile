@@ -75,7 +75,7 @@ test_environment:
 
 clean_data: data/interim/book_info.csv data/interim/similar_books.csv
 
-data/interim/book_info.csv data/interim/similar_books.csv: src/data/parse_xml_files.py
+data/interim/book-additional_info.csv data/interim/similar_books.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
 
@@ -131,7 +131,7 @@ $(BASIC_TF_IDF_MODEL): data/interim/cb-tf-idf/book.csv src/models/tf_idf_models.
 # Model predictions rules
 #
 ################################################################################
-CB_TEST_CASES = data/interim/book.csv
+CB_TEST_CASES = data/interim/similar_books-unified_ids.csv
 
 $(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
 	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
@@ -144,8 +144,8 @@ $(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
 
 CB_DIRECTORY = models/content-based-models
 
-results/cb-results.csv: src/models/evaluation.py models/content-based-models/*.pkl
-	$(PYTHON_INTERPRETER) -m src.models.evaluation $(CB_DIRECTORY) data/interim/similar_books.csv $@
+results/cb-results.csv: src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.evaluation models/predictions data/interim/similar_books-unified_ids.csv $@
 
 ################################################################################
 #
@@ -153,8 +153,8 @@ results/cb-results.csv: src/models/evaluation.py models/content-based-models/*.p
 #
 ################################################################################
 
-data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book.csv
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/book.csv $@
+data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book-additional_info.csv data/interim/similar_books-unified_ids.csv
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/similar_books-unified_ids.csv $@
 
 #################################################################################
 # Self Documenting Commands                                                     #

@@ -1,11 +1,8 @@
-import numpy as np
 import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Callable, Dict, List, Tuple
-from scipy.spatial import distance
-from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
 from statistics import mean
 
@@ -69,8 +66,8 @@ class TfIdfRecommendationModel(IContentBasedRecommendationModelValidation):
         self.data = pd.read_csv(input_filepath, index_col='book_id')
         self.content_analyzer = TfidfVectorizer()
         self.filtering_component = NearestNeighbors(
-            n_neighbors = recommendation_count + 1,
-            metric = 'cosine'
+            n_neighbors=recommendation_count + 1,
+            metric='cosine'
         )
 
     def train(self):
@@ -92,11 +89,14 @@ class TfIdfRecommendationModel(IContentBasedRecommendationModelValidation):
         selected_book_id = next(iter(user_ratings))
 
         try:
-            selected_book_description = self.data['description'].loc[selected_book_id]
+            descriptions = self.data['description']
+            selected_book_description = descriptions.loc[selected_book_id]
         except KeyError:
             return dict()
 
-        feature_vec = self.content_analyzer.transform([selected_book_description])
+        feature_vec = self.content_analyzer.transform(
+            [selected_book_description]
+        )
         distances, ids = self.filtering_component.kneighbors(feature_vec)
         recommendations = self.data['description'].index[ids.flatten()[1:]]
 

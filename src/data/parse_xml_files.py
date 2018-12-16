@@ -27,7 +27,7 @@ def unzip_archive(xml_archive_path):
     zip_reference.close()
 
     logger.info(f"Extracted files into {output_file}")
-    return(output_file)
+    return output_file
 
 
 def process(xmls_dir, output_dir):

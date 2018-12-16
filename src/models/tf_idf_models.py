@@ -10,7 +10,7 @@ from ..utils.serialization import save_object
 @click.argument('output_filepath', type=click.Path())
 @click.option('--n', default=1,
               help='How many recommendations are returned by the model')
-def main(input_filepath: str,  output_filepath: str, n: int):
+def main(input_filepath: str, output_filepath: str, n: int):
     logger = logging.getLogger(__name__)
 
     logger.info('Training tf-idf model...')

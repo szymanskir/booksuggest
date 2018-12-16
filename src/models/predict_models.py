@@ -7,11 +7,12 @@ from typing import List
 from .recommendation_models import IRecommendationModel
 
 from ..utils.serialization import read_object
+from ..utils.csv_utils import save_csv
 
 
 def _read_test_cases(test_cases_filepath: str):
     test_cases_data = pd.read_csv(test_cases_filepath)
-    test_cases = test_cases_data['book_id']
+    test_cases = test_cases_data['book_id'].sort_values().unique()
 
     return test_cases.tolist()
 
@@ -20,15 +21,15 @@ def predict_model(model: IRecommendationModel,
                   test_cases: List[int]) -> pd.DataFrame:
     def recommend_helper(model, test_case_id):
         logging.debug(f'Computing {test_case_id}')
-        return list(model.recommend({test_case_id: 5}).keys())
+        recommendations = list(model.recommend({test_case_id: 5}).keys())
+        return [{'book_id': test_case_id,
+                 'similar_book_id': recommended_book}
+                for recommended_book in recommendations]
 
-    recommendations = [recommend_helper(model, test_case_id)
-                       for test_case_id in test_cases]
+    predicted_similar_books = sum([recommend_helper(model, test_case_id)
+                                   for test_case_id in test_cases], [])
 
-    return pd.DataFrame(data={
-        'book_id': test_cases,
-        'recommendations': recommendations
-    })
+    return predicted_similar_books
 
 
 @click.command()
@@ -46,7 +47,7 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
     predictions = predict_model(model, test_cases)
 
     logger.info(f'Save results to {output_filepath}...')
-    predictions.to_csv(output_filepath, index=False)
+    save_csv(predictions, output_filepath, ['book_id', 'similar_book_id'])
 
 
 if __name__ == '__main__':
