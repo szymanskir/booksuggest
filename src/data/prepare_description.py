@@ -45,6 +45,9 @@ def clean_descriptions(input_filepath: str) -> pd.DataFrame:
 def main(input_filepath: str, output_filepath: str):
     """Cleans book descriptions
     """
+    logging.info('Downloading nltk resources...')
+    import nltk
+    nltk.download(['stopwords', 'wordnet'])
     logging.info('Cleaning descriptions...')
     cleaned_descriptions = clean_descriptions(input_filepath)
 
