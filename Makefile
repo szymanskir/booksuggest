@@ -12,14 +12,23 @@ PYTHON_INTERPRETER = python3.7
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
+
+# Content Based Pipeline
+CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book.csv
+
+## TF-IDF pipeline
 BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
-MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
 
-BASIC_TF_IDF_PREDICTION = models/predictions/basic-tf-idf-predictions.csv
-PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
+## CB predictions
+CB_RESULTS_DIR = models/predictions/cb-results
+BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
 
+
+
+# Unified parts of the pipeline
 RESULT_FILES = results/cb-results.csv
-
+MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
+PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -29,10 +38,9 @@ requirements:
 	$(PYTHON_INTERPRETER) setup.py install
 	pip install -r requirements.txt
 
-process_raw_data: $(RAW_DATA_FILES)
 
-## Make Dataset
-data: process_raw_data
+## Download Dataset
+data: $(RAW_DATA_FILES)
 
 ## Train models
 models: $(MODELS)
@@ -86,6 +94,7 @@ data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: sr
 #
 ################################################################################
 
+
 # Provide urls for downloading data
 book_tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/book_tags.csv
 books_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/books.csv
@@ -115,6 +124,16 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 
 ################################################################################
 #
+# Data preparation rules
+#
+################################################################################
+
+$(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
+
+
+################################################################################
+#
 # Model training rules
 #
 ################################################################################
@@ -123,7 +142,8 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
-$(BASIC_TF_IDF_MODEL): data/interim/cb-tf-idf/book.csv src/models/tf_idf_models.py src/models/recommendation_models.py src/models/predict_models.py
+# Content-Based Models
+$(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
 
 ################################################################################
@@ -142,19 +162,10 @@ $(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
 #
 ################################################################################
 
-CB_DIRECTORY = models/content-based-models
+SIMILAR_BOOKS = data/interim/similar_books-unified_ids.csv
 
 results/cb-results.csv: src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.evaluation models/predictions data/interim/similar_books-unified_ids.csv $@
-
-################################################################################
-#
-# Data preparation rules
-#
-################################################################################
-
-data/interim/cb-tf-idf/book.csv: src/data/prepare_description.py data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description data/interim/book-unified_ids.csv $@
+	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #

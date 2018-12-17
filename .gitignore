@@ -1,4 +1,5 @@
-data/*
+data/**/*.csv
+data/**/*.zip
 .vscode/*
 src/src.egg-info/*
 src.egg-info/*
@@ -7,6 +8,7 @@ build/*
 __pycache__/
 rs-venv/*
 .mypy_cache/*
-models/*.pkl
+models/**/*.pkl
+models/**/*.csv
 notebooks/.ipynb_checkpoints
-results/*
+results/*.csv
