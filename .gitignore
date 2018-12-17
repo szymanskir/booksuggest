@@ -1,10 +1,14 @@
-data/*
+data/**/*.csv
+data/**/*.zip
 .vscode/*
 src/src.egg-info/*
 src.egg-info/*
 dist/*
 build/*
 __pycache__/
+rs-venv/*
 .mypy_cache/*
-models/*
+models/**/*.pkl
+models/**/*.csv
 notebooks/.ipynb_checkpoints
+results/*.csv
