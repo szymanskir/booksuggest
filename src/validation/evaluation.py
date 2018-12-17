@@ -35,6 +35,8 @@ def calculate_scores(
         return precision_score, recall_score
 
     prediction_files = listdir(dir_path)
+    prediction_files = [filename for filename in prediction_files
+                        if filename.endswith('.csv')]
 
     scores = list()
     for prediction in prediction_files:

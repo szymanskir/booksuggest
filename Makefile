@@ -15,8 +15,10 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 
 # Content Based Pipeline
 CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book.csv
+CB_SCORES = results/cb-results.csv
 
 ## TF-IDF pipeline
+### Basic model
 BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
 
 ## CB predictions
@@ -26,7 +28,7 @@ BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
 
 
 # Unified parts of the pipeline
-RESULT_FILES = results/cb-results.csv
+RESULT_FILES = $(CB_SCORES)
 MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
 PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
@@ -164,7 +166,7 @@ $(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
 
 SIMILAR_BOOKS = data/interim/similar_books-unified_ids.csv
 
-results/cb-results.csv: src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
+$(CB_SCORES): src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
 	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################

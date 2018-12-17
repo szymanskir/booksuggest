@@ -43,7 +43,7 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
     model = read_object(model_filepath)
     test_cases = _read_test_cases(test_cases_filepath)
 
-    logger.info('Calculate predictions...')
+    logger.info('Calculating predictions...')
     predictions = predict_model(model, test_cases)
 
     logger.info(f'Save results to {output_filepath}...')
@@ -51,5 +51,5 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     main()
