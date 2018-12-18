@@ -7,11 +7,9 @@ import requests
 @click.command()
 @click.argument('download_url')
 @click.argument('output_filepath', type=click.Path())
-def main(download_url, output_filepath):
+def main(download_url: str, output_filepath: str):
     """
     Downloads data from the download_url and saves it in the output_filepath.
-    :param download_url: url for downloading data
-    :param output_filepath: path where the data will be saved
     """
     logger = logging.getLogger(__name__)
 

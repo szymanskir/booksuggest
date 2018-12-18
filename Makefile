@@ -12,40 +12,70 @@ PYTHON_INTERPRETER = python3.7
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
+
+# Content Based Pipeline
+CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book.csv
+CB_SCORES = results/cb-results.csv
+
+## TF-IDF pipeline
+### Basic model
+BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
+
+## CB predictions
+CB_RESULTS_DIR = models/predictions/cb-results
+BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
+
+
+
+# Unified parts of the pipeline
+RESULT_FILES = $(CB_SCORES)
+MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
+PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
 
 ## Install Python Dependencies
 requirements:
-	pip install -r requirements.txt
 	$(PYTHON_INTERPRETER) setup.py install
+	pip install -r requirements.txt
 
-process_raw_data: $(RAW_DATA_FILES)
 
-## Make Dataset
-data: process_raw_data
+## Download Dataset
+data: $(RAW_DATA_FILES)
 
 ## Train models
-models: models/dummy_model.pkl
+models: $(MODELS)
 
 ## Run all tests
 tests: 
 	pytest
 
+## Predict models
+predictions: $(PREDICTIONS)
+
+## Evaluate models
+scores: $(RESULT_FILES) 
+
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
-	rm data/*/*
+	rm -rf .mypy_cache
 
-## Lint using flake8
+## Lint using flake8 and check types with mypy
 lint:
 	flake8 src
+	pylint src
+	mypy src --ignore-missing-imports
 
 ## Set up python interpreter environment
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
+
+## Test if python environment is setup correctly
+test_environment:
+	$(PYTHON_INTERPRETER) test_environment.py
 
 ################################################################################
 #
@@ -53,15 +83,19 @@ create_environment:
 #
 ################################################################################
 
-clean_data: data src/data/parse_xml_files.py
+clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
+
+data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
+
 
 ################################################################################
 #
 # Dataset downloading rules
 #
 ################################################################################
+
 
 # Provide urls for downloading data
 book_tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/book_tags.csv
@@ -92,12 +126,48 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 
 ################################################################################
 #
+# Data preparation rules
+#
+################################################################################
+
+$(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
+
+
+################################################################################
+#
 # Model training rules
 #
 ################################################################################
 
+
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
+
+# Content-Based Models
+$(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+
+################################################################################
+#
+# Model predictions rules
+#
+################################################################################
+CB_TEST_CASES = data/interim/similar_books-unified_ids.csv
+
+$(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
+	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
+
+################################################################################
+#
+# Model evaluation rules
+#
+################################################################################
+
+SIMILAR_BOOKS = data/interim/similar_books-unified_ids.csv
+
+$(CB_SCORES): src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #

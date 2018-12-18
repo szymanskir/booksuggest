@@ -52,7 +52,9 @@ def unify_similar_books(book_df, similar_books_df, output_data_dir):
         columns={'tmp_book_id': 'similar_book_id'})
 
     merged_similar_book_df.to_csv(
-        os.path.join(output_data_dir, 'similar_books-unified_ids.csv'), index=False)
+        os.path.join(output_data_dir, 'similar_books-unified_ids.csv'),
+        index=False
+    )
 
 
 @click.command()
