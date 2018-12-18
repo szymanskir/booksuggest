@@ -46,7 +46,7 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
     logger.info('Calculating predictions...')
     predictions = predict_model(model, test_cases)
 
-    logger.info(f'Save results to {output_filepath}...')
+    logger.info(f'Saving results to {output_filepath}...')
     save_csv(predictions, output_filepath, ['book_id', 'similar_book_id'])
 
 
