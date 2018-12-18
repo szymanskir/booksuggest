@@ -17,7 +17,15 @@ def calculate_scores(
         test_cases: Dict[int, List[int]]
 ) -> pd.DataFrame:
     """Evaluates the precision and accuracy_score for all models
-    present in the input directory
+    present in the input directory.
+
+    Args:
+        dir_path: directory in which calculated similar books predictions
+        are saved for each model.
+        test_cases: similar books ground truth.
+
+    Returns:
+        Data frame containg presicion and recall scores for all models.
     """
 
     def calculate_single_score(predictions: Dict[int, List[int]],

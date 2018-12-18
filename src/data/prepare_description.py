@@ -12,8 +12,12 @@ from nltk.stem.snowball import SnowballStemmer
 def clean_single_description(description: str) -> str:
     """Prepares the description for the tf-idf method.
 
-        Removes punctuation, stopwords and performs
-        stemming and lemmatization.
+    Args:
+        description: string containg a book description.
+
+    Returns:
+        description with removed punctuation, stopwords and stemmed,
+        lemmatized vocabulary.
     """
     if detect(description) != 'en':
         return np.nan
@@ -32,6 +36,16 @@ def clean_single_description(description: str) -> str:
 
 
 def clean_descriptions(input_filepath: str) -> pd.DataFrame:
+    """Cleans all descriptions in the data from the input
+    file.
+
+    Args:
+        input_filepath: filepath to the data containing a 'description'
+        column that will be cleaned.
+
+    Returns:
+        the original data frame but with the 'description' column cleaned.
+    """
     data = pd.read_csv(input_filepath, index_col='book_id')
     descriptions = data['description'].dropna()
     data['description'] = descriptions.apply(clean_single_description)
@@ -43,7 +57,11 @@ def clean_descriptions(input_filepath: str) -> pd.DataFrame:
 @click.argument('input_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(input_filepath: str, output_filepath: str):
-    """Cleans book descriptions
+    """Cleans book descriptions.
+
+    Args:
+        input_filepath: input file to clean descriptions in.
+        output_filepath: filepath where the results should be saved.
     """
     logging.info('Downloading nltk resources...')
     import nltk

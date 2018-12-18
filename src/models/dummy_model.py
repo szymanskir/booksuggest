@@ -7,7 +7,7 @@ from ..utils.serialization import save_object
 
 
 def train_dummy_model():
-    """Trains a dumy model object
+    """Trains a dumy model object.
     """
     dummy_model = DummyModel()
     return dummy_model
@@ -16,6 +16,12 @@ def train_dummy_model():
 @click.command()
 @click.argument('filename')
 def main(filename):
+    """Trains a dummy model and saves it to the specified
+    file.
+
+    Args:
+        filename: file in which in the model should be saved.
+    """
     logger = logging.getLogger(__name__)
 
     logger.info('Training dummy model...')

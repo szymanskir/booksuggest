@@ -2,67 +2,56 @@ import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
-from typing import Callable, Dict, List, Tuple
+from typing import Dict, List
 from sklearn.neighbors import NearestNeighbors
-from statistics import mean
-
-from ..validation.metrics import precision, recall
 
 
 class IRecommendationModel(metaclass=ABCMeta):
 
     @abstractmethod
     def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
-        """ Returns recommended books based on the users ratings.
+        """Returns recommended books based on the users ratings.
 
         The user_ratings have a form of <book_id>: <rating>. The
         ratings are based on a scale from 1 to 5.
+
+        Args:
+            user_ratings: dictionary containg book ratings.
+
+        Returns:
+            list of recommended books.
         """
         pass
 
 
-class IContentBasedRecommendationModelValidation(IRecommendationModel):
-    def _score_for_given_metric(
-            self,
-            results: Dict[int, List[int]],
-            test_cases: Dict[int, List[int]],
-            metric: Callable[[List[int], List[int]], int]
-    ) -> int:
-        """Calculates the average score for a given metric.
-        """
-        score = [metric(results[key], test_cases[key])
-                 for key in test_cases.keys()]
-
-        return mean(score)
-
-    def score(self, test_cases: Dict[int, List[int]]) -> Tuple[int, int]:
-        """Calculates the precision and recall score of the model
-        """
-        results = {key: list(self.recommend({key: None}).keys())
-                   for key in test_cases.keys()}
-        precision_score = self._score_for_given_metric(
-            results, test_cases, precision
-        )
-        recall_score = self._score_for_given_metric(
-            results, test_cases, recall
-        )
-
-        return (precision_score, recall_score)
-
-
 class DummyModel(IRecommendationModel):
+    """Dummy recommendation model used for web app integration purposes.
+    """
     def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
         books: List[int] = list(user_ratings.keys())
         return books[0:6]
 
 
-class TfIdfRecommendationModel(IContentBasedRecommendationModelValidation):
+class TfIdfRecommendationModel(IRecommendationModel):
     """Recommendation model using the tf-idf method for
     feature extraction. Later uses the cosine similarity
-    in order to select the most similar books
+    in order to select the most similar books.
+
+    Attributes:
+        data: data frame containing book data.
+        content_analyzer: component used for feature extraction from the data.
+        filtering_component: component used for calculating most similar books
+        based on the features calculated by the content_analyzer.
     """
 
     def __init__(self, input_filepath: str, recommendation_count):
+        """Initializes an instance of the TfIdfRecommendationModel class.
+
+        Args:
+            input_filepath: filepath containing book data.
+            recommendation_count: how many recommendations should.
+            be returned for a single book.
+        """
         self.data = pd.read_csv(input_filepath, index_col='book_id')
         self.content_analyzer = TfidfVectorizer()
         self.filtering_component = NearestNeighbors(
@@ -71,7 +60,7 @@ class TfIdfRecommendationModel(IContentBasedRecommendationModelValidation):
         )
 
     def train(self):
-        """Prepares tf_idf feature vectors
+        """Prepares tf_idf feature vectors.
         """
 
         descriptions = self.data['description']
