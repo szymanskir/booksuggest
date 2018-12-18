@@ -1,13 +1,11 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import json
-import random
 
 import components
 import resources
 
-from dash.dependencies import Input, State, Output
+from dash.dependencies import Input, Output
 
 
 def serve_layout():
@@ -170,9 +168,6 @@ app.layout = serve_layout
               [Input('user-selection', 'value')])
 def display_reviewed_books(selected_user_id):
     """Displays reviewed book
-
-    Based on the json data saved in a hidden a div
-    a layout of reviewed books is created and displayed.
     """
     user_ratings = resources.USER_DATA[
         resources.USER_DATA['user_id'] == selected_user_id
@@ -190,7 +185,7 @@ def display_cf_recommendations(model, selected_user_id):
     """Displays recommendations that were obtained using
     collaborative filtering methods.
 
-    Based on the rated books saved in a hidden div,
+    Based on the rated books of the selected user,
     recommendations are calculated using collaborative
     filtering methods and a layout of recommended books
     is created and displayed.
@@ -236,24 +231,6 @@ def display_cb_recommendation(model, selected_book_id):
     return components.recommended_books_layout(
         resources.BOOK_DATA, recommended_books
     )
-
-
-def json2dict(json_data):
-    """Converts json_data to dictionary
-
-    Wrapper around json.loads in order to handle Nones as an empty
-    dictionary.
-    """
-    return dict(json.loads(json_data)) if json_data else dict()
-
-
-def dict2json(dictionary):
-    """Converts dictionary to json
-
-    Wrapper around json.dumps, because json.dumps does not
-    conserve the type of keys. They get casted to str by default.
-    """
-    return json.dumps(list(dictionary.items()))
 
 
 if __name__ == '__main__':
