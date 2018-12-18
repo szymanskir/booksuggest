@@ -1,13 +1,11 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import json
-import random
 
 import components
 import resources
 
-from dash.dependencies import Input, State, Output
+from dash.dependencies import Input, Output
 
 
 def serve_layout():
@@ -27,10 +25,25 @@ def serve_layout():
                             html.Div(
                                 className='col-4 d-flex flex-row align-items-center',
                                 children=[
-                                    html.I(className='fas fa-info-circle px-3'),
+                                    html.I(
+                                        className='fas fa-info-circle px-3'
+                                    ),
                                     html.H4('Rated books')
                                 ]
                             ),
+                            html.Div(
+                                className='col-4',
+                                children=[
+                                    dcc.Dropdown(
+                                        id='user-selection',
+                                        className='flex-fill',
+                                        placeholder='Select user...',
+                                        options=components.users_to_dropdown(
+                                            resources.USER_DATA
+                                        )
+                                    )
+                                ]
+                            )
                         ]
                     ),
                     html.Div(
@@ -39,11 +52,6 @@ def serve_layout():
                         style={
                             'overflow': 'auto',
                         },
-                    ),
-                    components.get_rating_form(resources.DATA),
-                    html.Button(
-                        'Submit',
-                        id='add-book-review',
                     )
                 ]
             ),
@@ -79,7 +87,7 @@ def serve_layout():
                         ]
                     ),
                     html.Div(
-                        id='recomended-books-cf',
+                        id='recommended-books-cf',
                         className='border mb-5',
                         style={'overflow': 'auto'}
                     )
@@ -95,14 +103,27 @@ def serve_layout():
                         },
                         children=[
                             html.Div(
-                                className='col-4 d-flex flex-row align-items-center',
+                                className='col-2 d-flex flex-row align-items-center',
                                 children=[
                                     html.I(className='fas fa-star px-3'),
-                                    html.H4(id='cb-title', children='Similar to X')
+                                    html.H4(children='Similar books')
                                 ]
                             ),
                             html.Div(
-                                className='col-6',
+                                className='col-5',
+                                children=[
+                                    dcc.Dropdown(
+                                        id='book-selection',
+                                        className='flex-fill',
+                                        placeholder='Select book...',
+                                        options=components.books_to_dropdown(
+                                            resources.BOOK_DATA
+                                        )
+                                    )
+                                ]
+                            ),
+                            html.Div(
+                                className='col-5',
                                 children=[
                                     dcc.Dropdown(
                                         id='model-selection-cb',
@@ -123,12 +144,6 @@ def serve_layout():
                     )
                 ]
             ),
-
-            # Hidden div inside the app that stores ratings
-            html.Div(id='rated-books-data', style={'display': 'none'}),
-
-            # Hidden div storing the book selected for cb recommendations
-            html.Div(id='cb-selected-book', style={'display': 'none'})
         ]
     )
 
@@ -146,83 +161,51 @@ app.layout = serve_layout
 
 
 @app.callback(Output('rated-books', 'children'),
-              [Input('rated-books-data', 'children')])
-def display_reviewed_books(rated_books_data):
+              [Input('user-selection', 'value')])
+def display_reviewed_books(selected_user_id):
     """Displays reviewed book
-    
-    Based on the json data saved in a hidden a div
-    a layout of reviewed books is created and displayed.
     """
-    rated_books = json2dict(rated_books_data)
-    return components.rated_books_layout(resources.DATA, rated_books)
+    book_ratings = components.get_book_ratings(
+        resources.USER_DATA, selected_user_id
+    )
+    return components.rated_books_layout(resources.BOOK_DATA, book_ratings)
 
 
-@app.callback(Output('rated-books-data', 'children'),
-              [Input('add-book-review', 'n_clicks')],
-              [State('rated-books-data', 'children'),
-               State('book-title', 'value'),
-               State('book-rating', 'value')])
-def add_book_review(n_clicks, rated_books_data, book_id, rating):
-    """Adds a book review
-
-    Adds a book review to a dictionary stored in a hidden div
-    and saves it back to that hidden div.
-    """
-    rated_books = json2dict(rated_books_data)
-
-    if book_id is not None and rating is not None:
-        rated_books[book_id] = rating
-
-    return dict2json(rated_books)
-
-
-@app.callback(Output('recomended-books-cf', 'children'),
-              [Input('model-selection-cf', 'value')],
-              [State('rated-books-data', 'children')])
-def display_cf_recommendations(model, rated_books_data):
+@app.callback(Output('recommended-books-cf', 'children'),
+              [Input('model-selection-cf', 'value'),
+               Input('user-selection', 'value')])
+def display_cf_recommendations(model, selected_user_id):
     """Displays recommendations that were obtained using
     collaborative filtering methods.
-    
-    Based on the rated books saved in a hidden div,
+
+    Based on the rated books of the selected user,
     recommendations are calculated using collaborative
     filtering methods and a layout of recommended books
     is created and displayed.
     """
-    rated_books = json2dict(rated_books_data)
+
+    if model is None or selected_user_id is None:
+        return html.Div()
+
+    user_ratings = resources.USER_DATA[
+        resources.USER_DATA['user_id'] == selected_user_id
+    ].sort_values(by='rating', ascending=False)
+
+    book_ratings = {row['book_id']: row['rating']
+                    for _, row in user_ratings.iterrows()}
 
     recommended_books = resources.CF_MODELS[model].recommend(
-        rated_books
-    ) if rated_books and model else list()
+        book_ratings
+    ) if book_ratings and model else list()
 
-    return components.recommended_books_layout(resources.DATA,
+    return components.recommended_books_layout(resources.BOOK_DATA,
                                                recommended_books)
 
 
-@app.callback(Output('cb-selected-book', 'children'),
-              [Input('model-selection-cb', 'value')],
-              [State('rated-books-data', 'children')])
-def select_book_for_cb(model, rated_books_data):
-    """Selects a specific book from all reviewed books.
-
-    Based on the reviewed books saved in a hidden div
-    a random book is selected for content based methods.
-
-    E.g. Harry Potter is selected for 'Similar to Harry Potter'
-    recommendations.
-    """
-    rated_books = json2dict(rated_books_data)
-    random_index = random.choice(
-        list(rated_books.keys())
-    ) if rated_books else None
-
-    return json.dumps(random_index)
-
-
 @app.callback(Output('recomended-books-cb', 'children'),
-              [Input('cb-selected-book', 'children')],
-              [State('model-selection-cb', 'value'),
-               State('rated-books-data', 'children')])
-def display_cb_recommendation(book, model, rated_books_data):
+              [Input('model-selection-cb', 'value'),
+               Input('book-selection', 'value')])
+def display_cb_recommendation(model, selected_book_id):
     """Displays recommendations that were obtained using
     content based methods.
 
@@ -231,53 +214,16 @@ def display_cb_recommendation(book, model, rated_books_data):
     methods and a layout of recommended books is created
     and displayed.
     """
-    book_id = json.loads(book)
-    rated_books = json2dict(rated_books_data)
+    if model is None or selected_book_id is None:
+        return html.Div()
 
     recommended_books = resources.CB_MODELS[model].recommend({
-        book_id: rated_books[book_id]
-    }) if rated_books and model else list()
+        selected_book_id: 5
+    })
 
-    return components.recommended_books_layout(resources.DATA,
-                                               recommended_books)
-
-
-@app.callback(Output('cb-title', 'children'),
-              [Input('cb-selected-book', 'children')])
-def update_cb_title(book):
-    """Updated the title of content based recommendations
-
-    Based on the book selected for content-based recommendations
-    the title of the window displaying those recommendations is updated.
-
-    E.g. if Harry Potter is the selected book than the title of the window
-    would be 'Similar to Harry Potter'
-    """
-    book_id = json.loads(book)
-
-    book_title = resources.DATA.loc[
-        book_id, 'original_title'
-    ] if book_id else 'X'
-
-    return f'Similar to {book_title}'
-
-
-def json2dict(json_data):
-    """Converts json_data to dictionary
-
-    Wrapper around json.loads in order to handle Nones as an empty
-    dictionary.
-    """
-    return dict(json.loads(json_data)) if json_data else dict()
-
-
-def dict2json(dictionary):
-    """Converts dictionary to json
-
-    Wrapper around json.dumps, because json.dumps does not
-    conserve the type of keys. They get casted to str by default.
-    """
-    return json.dumps(list(dictionary.items()))
+    return components.recommended_books_layout(
+        resources.BOOK_DATA, recommended_books
+    )
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import dash_core_components as dcc
 import dash_html_components as html
 
 import resources
@@ -68,6 +67,21 @@ PAGE_HEADER = html.Nav(
 ############################################################
 
 
+def get_goodreads_url(goodreads_id):
+    return f'{resources.GOODREADS_URL}/{goodreads_id}'
+
+
+def get_book_ratings(user_data, selected_user_id):
+    user_ratings = resources.USER_DATA[
+        resources.USER_DATA['user_id'] == selected_user_id
+    ].sort_values(by='rating', ascending=False)
+
+    book_ratings = {row['book_id']: row['rating']
+                    for _, row in user_ratings.iterrows()}
+
+    return book_ratings
+
+
 def books_to_dropdown(book_data):
     """Converts book data to the dash dropdown values format
 
@@ -86,74 +100,17 @@ def models_to_dropdown(cb_models):
     return [{'label': cb_model_label, 'value': cb_model_label}
             for cb_model_label in cb_models.keys()]
 
-############################################################
-# Rating form
-############################################################
 
-
-def book_selection(book_data):
-    """Creates an html form for selecting books to review.
+def users_to_dropdown(user_data):
+    """Converts user ratings to dash dropdown values format
     """
-    return html.Div(
-        className='form-group row',
-        children=[
-            html.Label(
-                htmlFor='book-title',
-                className='col-1 col-form-label',
-                children='Book title'
-            ),
-            html.Div(
-                className='col-9',
-                children=[
-                    dcc.Dropdown(
-                        id='book-title',
-                        placeholder='Select book...',
-                        options=books_to_dropdown(book_data)
-                    )
-                ]
-            )
-        ]
-    )
-
-
-_RATING_SELECTION = html.Div(
-    className='form-group row',
-    children=[
-        html.Label(
-            htmlFor='book-rating',
-            className='col-1 col-form-label',
-            children='Rating'
-        ),
-        html.Div(
-            className='col-9',
-            children=[
-                dcc.Input(
-                    id='book-rating',
-                    type='number',
-                    min=0,
-                    max=5,
-                    value=0
-                )
-            ]
-        )
-    ]
-)
-
+    user_ids = user_data['user_id'].unique()
+    return [{'label': f'user {idx}', 'value': idx}
+            for idx in user_ids]
 
 ############################################################
 # Book rendering
 ############################################################
-
-
-def get_rating_form(book_data):
-    """Creates an html rating form component.
-    """
-    return html.Form(
-        children=[
-            book_selection(book_data),
-            _RATING_SELECTION,
-        ]
-    )
 
 
 def render_book(book_data, rating=None):
@@ -167,7 +124,12 @@ def render_book(book_data, rating=None):
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
         children=[
-            html.Img(src=book_data['image_url']),
+            html.A(
+                href=get_goodreads_url(book_data['goodreads_book_id']),
+                children=[
+                    html.Img(src=book_data['image_url']),
+                ]
+            ),
             html.Small(book_data['authors'], style={'color': '#999999'}),
             html.Strong(book_data['original_title']),
             html_rating
