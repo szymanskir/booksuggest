@@ -10,5 +10,6 @@ CF_MODELS = {
 }
 
 CB_MODELS = {
+    'cb-dummy': load_model('dummy_model'),
     'basic-tf-idf': load_model('basic-tf-idf-model')
 }

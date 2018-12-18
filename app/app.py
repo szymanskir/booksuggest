@@ -95,14 +95,27 @@ def serve_layout():
                         },
                         children=[
                             html.Div(
-                                className='col-4 d-flex flex-row align-items-center',
+                                className='col-2 d-flex flex-row align-items-center',
                                 children=[
                                     html.I(className='fas fa-star px-3'),
-                                    html.H4(id='cb-title', children='Similar to X')
+                                    html.H4(id='cb-title', children='Similar books')
                                 ]
                             ),
                             html.Div(
-                                className='col-6',
+                                className='col-5',
+                                children=[
+                                    dcc.Dropdown(
+                                        id='book-selection',
+                                        className='flex-fill',
+                                        placeholder='Select book...',
+                                        options=components.books_to_dropdown(
+                                            resources.DATA
+                                        )
+                                    )
+                                ]
+                            ),
+                            html.Div(
+                                className='col-5',
                                 children=[
                                     dcc.Dropdown(
                                         id='model-selection-cb',
@@ -149,7 +162,7 @@ app.layout = serve_layout
               [Input('rated-books-data', 'children')])
 def display_reviewed_books(rated_books_data):
     """Displays reviewed book
-    
+
     Based on the json data saved in a hidden a div
     a layout of reviewed books is created and displayed.
     """
@@ -182,7 +195,7 @@ def add_book_review(n_clicks, rated_books_data, book_id, rating):
 def display_cf_recommendations(model, rated_books_data):
     """Displays recommendations that were obtained using
     collaborative filtering methods.
-    
+
     Based on the rated books saved in a hidden div,
     recommendations are calculated using collaborative
     filtering methods and a layout of recommended books
@@ -219,10 +232,9 @@ def select_book_for_cb(model, rated_books_data):
 
 
 @app.callback(Output('recomended-books-cb', 'children'),
-              [Input('cb-selected-book', 'children')],
-              [State('model-selection-cb', 'value'),
-               State('rated-books-data', 'children')])
-def display_cb_recommendation(book, model, rated_books_data):
+              [Input('model-selection-cb', 'value'),
+               Input('book-selection', 'value')])
+def display_cb_recommendation(model, selected_book_id):
     """Displays recommendations that were obtained using
     content based methods.
 
@@ -231,35 +243,16 @@ def display_cb_recommendation(book, model, rated_books_data):
     methods and a layout of recommended books is created
     and displayed.
     """
-    book_id = json.loads(book)
-    rated_books = json2dict(rated_books_data)
+    if model is None or selected_book_id is None:
+        return html.Div()
 
     recommended_books = resources.CB_MODELS[model].recommend({
-        book_id: rated_books[book_id]
-    }) if rated_books and model else list()
+        selected_book_id: 5
+    })
 
-    return components.recommended_books_layout(resources.DATA,
-                                               recommended_books)
-
-
-@app.callback(Output('cb-title', 'children'),
-              [Input('cb-selected-book', 'children')])
-def update_cb_title(book):
-    """Updated the title of content based recommendations
-
-    Based on the book selected for content-based recommendations
-    the title of the window displaying those recommendations is updated.
-
-    E.g. if Harry Potter is the selected book than the title of the window
-    would be 'Similar to Harry Potter'
-    """
-    book_id = json.loads(book)
-
-    book_title = resources.DATA.loc[
-        book_id, 'original_title'
-    ] if book_id else 'X'
-
-    return f'Similar to {book_title}'
+    return components.recommended_books_layout(
+        resources.DATA, recommended_books
+    )
 
 
 def json2dict(json_data):
