@@ -31,6 +31,19 @@ def serve_layout():
                                     html.H4('Rated books')
                                 ]
                             ),
+                            html.Div(
+                                className='col-4',
+                                children=[
+                                    dcc.Dropdown(
+                                        id='user-selection',
+                                        className='flex-fill',
+                                        placeholder='Select user...',
+                                        options=components.users_to_dropdown(
+                                            resources.USER_DATA
+                                        )
+                                    )
+                                ]
+                            )
                         ]
                     ),
                     html.Div(
@@ -39,11 +52,6 @@ def serve_layout():
                         style={
                             'overflow': 'auto',
                         },
-                    ),
-                    components.get_rating_form(resources.DATA),
-                    html.Button(
-                        'Submit',
-                        id='add-book-review',
                     )
                 ]
             ),
@@ -79,7 +87,7 @@ def serve_layout():
                         ]
                     ),
                     html.Div(
-                        id='recomended-books-cf',
+                        id='recommended-books-cf',
                         className='border mb-5',
                         style={'overflow': 'auto'}
                     )
@@ -109,7 +117,7 @@ def serve_layout():
                                         className='flex-fill',
                                         placeholder='Select book...',
                                         options=components.books_to_dropdown(
-                                            resources.DATA
+                                            resources.BOOK_DATA
                                         )
                                     )
                                 ]
@@ -159,40 +167,26 @@ app.layout = serve_layout
 
 
 @app.callback(Output('rated-books', 'children'),
-              [Input('rated-books-data', 'children')])
-def display_reviewed_books(rated_books_data):
+              [Input('user-selection', 'value')])
+def display_reviewed_books(selected_user_id):
     """Displays reviewed book
 
     Based on the json data saved in a hidden a div
     a layout of reviewed books is created and displayed.
     """
-    rated_books = json2dict(rated_books_data)
-    return components.rated_books_layout(resources.DATA, rated_books)
+    user_ratings = resources.USER_DATA[
+        resources.USER_DATA['user_id'] == selected_user_id
+    ].sort_values(by='rating', ascending=False)
+
+    book_ratings = {row['book_id']: row['rating']
+                    for _, row in user_ratings.iterrows()}
+    return components.rated_books_layout(resources.BOOK_DATA, book_ratings)
 
 
-@app.callback(Output('rated-books-data', 'children'),
-              [Input('add-book-review', 'n_clicks')],
-              [State('rated-books-data', 'children'),
-               State('book-title', 'value'),
-               State('book-rating', 'value')])
-def add_book_review(n_clicks, rated_books_data, book_id, rating):
-    """Adds a book review
-
-    Adds a book review to a dictionary stored in a hidden div
-    and saves it back to that hidden div.
-    """
-    rated_books = json2dict(rated_books_data)
-
-    if book_id is not None and rating is not None:
-        rated_books[book_id] = rating
-
-    return dict2json(rated_books)
-
-
-@app.callback(Output('recomended-books-cf', 'children'),
-              [Input('model-selection-cf', 'value')],
-              [State('rated-books-data', 'children')])
-def display_cf_recommendations(model, rated_books_data):
+@app.callback(Output('recommended-books-cf', 'children'),
+              [Input('model-selection-cf', 'value'),
+               Input('user-selection', 'value')])
+def display_cf_recommendations(model, selected_user_id):
     """Displays recommendations that were obtained using
     collaborative filtering methods.
 
@@ -201,34 +195,23 @@ def display_cf_recommendations(model, rated_books_data):
     filtering methods and a layout of recommended books
     is created and displayed.
     """
-    rated_books = json2dict(rated_books_data)
+
+    if model is None or selected_user_id is None:
+        return html.Div()
+
+    user_ratings = resources.USER_DATA[
+        resources.USER_DATA['user_id'] == selected_user_id
+    ].sort_values(by='rating', ascending=False)
+
+    book_ratings = {row['book_id']: row['rating']
+                    for _, row in user_ratings.iterrows()}
 
     recommended_books = resources.CF_MODELS[model].recommend(
-        rated_books
-    ) if rated_books and model else list()
+        book_ratings
+    ) if book_ratings and model else list()
 
-    return components.recommended_books_layout(resources.DATA,
+    return components.recommended_books_layout(resources.BOOK_DATA,
                                                recommended_books)
-
-
-@app.callback(Output('cb-selected-book', 'children'),
-              [Input('model-selection-cb', 'value')],
-              [State('rated-books-data', 'children')])
-def select_book_for_cb(model, rated_books_data):
-    """Selects a specific book from all reviewed books.
-
-    Based on the reviewed books saved in a hidden div
-    a random book is selected for content based methods.
-
-    E.g. Harry Potter is selected for 'Similar to Harry Potter'
-    recommendations.
-    """
-    rated_books = json2dict(rated_books_data)
-    random_index = random.choice(
-        list(rated_books.keys())
-    ) if rated_books else None
-
-    return json.dumps(random_index)
 
 
 @app.callback(Output('recomended-books-cb', 'children'),
@@ -251,7 +234,7 @@ def display_cb_recommendation(model, selected_book_id):
     })
 
     return components.recommended_books_layout(
-        resources.DATA, recommended_books
+        resources.BOOK_DATA, recommended_books
     )
 
 
