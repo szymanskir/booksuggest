@@ -25,7 +25,9 @@ def serve_layout():
                             html.Div(
                                 className='col-4 d-flex flex-row align-items-center',
                                 children=[
-                                    html.I(className='fas fa-info-circle px-3'),
+                                    html.I(
+                                        className='fas fa-info-circle px-3'
+                                    ),
                                     html.H4('Rated books')
                                 ]
                             ),
@@ -104,7 +106,7 @@ def serve_layout():
                                 className='col-2 d-flex flex-row align-items-center',
                                 children=[
                                     html.I(className='fas fa-star px-3'),
-                                    html.H4(id='cb-title', children='Similar books')
+                                    html.H4(children='Similar books')
                                 ]
                             ),
                             html.Div(
@@ -142,12 +144,6 @@ def serve_layout():
                     )
                 ]
             ),
-
-            # Hidden div inside the app that stores ratings
-            html.Div(id='rated-books-data', style={'display': 'none'}),
-
-            # Hidden div storing the book selected for cb recommendations
-            html.Div(id='cb-selected-book', style={'display': 'none'})
         ]
     )
 
@@ -169,12 +165,9 @@ app.layout = serve_layout
 def display_reviewed_books(selected_user_id):
     """Displays reviewed book
     """
-    user_ratings = resources.USER_DATA[
-        resources.USER_DATA['user_id'] == selected_user_id
-    ].sort_values(by='rating', ascending=False)
-
-    book_ratings = {row['book_id']: row['rating']
-                    for _, row in user_ratings.iterrows()}
+    book_ratings = components.get_book_ratings(
+        resources.USER_DATA, selected_user_id
+    )
     return components.rated_books_layout(resources.BOOK_DATA, book_ratings)
 
 

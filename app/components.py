@@ -67,6 +67,21 @@ PAGE_HEADER = html.Nav(
 ############################################################
 
 
+def get_goodreads_url(goodreads_id):
+    return f'{resources.GOODREADS_URL}/{goodreads_id}'
+
+
+def get_book_ratings(user_data, selected_user_id):
+    user_ratings = resources.USER_DATA[
+        resources.USER_DATA['user_id'] == selected_user_id
+    ].sort_values(by='rating', ascending=False)
+
+    book_ratings = {row['book_id']: row['rating']
+                    for _, row in user_ratings.iterrows()}
+
+    return book_ratings
+
+
 def books_to_dropdown(book_data):
     """Converts book data to the dash dropdown values format
 
@@ -109,7 +124,12 @@ def render_book(book_data, rating=None):
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
         children=[
-            html.Img(src=book_data['image_url']),
+            html.A(
+                href=get_goodreads_url(book_data['goodreads_book_id']),
+                children=[
+                    html.Img(src=book_data['image_url']),
+                ]
+            ),
             html.Small(book_data['authors'], style={'color': '#999999'}),
             html.Strong(book_data['original_title']),
             html_rating
