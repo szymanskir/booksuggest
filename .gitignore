@@ -1,4 +1,5 @@
 data/**/*.csv
+data/**/*.xml
 data/**/*.zip
 .vscode/*
 src/src.egg-info/*
