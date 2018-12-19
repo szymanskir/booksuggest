@@ -85,12 +85,11 @@ test_environment:
 #
 ################################################################################
 
-clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
+clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv 
 
 data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
-
 
 ################################################################################
 #
@@ -135,6 +134,8 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 $(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
 
+data/processed/ratings-train.csv data/processed/ratings-test.csv: 
+	$(PYTHON_INTERPRETER) src/data/ratings-train_test_split.py data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -151,8 +152,8 @@ $(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
 
 # Collaborative-Filtering Models
-$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py 
-	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/raw/ratings.csv $@ --n 10 
+$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
 
 ################################################################################
 #
