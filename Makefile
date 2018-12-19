@@ -25,11 +25,13 @@ BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
 CB_RESULTS_DIR = models/predictions/cb-results
 BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
 
-
+## SVD pipeline
+### Basic model
+BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
+MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
 # COMMANDS                                                                      #
@@ -147,6 +149,10 @@ models/dummy_model.pkl: src/models/dummy_model.py
 # Content-Based Models
 $(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+
+# Collaborative-Filtering Models
+$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py 
+	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/raw/ratings.csv $@ --n 10 
 
 ################################################################################
 #
