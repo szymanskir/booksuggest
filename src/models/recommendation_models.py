@@ -52,7 +52,7 @@ class TfIdfRecommendationModel(IRecommendationModel):
             recommendation_count: how many recommendations should.
             be returned for a single book.
         """
-        self.data = pd.read_csv(input_filepath, index_col='book_id')
+        self.data = pd.read_csv(input_filepath, index_col='book_id').dropna()
         self.content_analyzer = TfidfVectorizer()
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,

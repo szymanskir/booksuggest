@@ -14,23 +14,29 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 
 
 # Content Based Pipeline
-CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book.csv
+CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book_with_nouns.csv
+CLEAN_DESCRIPTION_WITHOUT_NOUNS = data/interim/cb-tf-idf/book_without_nouns.csv
 CB_SCORES = results/cb-results.csv
 
-## TF-IDF pipeline
-### Basic model
-BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
+## CB models
+CB_MODELS_DIR = models/content-based-models
+TF_IDF_WITH_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
+TF_IDF_WITHOUT_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
+CB_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
+
 
 ## CB predictions
 CB_RESULTS_DIR = models/predictions/cb-results
-BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
+TF_IDF_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-predictions.csv
+TF_IDF_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-predictions.csv
+CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) $(TF_IDF_NO_NOUNS_PREDICTION)
 
 
 
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
-PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
+MODELS = models/dummy_model.pkl $(CB_MODELS)
+PREDICTIONS = $(CB_PREDICTIONS)
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -133,6 +139,8 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 $(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
 
+$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
+	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
 ################################################################################
 #
@@ -145,8 +153,11 @@ models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
 # Content-Based Models
-$(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
+$(TF_IDF_WITH_NOUNS): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+
+$(TF_IDF_WITHOUT_NOUNS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10
 
 ################################################################################
 #
@@ -155,7 +166,10 @@ $(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.
 ################################################################################
 CB_TEST_CASES = data/interim/similar_books-unified_ids.csv
 
-$(BASIC_TF_IDF_PREDICTION): $(BASIC_TF_IDF_MODEL)
+$(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_WITH_NOUNS)
+$(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS)
+
+$(CB_PREDICTIONS): 
 	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
 
 ################################################################################
