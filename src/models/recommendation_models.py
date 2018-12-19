@@ -145,4 +145,9 @@ class SvdRecommendationModel(IRecommendationModel):
         predictions = self.model.test(to_predict)
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
             :self.recommendation_count]
-        return top_n
+
+        rec_books = dict()
+        for _, iid, _, est, _ in top_n:
+            rec_books[self.trainset.to_raw_iid(iid)] = est
+
+        return rec_books

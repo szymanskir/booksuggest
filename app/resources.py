@@ -15,7 +15,8 @@ USER_DATA = pd.read_csv(join(CURRENT_DIR, 'assets/ratings.csv')).dropna()
 
 # Model sources
 CF_MODELS = {
-    'cf-dummy': load_model('dummy_model')
+    'cf-dummy': load_model('dummy_model'),
+    'cf-svd': load_model('basic-svd-model')
 }
 
 CB_MODELS = {
