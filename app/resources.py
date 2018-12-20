@@ -21,5 +21,9 @@ CF_MODELS = {
 CB_MODELS = {
     'cb-dummy': load_model('dummy_model'),
     'tf-idf-nouns': load_model('tf-idf-nouns-model'),
-    'tf-idf-no-nouns': load_model('tf-idf-no-nouns-model')
+    'tf-idf-no-nouns': load_model('tf-idf-no-nouns-model'),
+    'tf-idf-nouns-2grams': load_model('tf-idf-nouns-2grams-model'),
+    'tf-idf-no-nouns-2grams': load_model('tf-idf-no-nouns-2grams-model'),
+    'tf-idf-nouns-3grams': load_model('tf-idf-nouns-3grams-model'),
+    'tf-idf-no-nouns-3grams': load_model('tf-idf-no-nouns-3grams-model')
 }

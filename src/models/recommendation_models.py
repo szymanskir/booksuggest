@@ -38,22 +38,30 @@ class TfIdfRecommendationModel(IRecommendationModel):
     in order to select the most similar books.
 
     Attributes:
-        data: data frame containing book data.
-        content_analyzer: component used for feature extraction from the data.
-        filtering_component: component used for calculating most similar books
+        data: Data frame containing book data.
+        content_analyzer: Component used for feature extraction from the data.
+        filtering_component: Component used for calculating most similar books
         based on the features calculated by the content_analyzer.
     """
 
-    def __init__(self, input_filepath: str, recommendation_count):
+    def __init__(
+            self,
+            input_filepath: str,
+            recommendation_count: int,
+            n_grams_length: int
+    ):
         """Initializes an instance of the TfIdfRecommendationModel class.
 
         Args:
-            input_filepath: filepath containing book data.
-            recommendation_count: how many recommendations should.
+            input_filepath: Filepath containing book data.
+            recommendation_count: How many recommendations should.
             be returned for a single book.
+            n_gram_length: Length of n_grams to be considered.
         """
         self.data = pd.read_csv(input_filepath, index_col='book_id').dropna()
-        self.content_analyzer = TfidfVectorizer()
+        self.content_analyzer = TfidfVectorizer(
+            ngram_range=(1, n_grams_length)
+        )
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
