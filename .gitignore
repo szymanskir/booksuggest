@@ -2,6 +2,7 @@ data/**/*.csv
 data/**/*.xml
 data/**/*.zip
 .vscode/*
+src/models/serialized_models/*
 src/src.egg-info/*
 src.egg-info/*
 dist/*

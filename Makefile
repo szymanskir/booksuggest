@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements tests
+.PHONY: clean data lint requirements tests app
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -32,6 +32,7 @@ BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
 MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL) $(BASIC_SVD_MODEL)
+APP_MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
 # COMMANDS                                                                      #
@@ -41,7 +42,6 @@ PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 requirements:
 	$(PYTHON_INTERPRETER) setup.py install
 	pip install -r requirements.txt
-
 
 ## Download Dataset
 data: $(RAW_DATA_FILES)
@@ -75,9 +75,11 @@ lint:
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-## Test if python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
+# Start web application
+app: models
+	cp --update $(APP_MODELS) src/models/serialized_models
+	$(PYTHON_INTERPRETER) setup.py install
+	$(PYTHON_INTERPRETER) app/app.py
 
 ################################################################################
 #
