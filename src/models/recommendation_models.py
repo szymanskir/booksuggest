@@ -5,7 +5,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Dict, List, Tuple
 from sklearn.neighbors import NearestNeighbors
 
-from surprise.model_selection import KFold
 from surprise import SVD
 from surprise import Reader
 from surprise import Dataset
@@ -127,13 +126,13 @@ class SvdRecommendationModel(IRecommendationModel):
         algo.fit(self.trainset)
         self.model = algo
 
-    def recommend(self, user_id: int) -> List[Tuple[int, float]]:
+    def recommend(self, user_id: int) -> Dict[int, float]:
         """Recommends top n books for given user.
         """
         try:
             user_inner_id = self.trainset.to_inner_uid(user_id)
         except ValueError:
-            return list()
+            return dict()
 
         read_book_ids = set(iid for iid, _ in self.trainset.ur[user_inner_id])
         unread_books_ids = set(self.trainset.all_items()) - read_book_ids
