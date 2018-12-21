@@ -1,13 +1,14 @@
 import logging
 import os
 
+from typing import List
 from glob import glob
 from lxml import etree
 
 logger = logging.getLogger(__name__)
 
 
-def extract_all_book_xml_roots(xmls_dir):
+def extract_all_book_xml_roots(xmls_dir: str) -> List[etree.Element]:
     logger.info(f"Processing xml files in {xmls_dir} ...")
     book_roots = list()
     for filename in glob(os.path.join(xmls_dir, '*.xml')):
@@ -17,7 +18,7 @@ def extract_all_book_xml_roots(xmls_dir):
     return book_roots
 
 
-def _extract_book_element_(filename):
+def _extract_book_element_(filename: str) -> etree.Element:
     with open(filename, 'r') as data_file:
         data = data_file.read()
 
