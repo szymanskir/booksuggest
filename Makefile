@@ -89,12 +89,22 @@ test_environment:
 #
 ################################################################################
 
-clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
+clean_data: data/processed/book.csv data/processed/similar_books.csv data/processed/book_tags.csv
 
-data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
-	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
+BOOKS_XML_DIR = data/raw/books_xml
 
+$(BOOKS_XML_DIR):
+	mkdir $@
+	$(PYTHON_INTERPRETER) src/data/extract_xml_files.py data/raw/books_xml.zip $@
+
+data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
+	$(PYTHON_INTERPRETER) src/data/clean_book.py data/raw/book.csv $(BOOKS_XML_DIR) $@
+
+data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
+	$(PYTHON_INTERPRETER) src/data/prepare_similar_books.py $(BOOKS_XML_DIR) data/processed/book.csv $@
+
+data/processed/book_tags.csv: $(RAW_DATA_FILES)
+	$(PYTHON_INTERPRETER) src/data/clean_book_tags.py data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
