@@ -18,11 +18,11 @@ def extract_similar_books(xmls_dir):
 def _extract_similar_books_(book):
     similar_books_rows = list()
 
-    book_work_id = book.find("work").find("id").text
+    book_work_id = book.find("work").findtext("id")
     similar_books = book.find("similar_books")
     if similar_books is not None:
         for similar_book in similar_books.findall("book"):
-            similar_book_id = similar_book.find("work").find("id").text
+            similar_book_id = similar_book.find("work").findtext("id")
             similar_books_rows.append(
                 [int(book_work_id), int(similar_book_id)])
     return similar_books_rows

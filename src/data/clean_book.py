@@ -16,9 +16,9 @@ def extract_book_extra_info(xmls_dir):
 
 
 def _extract_book_info_(book):
-    book_work_id = book.find("work").find("id").text
-    book_info = [int(book_work_id), book.find(
-        "isbn13").text, book.find("description").text]
+    book_work_id = book.find("work").findtext
+    book_info = (int(book_work_id), int(book.findtext(
+        "isbn13")), book.findtext("description"))
     return book_info
 
 
