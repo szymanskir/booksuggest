@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 def extract_similar_books(xmls_dir: str) -> List[etree.Element]:
     similar_books_rows = list()
     for book in extract_all_book_xml_roots(xmls_dir):
-        similar_books_rows.extend(_extract_similar_books_(book))
+        similar_books_rows.extend(_extract_similar_books(book))
 
     return similar_books_rows
 
 
-def _extract_similar_books_(book: etree.Element) -> List[Tuple[int, int]]:
+def _extract_similar_books(book: etree.Element) -> List[Tuple[int, int]]:
     similar_books_rows = list()
     book_work_id = book.find("work").findtext("id")
     similar_books = book.find("similar_books")

@@ -16,7 +16,7 @@ full_file_path = os.path.join(current_path, "data/test-full.xml")
     full_file_path
 ])
 def test_book_element_parsed(file_path):
-    book = src.data.xml_parser._extract_book_element_(file_path)
+    book = src.data.xml_parser._extract_book_element(file_path)
     assert book is not None
 
 
@@ -26,8 +26,8 @@ def test_book_element_parsed(file_path):
      [(908211, 858297), (908211, 40711), (908211, 3171254), (908211, 2777504), (908211, 1174485), (908211, 3590796), (908211, 1500323), (908211, 924161), (908211, 873021), (908211, 1247570), (908211, 924711), (908211, 348798), (908211, 3634673), (908211, 816647), (908211, 1218966), (908211, 953721), (908211, 820134)])
 ])
 def test_similar_books_parsed(file_path, expected):
-    book = src.data.xml_parser._extract_book_element_(file_path)
-    similar_books = src.data.prepare_similar_books._extract_similar_books_(
+    book = src.data.xml_parser._extract_book_element(file_path)
+    similar_books = src.data.prepare_similar_books._extract_similar_books(
         book)
     assert similar_books == expected
 
@@ -39,8 +39,8 @@ def test_similar_books_parsed(file_path, expected):
                       "<b>NAME: Valentine Michael Smith<br />ANCESTRY: Human<br />ORIGIN: Mars</b><br /><br />Valentine Michael Smith is a human being raised on Mars, newly returned to Earth. Among his people for the first time, he struggles to understand the social mores and prejudices of human nature that are so alien to him, while teaching them his own fundamental beliefs in grokking, watersharing, and love."))
 ])
 def test_book_info_parsed(file_path, expected):
-    book = src.data.xml_parser._extract_book_element_(file_path)
-    book_info = src.data.clean_book._extract_book_info_(book)
+    book = src.data.xml_parser._extract_book_element(file_path)
+    book_info = src.data.clean_book._extract_book_info(book)
     assert book_info == expected
 
 

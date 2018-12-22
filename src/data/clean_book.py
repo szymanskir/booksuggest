@@ -11,14 +11,11 @@ logger = logging.getLogger(__name__)
 
 
 def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, str, str]]:
-    book_extra_info_rows = list()
-    for book in extract_all_book_xml_roots(xmls_dir):
-        book_extra_info_rows.append(_extract_book_info_(book))
-
-    return book_extra_info_rows
+    return [_extract_book_info(book)
+            for book in extract_all_book_xml_roots(xmls_dir)]
 
 
-def _extract_book_info_(book: etree.Element) -> Tuple[int, str, str]:
+def _extract_book_info(book: etree.Element) -> Tuple[int, str, str]:
     book_work_id = book.find("work").findtext("id")
     book_info = (int(book_work_id), book.findtext(
         "isbn13"), book.findtext("description"))
