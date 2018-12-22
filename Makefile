@@ -93,9 +93,11 @@ clean_data: data/processed/book.csv data/processed/similar_books.csv data/proces
 
 BOOKS_XML_DIR = data/raw/books_xml
 
-$(BOOKS_XML_DIR):
-	mkdir $@
-	$(PYTHON_INTERPRETER) src/data/extract_xml_files.py data/raw/books_xml.zip $@
+data/raw/books_xml/1.xml:
+
+$(BOOKS_XML_DIR): data/raw/books_xml/1.xml
+	mkdir -p $@
+	$(PYTHON_INTERPRETER) src/data/extract_xml_files.py data/raw/books_xml.zip data/raw
 
 data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
 	$(PYTHON_INTERPRETER) src/data/clean_book.py data/raw/book.csv $(BOOKS_XML_DIR) $@

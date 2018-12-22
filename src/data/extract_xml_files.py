@@ -13,7 +13,6 @@ def main(xml_archive_path: str, output_dir: str):
     """Extract xml files from archive xml_archive_path to output_dir
     """
     logger.info(f"Extracting {xml_archive_path}...")
-    output_dir = os.path.join(os.path.dirname(xml_archive_path), "xmls")
     zip_reference = zipfile.ZipFile(xml_archive_path, 'r')
     zip_reference.extractall(output_dir)
     zip_reference.close()
