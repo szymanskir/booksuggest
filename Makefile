@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements tests docs
+.PHONY: clean data lint requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -25,11 +25,14 @@ BASIC_TF_IDF_MODEL = models/content-based-models/basic-tf-idf-model.pkl
 CB_RESULTS_DIR = models/predictions/cb-results
 BASIC_TF_IDF_PREDICTION = $(CB_RESULTS_DIR)/basic-tf-idf-predictions.csv
 
-
+## SVD pipeline
+### Basic model
+BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL)
+MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL) $(BASIC_SVD_MODEL)
+APP_MODELS = models/dummy_model.pkl $(BASIC_TF_IDF_MODEL) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 #################################################################################
 # COMMANDS                                                                      #
@@ -38,8 +41,8 @@ PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 ## Install Python Dependencies
 requirements:
 	$(PYTHON_INTERPRETER) setup.py install
+	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
 	pip install -r requirements.txt
-
 
 ## Download Dataset
 data: $(RAW_DATA_FILES)
@@ -73,9 +76,10 @@ lint:
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-## Test if python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
+# Start web application
+app: models
+	cp --update $(APP_MODELS) app/assets/models/
+	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation
 docs: 
@@ -88,12 +92,11 @@ docs:
 #
 ################################################################################
 
-clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
+clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv 
 
 data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
-
 
 ################################################################################
 #
@@ -138,6 +141,8 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 $(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
 
+data/processed/ratings-train.csv data/processed/ratings-test.csv: 
+	$(PYTHON_INTERPRETER) src/data/ratings-train_test_split.py data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -152,6 +157,10 @@ models/dummy_model.pkl: src/models/dummy_model.py
 # Content-Based Models
 $(BASIC_TF_IDF_MODEL): $(CLEAN_DESCRIPTION_WITH_NOUNS) src/models/tf_idf_models.py src/models/recommendation_models.py 
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+
+# Collaborative-Filtering Models
+$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
 
 ################################################################################
 #

@@ -1,3 +1,4 @@
+app/assets/models/*
 data/**/*.csv
 data/**/*.xml
 data/**/*.zip
