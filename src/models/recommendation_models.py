@@ -137,16 +137,14 @@ class SvdRecommendationModel(IRecommendationModel):
         read_book_ids = set(iid for iid, _ in self.trainset.ur[user_inner_id])
         unread_books_ids = set(self.trainset.all_items()) - read_book_ids
 
-        to_predict = list()
-        for item_inner_id in unread_books_ids:
-            to_predict.append((user_inner_id, item_inner_id, 0))
+        to_predict = [(user_inner_id, item_inner_id, 0)
+                      for item_inner_id in unread_books_ids]
 
         predictions = self.model.test(to_predict)
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
             :self.recommendation_count]
 
-        rec_books = dict()
-        for _, iid, _, est, _ in top_n:
-            rec_books[self.trainset.to_raw_iid(iid)] = est
+        rec_books = {self.trainset.to_raw_iid(
+            iid): est for _, iid, _, est, _ in top_n}
 
         return rec_books
