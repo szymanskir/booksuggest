@@ -26,5 +26,16 @@ CF_MODELS = {
 
 CB_MODELS = {
     'cb-dummy': get_model('dummy_model.pkl'),
-    'basic-tf-idf': get_model('basic-tf-idf-model.pkl')
+    'tf-idf-nouns': get_model('tf-idf-nouns-model.pkl'),
+    'tf-idf-no-nouns': get_model('tf-idf-no-nouns-model.pkl'),
+    'tf-idf-nouns-2grams': get_model('tf-idf-nouns-2grams-model.pkl'),
+    'tf-idf-no-nouns-2grams': get_model('tf-idf-no-nouns-2grams-model.pkl'),
+    'tf-idf-nouns-3grams': get_model('tf-idf-nouns-3grams-model.pkl'),
+    'tf-idf-no-nouns-3grams': get_model('tf-idf-no-nouns-3grams-model.pkl'),
+    'count-nouns': get_model('count-nouns-model.pkl'),
+    'count-no-nouns': get_model('count-no-nouns-model.pkl'),
+    'count-nouns-2grams': get_model('count-nouns-2grams-model.pkl'),
+    'count-no-nouns-2grams': get_model('count-no-nouns-2grams-model.pkl'),
+    'count-nouns-3grams': get_model('count-nouns-3grams-model.pkl'),
+    'count-no-nouns-3grams': get_model('count-no-nouns-3grams-model.pkl'),
 }

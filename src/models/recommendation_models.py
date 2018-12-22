@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Dict, List, Tuple
 from sklearn.neighbors import NearestNeighbors
+from os import environ
 
 from surprise import SVD
 from surprise import Reader
@@ -37,32 +38,39 @@ class DummyModel(IRecommendationModel):
         return books[0:6]
 
 
-class TfIdfRecommendationModel(IRecommendationModel):
-    """Recommendation model using the tf-idf method for
-    feature extraction. Later uses the cosine similarity
-    in order to select the most similar books.
+class ContentBasedRecommendationModel(IRecommendationModel):
+    """Recommendation model using the text features.
+    Later uses the cosine similarity in order to select
+    the most similar books.
 
     Attributes:
-        data: data frame containing book data.
-        content_analyzer: component used for feature extraction from the data.
-        filtering_component: component used for calculating most similar books
+        data: Data frame containing book data.
+        content_analyzer: Component used for feature extraction from the data.
+        filtering_component: Component used for calculating most similar books
         based on the features calculated by the content_analyzer.
     """
 
-    def __init__(self, input_filepath: str, recommendation_count):
+    def __init__(
+            self,
+            input_filepath: str,
+            recommendation_count: int,
+            content_analyzer
+    ):
         """Initializes an instance of the TfIdfRecommendationModel class.
 
         Args:
-            input_filepath: filepath containing book data.
-            recommendation_count: how many recommendations should.
+            input_filepath: Filepath containing book data.
+            recommendation_count: How many recommendations should.
             be returned for a single book.
         """
-        self.data = pd.read_csv(input_filepath, index_col='book_id')
-        self.content_analyzer = TfidfVectorizer()
+        self.data = pd.read_csv(input_filepath, index_col='book_id').dropna()
+        self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
+        if environ['TEST_RUN'] == '1':
+            self.data = self.data.head(100)
 
     def train(self):
         """Prepares tf_idf feature vectors.
@@ -74,7 +82,7 @@ class TfIdfRecommendationModel(IRecommendationModel):
 
     def recommend(self, user_ratings: Dict[int, int]) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
-        book ids and their ratings recommendations are determined.
+
 
         The model makes use of tf-idf features calculated using book
         descriptions. The cosine metric is used in order to determine

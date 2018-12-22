@@ -1,24 +1,43 @@
 import click
 import logging
 
-from .recommendation_models import TfIdfRecommendationModel
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+
+from .recommendation_models import ContentBasedRecommendationModel
 from ..utils.serialization import save_object
 
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
+@click.option('--ngrams', default=1,
+              help='Length of n-grams to be considered')
 @click.option('--n', default=1,
               help='How many recommendations are returned by the model')
-def main(input_filepath: str, output_filepath: str, n: int):
+@click.option('--tf_idf/--count', default=True)
+def main(
+        input_filepath: str,
+        output_filepath: str,
+        n: int,
+        ngrams: int,
+        tf_idf: bool
+):
     logger = logging.getLogger(__name__)
 
-    logger.info('Training tf-idf model...')
-    tf_idf_model = TfIdfRecommendationModel(input_filepath, n)
-    tf_idf_model.train()
+    if tf_idf:
+        logger.info('Training tf-idf model...')
+        content_analyzer = TfidfVectorizer(ngram_range=(1, ngrams))
+    else:
+        logger.info('Training count model...')
+        content_analyzer = CountVectorizer(ngram_range=(1, ngrams))
 
-    logger.info(f'Saving tf-idf model to {output_filepath}...')
-    save_object(tf_idf_model, output_filepath)
+    cb_model = ContentBasedRecommendationModel(
+        input_filepath, n, content_analyzer
+    )
+    cb_model.train()
+
+    logger.info(f'Saving model to {output_filepath}...')
+    save_object(cb_model, output_filepath)
 
 
 if __name__ == '__main__':
