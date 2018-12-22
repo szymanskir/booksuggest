@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Dict, List, Tuple
 from sklearn.neighbors import NearestNeighbors
+from os import environ
 
 from surprise import SVD
 from surprise import Reader
@@ -68,6 +69,8 @@ class ContentBasedRecommendationModel(IRecommendationModel):
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
+        if environ['TEST_RUN'] == '1':
+            self.data = self.data.head(100)
 
     def train(self):
         """Prepares tf_idf feature vectors.
