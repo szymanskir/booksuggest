@@ -25,5 +25,11 @@ CB_MODELS = {
     'tf-idf-nouns-2grams': load_model('tf-idf-nouns-2grams-model'),
     'tf-idf-no-nouns-2grams': load_model('tf-idf-no-nouns-2grams-model'),
     'tf-idf-nouns-3grams': load_model('tf-idf-nouns-3grams-model'),
-    'tf-idf-no-nouns-3grams': load_model('tf-idf-no-nouns-3grams-model')
+    'tf-idf-no-nouns-3grams': load_model('tf-idf-no-nouns-3grams-model'),
+    'count-nouns': load_model('count-nouns-model'),
+    'count-no-nouns': load_model('count-no-nouns-model'),
+    'count-nouns-2grams': load_model('count-nouns-2grams-model'),
+    'count-no-nouns-2grams': load_model('count-no-nouns-2grams-model'),
+    'count-nouns-3grams': load_model('count-nouns-3grams-model'),
+    'count-no-nouns-3grams': load_model('count-no-nouns-3grams-model'),
 }

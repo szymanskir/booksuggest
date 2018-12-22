@@ -32,10 +32,10 @@ class DummyModel(IRecommendationModel):
         return books[0:6]
 
 
-class TfIdfRecommendationModel(IRecommendationModel):
-    """Recommendation model using the tf-idf method for
-    feature extraction. Later uses the cosine similarity
-    in order to select the most similar books.
+class ContentBasedRecommendationModel(IRecommendationModel):
+    """Recommendation model using the text features.
+    Later uses the cosine similarity in order to select
+    the most similar books.
 
     Attributes:
         data: Data frame containing book data.
@@ -48,7 +48,7 @@ class TfIdfRecommendationModel(IRecommendationModel):
             self,
             input_filepath: str,
             recommendation_count: int,
-            n_grams_length: int
+            content_analyzer
     ):
         """Initializes an instance of the TfIdfRecommendationModel class.
 
@@ -56,12 +56,9 @@ class TfIdfRecommendationModel(IRecommendationModel):
             input_filepath: Filepath containing book data.
             recommendation_count: How many recommendations should.
             be returned for a single book.
-            n_gram_length: Length of n_grams to be considered.
         """
         self.data = pd.read_csv(input_filepath, index_col='book_id').dropna()
-        self.content_analyzer = TfidfVectorizer(
-            ngram_range=(1, n_grams_length)
-        )
+        self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
@@ -77,7 +74,7 @@ class TfIdfRecommendationModel(IRecommendationModel):
 
     def recommend(self, user_ratings: Dict[int, int]) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
-        book ids and their ratings recommendations are determined.
+
 
         The model makes use of tf-idf features calculated using book
         descriptions. The cosine metric is used in order to determine

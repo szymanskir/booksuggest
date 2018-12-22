@@ -21,6 +21,7 @@ CB_SCORES = results/cb-results.csv
 ## CB models
 CB_MODELS_DIR = models/content-based-models
 
+### TF-IDF models
 TF_IDF_WITH_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
 TF_IDF_WITHOUT_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
 TF_IDF_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-2grams-model.pkl
@@ -28,17 +29,32 @@ TF_IDF_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
 TF_IDF_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
 TF_IDF_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
 
+### Count based models
+COUNT_WITH_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
+COUNT_WITHOUT_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
+COUNT_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-nouns-2grams-model.pkl
+COUNT_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
+COUNT_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
+COUNT_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
+
 CB_MODELS = $(TF_IDF_WITH_NOUNS) \
 	    $(TF_IDF_WITH_NOUNS_2GRAMS) \
 	    $(TF_IDF_WITH_NOUNS_3GRAMS) \
 	    $(TF_IDF_WITHOUT_NOUNS) \
 	    $(TF_IDF_WITHOUT_NOUNS_2GRAMS) \
 	    $(TF_IDF_WITHOUT_NOUNS_3GRAMS) \
+	    $(COUNT_WITH_NOUNS) \
+	    $(COUNT_WITHOUT_NOUNS) \
+	    $(COUNT_WITH_NOUNS_2GRAMS) \
+	    $(COUNT_WITH_NOUNS_3GRAMS) \
+	    $(COUNT_WITHOUT_NOUNS_2GRAMS) \
+	    $(COUNT_WITHOUT_NOUNS_3GRAMS)
 
 
 ## CB predictions
 CB_RESULTS_DIR = models/predictions/cb-results
 
+### Tf-idf predictions
 TF_IDF_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-predictions.csv
 TF_IDF_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-predictions.csv
 TF_IDF_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-2grams-predictions.csv
@@ -46,12 +62,15 @@ TF_IDF_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-2grams-pre
 TF_IDF_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-3grams-predictions.csv
 TF_IDF_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-3grams-predictions.csv
 
+### Count based predictions
+COUNT_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-predictions.csv
+COUNT_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-predictions.csv
+COUNT_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-predictions.csv
+COUNT_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-3grams-predictions.csv
+COUNT_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-predictions.csv
+COUNT_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-predictions.csv
+
 CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_PREDICTION) \
-		 $(TF_IDF_NOUNS_2GRAMS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION) \
-		 $(TF_IDF_NOUNS_3GRAMS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION)
 
 
 
@@ -174,7 +193,7 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/interim/book-unified_ids.csv src/data/p
 models/dummy_model.pkl: src/models/dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
 
-TF_IDF_DEPS = src/models/tf_idf_models.py src/models/recommendation_models.py
+COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/recommendation_models.py
 
 
 TF_IDF_NOUNS_MODELS = $(TF_IDF_WITH_NOUNS) \
@@ -189,25 +208,56 @@ TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
 TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
 TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
 
-$(TF_IDF_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(TF_IDF_DEPS)
-$(TF_IDF_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(TF_IDF_DEPS)
 
-# Content-Based Models
+COUNT_NOUNS_MODELS = $(COUNT_WITH_NOUNS) \
+		     $(COUNT_WITH_NOUNS_2GRAMS) \
+		     $(COUNT_WITH_NOUNS_3GRAMS)
+
+COUNT_WITHOUT_NOUNS_MODELS = $(COUNT_WITHOUT_NOUNS) \
+			     $(COUNT_WITHOUT_NOUNS_2GRAMS) \
+			     $(COUNT_WITHOUT_NOUNS_3GRAMS)
+
+TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
+TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
+TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+
+COUNT_1GRAM_MODELS = $(COUNT_WITH_NOUNS) $(COUNT_WITHOUT_NOUNS)
+COUNT_2GRAM_MODELS = $(COUNT_WITH_NOUNS_2GRAMS) $(COUNT_WITHOUT_NOUNS_2GRAMS)
+COUNT_3GRAM_MODELS = $(COUNT_WITH_NOUNS_3GRAMS) $(COUNT_WITHOUT_NOUNS_3GRAMS)
+
+$(TF_IDF_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
+$(TF_IDF_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
+
+$(COUNT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
+$(COUNT_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
+REC_COUNT = 13
+
+# Tf-idf models
 $(TF_IDF_1GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) 
 
 $(TF_IDF_2GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 --ngrams 2
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2
 
 $(TF_IDF_3GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n 10 --ngrams 3
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3
+
+# Count based models
+$(COUNT_1GRAM_MODELS):
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --count
+
+$(COUNT_2GRAM_MODELS):
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2 --count
+
+$(COUNT_3GRAM_MODELS):
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
 
 ################################################################################
 #
 # Model predictions rules
 #
 ################################################################################
-CB_TEST_CASES = data/interim/similar_books-unified_ids.csv
+CB_TEST_CASES = data/raw/test_cases.csv
 
 $(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_WITH_NOUNS)
 $(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS)
@@ -215,6 +265,13 @@ $(TF_IDF_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_2GRAMS)
 $(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
 $(TF_IDF_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_3GRAMS)
 $(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+
+$(COUNT_NOUNS_PREDICTION): $(COUNT_WITH_NOUNS)
+$(COUNT_NO_NOUNS_PREDICTION): $(COUNT_WITHOUT_NOUNS)
+$(COUNT_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_2GRAMS)
+$(COUNT_NO_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_2GRAMS)
+$(COUNT_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_3GRAMS)
+$(COUNT_NO_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_3GRAMS)
 
 $(CB_PREDICTIONS): 
 	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
