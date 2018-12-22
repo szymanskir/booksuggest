@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
 from typing import Dict, List
 from sklearn.neighbors import NearestNeighbors
+from os import environ
 
 
 class IRecommendationModel(metaclass=ABCMeta):
@@ -27,6 +28,7 @@ class IRecommendationModel(metaclass=ABCMeta):
 class DummyModel(IRecommendationModel):
     """Dummy recommendation model used for web app integration purposes.
     """
+
     def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
         books: List[int] = list(user_ratings.keys())
         return books[0:6]
@@ -63,6 +65,8 @@ class ContentBasedRecommendationModel(IRecommendationModel):
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
+        if environ['TEST_RUN'] == '1':
+            self.data = self.data.head(100)
 
     def train(self):
         """Prepares tf_idf feature vectors.
