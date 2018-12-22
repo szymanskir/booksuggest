@@ -1,8 +1,10 @@
+alabaster==0.7.12
 astroid==2.1.0
 atomicwrites==1.2.1
 attrs==18.2.0
 autopep8==1.4.3
 backcall==0.1.0
+Babel==2.6.0
 certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
@@ -11,12 +13,14 @@ dash-core-components==0.40.0
 dash-html-components==0.13.2
 dash-renderer==0.15.1
 decorator==4.3.0
+docutils==0.14
 flake8==3.6.0
 Flask==1.0.2
 Flask-Compress==1.4.0
 idna==2.7
 ipykernel==5.1.0
 ipython==7.2.0
+imagesize==1.1.0
 ipython-genutils==0.2.0
 isort==4.3.4
 itsdangerous==1.1.0
@@ -37,6 +41,7 @@ mypy-extensions==0.4.1
 nbformat==4.4.0
 nltk==3.4
 numpy==1.15.4
+packaging==18.0
 pandas==0.23.4
 parso==0.3.1
 pexpect==4.6.0
@@ -50,6 +55,7 @@ pycodestyle==2.4.0
 pyflakes==2.0.0
 Pygments==2.3.1
 pylint==2.2.2
+pyparsing==2.3.0
 pytest==4.0.2
 python-dateutil==2.7.5
 pytz==2018.7
@@ -63,6 +69,12 @@ singledispatch==3.4.0.3
 six==1.11.0
 src==0.1.0
 tornado==5.1.1
+snowballstemmer==1.2.1
+Sphinx==1.8.2
+sphinx-autodoc-typehints==1.5.2
+sphinx-rtd-theme==0.4.2
+sphinxcontrib-websupport==1.1.0
+src==0.1.0
 traitlets==4.3.2
 typed-ast==1.1.0
 urllib3==1.24.1

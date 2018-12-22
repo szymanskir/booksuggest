@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements tests app
+.PHONY: clean data lint requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -80,6 +80,11 @@ create_environment:
 app: models
 	cp --update $(APP_MODELS) app/assets/models/
 	$(PYTHON_INTERPRETER) app/app.py
+
+## Generate documentation
+docs: 
+	$(PYTHON_INTERPRETER) setup.py install
+	make -C docs/ html
 
 ################################################################################
 #
