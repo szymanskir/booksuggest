@@ -18,7 +18,7 @@ def extract_similar_books(xmls_dir: str) -> List[etree.Element]:
     return similar_books_rows
 
 
-def _extract_similar_books_(book: etree.Element) -> List[Tuple[str, str]]:
+def _extract_similar_books_(book: etree.Element) -> List[Tuple[int, int]]:
     similar_books_rows = list()
     book_work_id = book.find("work").findtext("id")
     similar_books = book.find("similar_books")
@@ -26,11 +26,11 @@ def _extract_similar_books_(book: etree.Element) -> List[Tuple[str, str]]:
         for similar_book in similar_books.findall("book"):
             similar_book_id = similar_book.find("work").findtext("id")
             similar_books_rows.append(
-                (book_work_id, similar_book_id))
+                (int(book_work_id), int(similar_book_id)))
     return similar_books_rows
 
 
-def process_similar_books(similar_books_rows: List[Tuple[str, str]]) -> pd.DataFrame:
+def process_similar_books(similar_books_rows: List[Tuple[int, int]]) -> pd.DataFrame:
     similar_book_labels = ['work_id', 'similar_book_work_id']
     similar_book_df = pd.DataFrame.from_records(
         similar_books_rows, columns=similar_book_labels)
@@ -43,7 +43,6 @@ def switch_to_book_id(similar_books_df: pd.DataFrame, book_df: pd.DataFrame) -> 
     book_ids_df = book_df[['book_id', 'work_id']]
     book_ids_df = book_ids_df.rename(
         columns={'book_id': 'tmp_book_id', 'work_id': 'tmp_work_id'})
-
     merged_book_df = similar_books_df.merge(
         book_ids_df, left_on='work_id', right_on='tmp_work_id')
     merged_book_df = merged_book_df[['tmp_book_id', 'similar_book_work_id']]
@@ -75,9 +74,5 @@ def main(books_xml_dir: str, books_filepath: str, output_filepath: str):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        level=logging.DEBUG,
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
+    logging.basicConfig(level=logging.INFO)
     main()

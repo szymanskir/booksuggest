@@ -10,7 +10,7 @@ from lxml import etree
 logger = logging.getLogger(__name__)
 
 
-def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, int, str]]:
+def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, str, str]]:
     book_extra_info_rows = list()
     for book in extract_all_book_xml_roots(xmls_dir):
         book_extra_info_rows.append(_extract_book_info_(book))
@@ -18,14 +18,14 @@ def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, int, str]]:
     return book_extra_info_rows
 
 
-def _extract_book_info_(book: etree.Element) -> Tuple[int, int, str]:
-    book_work_id = book.find("work").findtext
-    book_info = (int(book_work_id), int(book.findtext(
-        "isbn13")), book.findtext("description"))
+def _extract_book_info_(book: etree.Element) -> Tuple[int, str, str]:
+    book_work_id = book.find("work").findtext("id")
+    book_info = (int(book_work_id), book.findtext(
+        "isbn13"), book.findtext("description"))
     return book_info
 
 
-def process_book_extra_info(book_extra_info_rows: List[Tuple[int, int, str]]) -> pd.DataFrame:
+def process_book_extra_info(book_extra_info_rows: List[Tuple[int, str, str]]) -> pd.DataFrame:
     book_info_labels = ['work_id', 'isbn13', 'description']
     book_extra_info_df = pd.DataFrame.from_records(
         book_extra_info_rows, columns=book_info_labels)
