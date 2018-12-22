@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements tests
+.PHONY: clean data lint requirements tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -76,6 +76,11 @@ create_environment:
 ## Test if python environment is setup correctly
 test_environment:
 	$(PYTHON_INTERPRETER) test_environment.py
+
+## Generate documentation
+docs: 
+	$(PYTHON_INTERPRETER) setup.py install
+	make -C docs/ html
 
 ################################################################################
 #
