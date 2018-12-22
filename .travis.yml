@@ -7,5 +7,6 @@ cache:
 install:
   - make requirements
 script:
-  - make scores 
+  - make scores
   - make tests
+  - make docs
