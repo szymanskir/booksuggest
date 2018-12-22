@@ -13,13 +13,18 @@ BOOK_DATA = pd.read_csv(
 )
 USER_DATA = pd.read_csv(join(CURRENT_DIR, 'assets/ratings.csv')).dropna()
 
+
 # Model sources
+def get_model(filename: str) -> str:
+    return load_model(join(CURRENT_DIR, 'assets/models/', filename))
+
+
 CF_MODELS = {
-    'cf-dummy': load_model('dummy_model'),
-    'cf-svd': load_model('basic-svd-model')
+    'cf-dummy': get_model('dummy_model.pkl'),
+    'cf-svd': get_model('basic-svd-model.pkl')
 }
 
 CB_MODELS = {
-    'cb-dummy': load_model('dummy_model'),
-    'basic-tf-idf': load_model('basic-tf-idf-model')
+    'cb-dummy': get_model('dummy_model.pkl'),
+    'basic-tf-idf': get_model('basic-tf-idf-model.pkl')
 }

@@ -78,8 +78,7 @@ create_environment:
 
 # Start web application
 app: models
-	cp --update $(APP_MODELS) src/models/serialized_models
-	$(PYTHON_INTERPRETER) setup.py install
+	cp --update $(APP_MODELS) app/assets/models/
 	$(PYTHON_INTERPRETER) app/app.py
 
 ################################################################################
