@@ -41,6 +41,7 @@ PREDICTIONS = $(BASIC_TF_IDF_PREDICTION)
 ## Install Python Dependencies
 requirements:
 	$(PYTHON_INTERPRETER) setup.py install
+	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
 	pip install -r requirements.txt
 
 ## Download Dataset
