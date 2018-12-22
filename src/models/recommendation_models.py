@@ -2,8 +2,12 @@ import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from sklearn.feature_extraction.text import TfidfVectorizer
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from sklearn.neighbors import NearestNeighbors
+
+from surprise import SVD
+from surprise import Reader
+from surprise import Dataset
 
 
 class IRecommendationModel(metaclass=ABCMeta):
@@ -27,6 +31,7 @@ class IRecommendationModel(metaclass=ABCMeta):
 class DummyModel(IRecommendationModel):
     """Dummy recommendation model used for web app integration purposes.
     """
+
     def recommend(self, user_ratings: Dict[int, int]) -> List[int]:
         books: List[int] = list(user_ratings.keys())
         return books[0:6]
@@ -95,3 +100,56 @@ class ContentBasedRecommendationModel(IRecommendationModel):
         recommendations = self.data['description'].index[ids.flatten()[1:]]
 
         return dict(zip(recommendations, distances.flatten()))
+
+
+class SvdRecommendationModel(IRecommendationModel):
+    """Recommendation model using the Singular Value Decomposition operation.
+
+    Attributes:
+        data: Data frame containing ratings data.
+    """
+
+    def __init__(self, input_filepath: str, recommendation_count: int):
+        """Initializes an instance of the SvdRecommendationModel class.
+
+        Args:
+            input_filepath: filepath containing ratings data.
+            recommendation_count: how many recommendations should be returned for a single user.
+        """
+        self.recommendation_count = recommendation_count
+
+        ratings_df = pd.read_csv(input_filepath)
+        reader = Reader(rating_scale=(1, 5))
+        dataset = Dataset.load_from_df(
+            ratings_df[['user_id', 'book_id', 'rating']], reader)
+        self.trainset = dataset.build_full_trainset()
+
+    def train(self):
+        """Prepares user and items vectors.
+        """
+        algo = SVD()
+        algo.fit(self.trainset)
+        self.model = algo
+
+    def recommend(self, user_id: int) -> Dict[int, float]:
+        """Recommends top n books for given user.
+        """
+        try:
+            user_inner_id = self.trainset.to_inner_uid(user_id)
+        except ValueError:
+            return dict()
+
+        read_book_ids = set(iid for iid, _ in self.trainset.ur[user_inner_id])
+        unread_books_ids = set(self.trainset.all_items()) - read_book_ids
+
+        to_predict = [(user_inner_id, item_inner_id, 0)
+                      for item_inner_id in unread_books_ids]
+
+        predictions = self.model.test(to_predict)
+        top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
+            :self.recommendation_count]
+
+        rec_books = {self.trainset.to_raw_iid(
+            iid): est for _, iid, _, est, _ in top_n}
+
+        return rec_books

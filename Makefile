@@ -1,4 +1,4 @@
-.PHONY: clean data lint requirements tests
+.PHONY: clean data lint requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -83,10 +83,16 @@ CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 		 $(COUNT_NO_NOUNS_2GRAMS_PREDICTION) \
 		 $(COUNT_NO_NOUNS_3GRAMS_PREDICTION)
 
+## SVD pipeline
+### Basic model
+BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
+
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
 MODELS = models/dummy_model.pkl $(CB_MODELS)
+APP_MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(CB_PREDICTIONS)
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -94,8 +100,8 @@ PREDICTIONS = $(CB_PREDICTIONS)
 ## Install Python Dependencies
 requirements:
 	$(PYTHON_INTERPRETER) setup.py install
+	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
 	pip install -r requirements.txt
-
 
 ## Download Dataset
 data: $(RAW_DATA_FILES)
@@ -129,9 +135,15 @@ lint:
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-## Test if python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
+# Start web application
+app: models
+	cp --update $(APP_MODELS) app/assets/models/
+	$(PYTHON_INTERPRETER) app/app.py
+
+## Generate documentation
+docs: 
+	$(PYTHON_INTERPRETER) setup.py install
+	make -C docs/ html
 
 ################################################################################
 #
@@ -139,12 +151,11 @@ test_environment:
 #
 ################################################################################
 
-clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv
+clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv 
 
 data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
 	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
 	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
-
 
 ################################################################################
 #
@@ -191,6 +202,9 @@ $(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prep
 
 $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
+
+data/processed/ratings-train.csv data/processed/ratings-test.csv: 
+	$(PYTHON_INTERPRETER) src/data/ratings-train_test_split.py data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -260,6 +274,10 @@ $(COUNT_2GRAM_MODELS):
 
 $(COUNT_3GRAM_MODELS):
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
+
+# Collaborative-Filtering Models
+$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
 
 ################################################################################
 #

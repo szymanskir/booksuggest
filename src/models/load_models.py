@@ -1,5 +1,5 @@
-from os import listdir
-from os.path import join, dirname
+import os
+import errno
 from typing import List
 
 from ..utils.serialization import read_object
@@ -12,42 +12,24 @@ class InvalidModelException(Exception):
     pass
 
 
-def _get_serialized_models_dir() -> str:
-    """Returns the internal directory containing serialized models.
-    """
-    return join(dirname(__file__), 'serialized_models')
-
-
-def _is_model_available(model: str) -> bool:
-    """Checks if the given model is available.
+def load_model(model_file_path: str) -> IRecommendationModel:
+    """Loads the model specified stored in model_file_path
 
     Args:
-        model: name of the model to look for.
+        model_file_path (str): Path to a file containing recommendation model.
+
+    Raises:
+        InvalidModelException: Raised when object does not implement IRecommendationModel interface.
 
     Returns:
-        True if the model is available in the serialized_models directory,
-        False otherwise.
+        IRecommendationModel: Recommendation model object.
     """
-    available_models: List[str] = listdir(_get_serialized_models_dir())
-    return model in available_models
+    if not os.path.isfile(model_file_path):
+        raise FileNotFoundError(
+            errno.ENOENT, os.strerror(errno.ENOENT), model_file_path)
 
-
-def load_model(model_name: str) -> IRecommendationModel:
-    """Loads the model specified by the model_name argument
-
-    Currently available models:
-    'dummy_model' - dummy model used for integration testing purposes.
-    'basic-tf-idf-model' - basic content based model using only book
-                           descriptions as features.
-
-    Args:
-        model_name: name of the model to load.
-
-    Returns:
-        recommendation model object.
-    """
-    model: str = f'{model_name}.pkl'
-    if _is_model_available(model):
-        return read_object(join(_get_serialized_models_dir(), model))
+    model = read_object(model_file_path)
+    if isinstance(model, IRecommendationModel):
+        return model
 
     raise InvalidModelException()

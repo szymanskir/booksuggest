@@ -13,23 +13,29 @@ BOOK_DATA = pd.read_csv(
 )
 USER_DATA = pd.read_csv(join(CURRENT_DIR, 'assets/ratings.csv')).dropna()
 
+
 # Model sources
+def get_model(filename: str) -> str:
+    return load_model(join(CURRENT_DIR, 'assets/models/', filename))
+
+
 CF_MODELS = {
-    'cf-dummy': load_model('dummy_model')
+    'cf-dummy': get_model('dummy_model.pkl'),
+    'cf-svd': get_model('basic-svd-model.pkl')
 }
 
 CB_MODELS = {
-    'cb-dummy': load_model('dummy_model'),
-    'tf-idf-nouns': load_model('tf-idf-nouns-model'),
-    'tf-idf-no-nouns': load_model('tf-idf-no-nouns-model'),
-    'tf-idf-nouns-2grams': load_model('tf-idf-nouns-2grams-model'),
-    'tf-idf-no-nouns-2grams': load_model('tf-idf-no-nouns-2grams-model'),
-    'tf-idf-nouns-3grams': load_model('tf-idf-nouns-3grams-model'),
-    'tf-idf-no-nouns-3grams': load_model('tf-idf-no-nouns-3grams-model'),
-    'count-nouns': load_model('count-nouns-model'),
-    'count-no-nouns': load_model('count-no-nouns-model'),
-    'count-nouns-2grams': load_model('count-nouns-2grams-model'),
-    'count-no-nouns-2grams': load_model('count-no-nouns-2grams-model'),
-    'count-nouns-3grams': load_model('count-nouns-3grams-model'),
-    'count-no-nouns-3grams': load_model('count-no-nouns-3grams-model'),
+    'cb-dummy': get_model('dummy_model.pkl'),
+    'tf-idf-nouns': get_model('tf-idf-nouns-model.pkl'),
+    'tf-idf-no-nouns': get_model('tf-idf-no-nouns-model.pkl'),
+    'tf-idf-nouns-2grams': get_model('tf-idf-nouns-2grams-model.pkl'),
+    'tf-idf-no-nouns-2grams': get_model('tf-idf-no-nouns-2grams-model.pkl'),
+    'tf-idf-nouns-3grams': get_model('tf-idf-nouns-3grams-model.pkl'),
+    'tf-idf-no-nouns-3grams': get_model('tf-idf-no-nouns-3grams-model.pkl'),
+    'count-nouns': get_model('count-nouns-model.pkl'),
+    'count-no-nouns': get_model('count-no-nouns-model.pkl'),
+    'count-nouns-2grams': get_model('count-nouns-2grams-model.pkl'),
+    'count-no-nouns-2grams': get_model('count-no-nouns-2grams-model.pkl'),
+    'count-nouns-3grams': get_model('count-nouns-3grams-model.pkl'),
+    'count-no-nouns-3grams': get_model('count-no-nouns-3grams-model.pkl'),
 }

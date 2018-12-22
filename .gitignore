@@ -1,3 +1,4 @@
+app/assets/models/*
 data/**/*.csv
 data/**/*.xml
 data/**/*.zip
@@ -9,6 +10,7 @@ build/*
 __pycache__/
 rs-venv/*
 .mypy_cache/*
+docs/_build/*
 models/**/*.pkl
 models/**/*.csv
 notebooks/.ipynb_checkpoints
