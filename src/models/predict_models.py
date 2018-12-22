@@ -86,5 +86,5 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     main()
