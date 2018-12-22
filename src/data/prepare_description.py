@@ -86,7 +86,6 @@ def main(input_filepath: str, output_filepath: str, remove_nouns: bool):
         output_filepath: filepath where the results should be saved.
     """
     logging.info('Downloading nltk resources...')
-    import nltk
     nltk.download(['stopwords', 'wordnet', 'averaged_perceptron_tagger'])
     logging.info('Cleaning descriptions...')
     cleaned_descriptions = clean_descriptions(input_filepath, remove_nouns)
@@ -96,5 +95,5 @@ def main(input_filepath: str, output_filepath: str, remove_nouns: bool):
 
 
 if __name__ == '__main__':
-    setup_root_logger()
+    logging.basicConfig(level=logging.INFO)
     main()
