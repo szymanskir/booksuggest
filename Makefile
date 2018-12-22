@@ -154,16 +154,16 @@ docs:
 BOOKS_XML_DIR = data/raw/books_xml
 
 $(BOOKS_XML_DIR): data/raw/books_xml.zip
-	$(PYTHON_INTERPRETER) src/data/extract_xml_files.py data/raw/books_xml.zip data/raw
+	$(PYTHON_INTERPRETER) -m src.data.extract_xml_files data/raw/books_xml.zip data/raw
 
 data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
-	$(PYTHON_INTERPRETER) src/data/clean_book.py data/raw/book.csv $(BOOKS_XML_DIR) $@
+	$(PYTHON_INTERPRETER) -m src.data.clean_book data/raw/book.csv $(BOOKS_XML_DIR) $@
 
 data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
-	$(PYTHON_INTERPRETER) src/data/prepare_similar_books.py $(BOOKS_XML_DIR) data/processed/book.csv $@
+	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
 data/processed/book_tags.csv: $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER) src/data/clean_book_tags.py data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
+	$(PYTHON_INTERPRETER)-m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -182,22 +182,22 @@ books_xml_zip = https://github.com/zygmuntz/goodbooks-10k/raw/master/books_xml/b
 
 
 data/raw/book_tags.csv: src/data/download_dataset.py 
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(book_tags_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(book_tags_url) $@
 
 data/raw/book.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
 
 data/raw/ratings.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(ratings_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
 
 data/raw/tags.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(tags_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(tags_url) $@
 
 data/raw/to_read.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(to_read_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
 
 data/raw/books_xml.zip: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_xml_zip) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_xml_zip) $@
 
 ################################################################################
 #
@@ -212,7 +212,7 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_des
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
 data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) src/data/ratings-train_test_split.py data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings-train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #

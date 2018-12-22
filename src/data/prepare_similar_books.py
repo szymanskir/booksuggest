@@ -2,7 +2,7 @@ import pandas as pd
 import click
 import logging
 
-from xml_parser import extract_all_book_xml_roots
+from .xml_parser import extract_all_book_xml_roots
 
 from typing import List, Tuple
 from lxml import etree
