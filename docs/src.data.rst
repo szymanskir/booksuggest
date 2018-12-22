@@ -4,6 +4,22 @@ src.data package
 Submodules
 ----------
 
+src.data.clean\_book module
+---------------------------
+
+.. automodule:: src.data.clean_book
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.data.clean\_book\_tags module
+---------------------------------
+
+.. automodule:: src.data.clean_book_tags
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.data.download\_dataset module
 ---------------------------------
 
@@ -12,10 +28,10 @@ src.data.download\_dataset module
     :undoc-members:
     :show-inheritance:
 
-src.data.parse\_xml\_files module
----------------------------------
+src.data.extract\_xml\_files module
+-----------------------------------
 
-.. automodule:: src.data.parse_xml_files
+.. automodule:: src.data.extract_xml_files
     :members:
     :undoc-members:
     :show-inheritance:
@@ -28,10 +44,26 @@ src.data.prepare\_description module
     :undoc-members:
     :show-inheritance:
 
-src.data.unify\_ids module
---------------------------
+src.data.prepare\_similar\_books module
+---------------------------------------
 
-.. automodule:: src.data.unify_ids
+.. automodule:: src.data.prepare_similar_books
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.data.ratings\_train\_test\_split module
+-------------------------------------------
+
+.. automodule:: src.data.ratings_train_test_split
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.data.xml\_parser module
+---------------------------
+
+.. automodule:: src.data.xml_parser
     :members:
     :undoc-members:
     :show-inheritance:

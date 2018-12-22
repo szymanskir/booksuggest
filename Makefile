@@ -212,7 +212,7 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_des
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
 data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) -m src.data.ratings-train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings.train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
