@@ -9,6 +9,7 @@ PROFILE = default
 PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
 PYTHON_INTERPRETER = python3.7
+TEST_RUN=0
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
@@ -89,7 +90,7 @@ BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(CB_MODELS)
+MODELS = models/dummy_model.pkl $(CB_MODELS) 
 APP_MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(CB_PREDICTIONS)
 
