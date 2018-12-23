@@ -4,6 +4,14 @@ src.models package
 Submodules
 ----------
 
+src.models.cf\_svd\_models module
+---------------------------------
+
+.. automodule:: src.models.cf_svd_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.models.dummy\_model module
 ------------------------------
 

@@ -151,11 +151,19 @@ docs:
 #
 ################################################################################
 
-clean_data: data/interim/book-unified_ids.csv data/interim/similar_books.csv 
+BOOKS_XML_DIR = data/raw/books_xml
 
-data/interim/book-unified_ids.csv data/interim/similar_books-unified_ids.csv: src/data/parse_xml_files.py $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER) src/data/parse_xml_files.py data/raw/books_xml.zip data/interim
-	$(PYTHON_INTERPRETER) src/data/unify_ids.py data/raw data/interim data/interim
+$(BOOKS_XML_DIR): data/raw/books_xml.zip
+	$(PYTHON_INTERPRETER) -m src.data.extract_xml_files data/raw/books_xml.zip data/raw
+
+data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
+	$(PYTHON_INTERPRETER) -m src.data.clean_book data/raw/book.csv $(BOOKS_XML_DIR) $@
+
+data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
+	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
+
+data/processed/book_tags.csv: $(RAW_DATA_FILES)
+	$(PYTHON_INTERPRETER)-m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -174,22 +182,22 @@ books_xml_zip = https://github.com/zygmuntz/goodbooks-10k/raw/master/books_xml/b
 
 
 data/raw/book_tags.csv: src/data/download_dataset.py 
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(book_tags_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(book_tags_url) $@
 
 data/raw/book.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
 
 data/raw/ratings.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(ratings_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
 
 data/raw/tags.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(tags_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(tags_url) $@
 
 data/raw/to_read.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(to_read_url) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
 
 data/raw/books_xml.zip: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_xml_zip) $@
+	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_xml_zip) $@
 
 ################################################################################
 #
@@ -197,14 +205,14 @@ data/raw/books_xml.zip: src/data/download_dataset.py
 #
 ################################################################################
 
-$(CLEAN_DESCRIPTION_WITH_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
+$(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
 
-$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/interim/book-unified_ids.csv src/data/prepare_description.py 
+$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
 data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) src/data/ratings-train_test_split.py data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings.train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -284,7 +292,7 @@ $(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models
 # Model predictions rules
 #
 ################################################################################
-CB_TEST_CASES = data/interim/similar_books-unified_ids.csv
+CB_TEST_CASES = data/processed/similar_books.csv
 
 $(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_WITH_NOUNS)
 $(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS)
@@ -309,9 +317,9 @@ $(CB_PREDICTIONS):
 #
 ################################################################################
 
-SIMILAR_BOOKS = data/interim/similar_books-unified_ids.csv
+SIMILAR_BOOKS = data/processed/similar_books.csv
 
-$(CB_SCORES): src/validation/evaluation.py data/interim/similar_books-unified_ids.csv $(PREDICTIONS)
+$(CB_SCORES): src/validation/evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
 	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################

@@ -12,6 +12,14 @@ src.utils.csv\_utils module
     :undoc-members:
     :show-inheritance:
 
+src.utils.logging module
+------------------------
+
+.. automodule:: src.utils.logging
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.utils.serialization module
 ------------------------------
 
