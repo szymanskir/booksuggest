@@ -187,9 +187,15 @@ data/raw/book_tags.csv: src/data/download_dataset.py
 
 data/raw/book.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@
+endif
 
 data/raw/ratings.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 10000
+endif
 
 data/raw/tags.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(tags_url) $@
