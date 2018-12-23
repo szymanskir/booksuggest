@@ -1,8 +1,7 @@
 import click
 import logging
 
-from .recommendation_models import DummyModel
-
+from .cf_recommend_models import DummyModel
 from ..utils.serialization import save_object
 
 
@@ -16,7 +15,7 @@ def train_dummy_model():
 @click.command()
 @click.argument('filename')
 def main(filename):
-    """Trains a dummy model and saves it to the specified
+    """Trains a CF dummy model and saves it to the specified
     file.
 
     Args:
@@ -24,10 +23,10 @@ def main(filename):
     """
     logger = logging.getLogger(__name__)
 
-    logger.info('Training dummy model...')
+    logger.info('Training CF dummy model...')
     dummy_model = train_dummy_model()
 
-    logger.info(f'Saving dummy model to {filename}...')
+    logger.info(f'Saving CF dummy model to {filename}...')
     save_object(dummy_model, filename)
 
 

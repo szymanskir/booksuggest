@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 from typing import List
 
-from .recommendation_models import IRecommendationModel
+from .cb_recommend_models import ICbRecommendationModel
 
 from ..utils.serialization import read_object
 from ..utils.csv_utils import save_csv
@@ -28,7 +28,7 @@ def _read_test_cases(test_cases_filepath: str) -> List[int]:
     return test_cases.tolist()
 
 
-def predict_model(model: IRecommendationModel,
+def predict_model(model: ICbRecommendationModel,
                   test_cases: List[int]) -> pd.DataFrame:
     """Uses the given model to calculate similar books.
 
@@ -47,7 +47,7 @@ def predict_model(model: IRecommendationModel,
     """
     def recommend_helper(model, test_case_id):
         logging.debug(f'Computing {test_case_id}')
-        recommendations = list(model.recommend({test_case_id: 5}).keys())
+        recommendations = list(model.recommend(test_case_id).keys())
         return [{'book_id': test_case_id,
                  'similar_book_id': recommended_book}
                 for recommended_book in recommendations]

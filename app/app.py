@@ -226,9 +226,7 @@ def display_cb_recommendation(model, selected_book_id):
     if model is None or selected_book_id is None:
         return html.Div()
 
-    recommended_books = resources.CB_MODELS[model].recommend({
-        selected_book_id: 5
-    })
+    recommended_books = resources.CB_MODELS[model].recommend(selected_book_id)
 
     return components.create_books_layout(
         resources.BOOK_DATA,

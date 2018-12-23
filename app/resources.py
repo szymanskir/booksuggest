@@ -20,12 +20,12 @@ def get_model(filename: str) -> str:
 
 
 CF_MODELS = {
-    'cf-dummy': get_model('dummy_model.pkl'),
+    'cf-dummy': get_model('cf_dummy_model.pkl'),
     'cf-svd': get_model('basic-svd-model.pkl')
 }
 
 CB_MODELS = {
-    'cb-dummy': get_model('dummy_model.pkl'),
+    'cb-dummy': get_model('cb_dummy_model.pkl'),
     'tf-idf-nouns': get_model('tf-idf-nouns-model.pkl'),
     'tf-idf-no-nouns': get_model('tf-idf-no-nouns-model.pkl'),
     'tf-idf-nouns-2grams': get_model('tf-idf-nouns-2grams-model.pkl'),
