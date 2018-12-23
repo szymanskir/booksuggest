@@ -1,3 +1,5 @@
+app/assets/models/cb/*
+app/assets/models/cf/*
 data/**/*.csv
 data/**/*.xml
 data/**/*.zip
