@@ -7,6 +7,7 @@ cache:
 install:
   - make requirements
 script:
-  - make scores TEST_RUN=1
+  - make models TEST_RUN=1
+  - make scores
   - make tests
   - make docs
