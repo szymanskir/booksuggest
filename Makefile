@@ -9,6 +9,7 @@ PROFILE = default
 PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
 PYTHON_INTERPRETER = python3.7
+TEST_RUN=0
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
@@ -89,7 +90,7 @@ BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(CB_MODELS)
+MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
 APP_MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
 PREDICTIONS = $(CB_PREDICTIONS)
 
@@ -186,9 +187,15 @@ data/raw/book_tags.csv: src/data/download_dataset.py
 
 data/raw/book.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@
+endif
 
 data/raw/ratings.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 10000
+endif
 
 data/raw/tags.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(tags_url) $@
@@ -212,7 +219,7 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_des
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
 data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) -m src.data.ratings.train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #

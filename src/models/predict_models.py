@@ -1,7 +1,6 @@
 import click
 import logging
 import pandas as pd
-from os import environ
 from typing import List
 
 from .recommendation_models import IRecommendationModel
@@ -24,8 +23,6 @@ def _read_test_cases(test_cases_filepath: str) -> List[int]:
         list of book ids used for similar books calculations.
     """
     test_cases_data = pd.read_csv(test_cases_filepath)
-    if environ['TEST_RUN'] == '1':
-        test_cases_data = test_cases_data.head(100)
     test_cases = test_cases_data['book_id'].sort_values().unique()
 
     return test_cases.tolist()
