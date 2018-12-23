@@ -4,13 +4,23 @@ import logging
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
+logger = logging.getLogger(__name__)
+
 
 @click.command()
 @click.argument('ratings_filepath', type=click.Path(exists=True))
 @click.argument('trainset_filepath', type=click.Path())
 @click.argument('testset_filepath', type=click.Path())
 def main(ratings_filepath: str, trainset_filepath: str, testset_filepath: str):
-    logger = logging.getLogger(__name__)
+    """Splits the data about ratings into traning and test datasets.
+
+    Split function is randomized, but with predefined seed to allow for reproducible results.
+
+    Args:
+        ratings_filepath (str): Ratings data frame filepath.
+        trainset_filepath (str): Output filepath for training dataset.
+        testset_filepath (str): Output filepath for test dataset.
+    """
 
     logger.info('Splitting ratings data into training and test sets...')
     ratings_df = pd.read_csv(ratings_filepath, index_col=[

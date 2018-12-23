@@ -1,7 +1,7 @@
 import logging
 import os
 
-from typing import List
+from typing import Iterable
 from glob import glob
 from lxml import etree
 import concurrent.futures as cf
@@ -9,7 +9,15 @@ import concurrent.futures as cf
 logger = logging.getLogger(__name__)
 
 
-def extract_all_book_xml_roots(xmls_dir: str) -> List[etree.Element]:
+def extract_all_book_xml_roots(xmls_dir: str) -> Iterable[etree.Element]:
+    """Extracts ``book`` element from .xml files located in given directory.
+
+    Args:
+        xmls_dir (str): Directory with .xml files.
+
+    Yields:
+        Iterable[etree.Element]: Iterable of `book` elements.
+    """
     logger.info(f"Processing xml files in {xmls_dir} ...")
 
     with cf.ThreadPoolExecutor() as executor:

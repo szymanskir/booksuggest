@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 @click.argument('xml_archive_path', type=click.Path(exists=True))
 @click.argument('output_dir', type=click.Path(exists=True))
 def main(xml_archive_path: str, output_dir: str):
-    """Extract xml files from archive xml_archive_path to output_dir
+    """Extract .xml files from ``archive xml_archive_path`` to ``output_dir``
     """
     logger.info(f"Extracting {xml_archive_path}...")
     zip_reference = zipfile.ZipFile(xml_archive_path, 'r')

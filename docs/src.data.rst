@@ -12,6 +12,8 @@ src.data.clean\_book module
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(book_filepath: str, books_xml_dir: str, output_filepath: str)
+
 src.data.clean\_book\_tags module
 ---------------------------------
 
@@ -19,6 +21,8 @@ src.data.clean\_book\_tags module
     :members:
     :undoc-members:
     :show-inheritance:
+
+    .. autofunction:: main(book_filepath: str, book_tags_filepath: str, tags_filepath: str, genres_filepath: str, output_filepath: str)
 
 src.data.download\_dataset module
 ---------------------------------
@@ -28,6 +32,8 @@ src.data.download\_dataset module
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(download_url: str, output_filepath: str)
+
 src.data.extract\_xml\_files module
 -----------------------------------
 
@@ -35,6 +41,8 @@ src.data.extract\_xml\_files module
     :members:
     :undoc-members:
     :show-inheritance:
+
+    .. autofunction:: main(xml_archive_path: str, output_dir: str)
 
 src.data.prepare\_description module
 ------------------------------------
@@ -44,6 +52,8 @@ src.data.prepare\_description module
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(input_filepath: str, output_filepath: str, remove_nouns: bool)
+
 src.data.prepare\_similar\_books module
 ---------------------------------------
 
@@ -52,6 +62,8 @@ src.data.prepare\_similar\_books module
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(books_xml_dir: str, books_filepath: str, output_filepath: str)
+
 src.data.ratings\_train\_test\_split module
 -------------------------------------------
 
@@ -59,6 +71,8 @@ src.data.ratings\_train\_test\_split module
     :members:
     :undoc-members:
     :show-inheritance:
+
+    .. autofunction:: main(ratings_filepath: str, trainset_filepath: str, testset_filepath: str)
 
 src.data.xml\_parser module
 ---------------------------

@@ -19,12 +19,11 @@ def clean_single_description(
     """Prepares the description for the tf-idf method.
 
     Args:
-        description: string containg a book description.
-        remove_proper_nouns: if True proper nouns will be removed
-        from the description
+        description (str): Book description.
+        remove_proper_nouns (bool): Whether to remove proper nouns from text.
 
     Returns:
-        description with removed punctuation, stopwords and stemmed,
+        str: Description with removed punctuation, stopwords and stemmed,
         lemmatized vocabulary.
     """
     logging.debug('Cleaning description...')
@@ -59,11 +58,12 @@ def clean_descriptions(
     file.
 
     Args:
-        input_filepath: filepath to the data containing a 'description'
+        input_filepath (str): Filepath to the data containing a ``description``
         column that will be cleaned.
+        remove_proper_nouns (bool): Whether to remove proper nouns from text.
 
     Returns:
-        the original data frame but with the 'description' column cleaned.
+        pd.DataFrame: The original data frame but with the ``description`` column cleaned.
     """
     data = pd.read_csv(input_filepath, index_col='book_id')
     descriptions = data['description'].dropna()
@@ -79,11 +79,12 @@ def clean_descriptions(
 @click.argument('output_filepath', type=click.Path())
 @click.option('--remove_nouns', is_flag=True)
 def main(input_filepath: str, output_filepath: str, remove_nouns: bool):
-    """Cleans book descriptions.
+    """Cleans books descriptions.
 
     Args:
-        input_filepath: input file to clean descriptions in.
-        output_filepath: filepath where the results should be saved.
+        input_filepath (str): Input file to clean descriptions in.
+        output_filepath (str): Filepath where the results should be saved.
+        remove_nouns (bool): Whether to remove proper nouns from text.
     """
     logging.info('Downloading nltk resources...')
     nltk.download(['stopwords', 'wordnet', 'averaged_perceptron_tagger'])
