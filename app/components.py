@@ -88,7 +88,7 @@ def books_to_dropdown(book_data):
     The labels in the dropdown are book titles and the values
     are the ids from the dataset.
     """
-    return [{'label': row['original_title'], 'value': idx}
+    return [{'label': row['title'], 'value': idx}
             for idx, row in book_data.iterrows()]
 
 

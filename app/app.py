@@ -233,7 +233,7 @@ def display_cb_recommendation(model, selected_book_id):
     return components.create_books_layout(
         resources.BOOK_DATA,
         recommended_books,
-        'distance',
+        'Distance',
         '#ADD8E6'
     )
 
