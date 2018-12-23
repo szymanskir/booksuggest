@@ -118,6 +118,14 @@ def render_book(book_data, extra_html):
     """
     extra_html = extra_html if extra_html else html.Div()
 
+    authors = book_data['authors'].split(',')
+    if len(authors) > 1:
+        authors = f'{authors[0]} et al.'
+
+    title = book_data['title']
+    if len(title) > 50:
+        title = f'{title[:50]}...'
+
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
         children=[
@@ -127,8 +135,14 @@ def render_book(book_data, extra_html):
                     html.Img(src=book_data['image_url']),
                 ]
             ),
-            html.Small(book_data['authors'], style={'color': '#999999'}),
-            html.Strong(book_data['original_title']),
+            html.Div(
+                title=book_data['authors'],
+                children=html.Small(authors, style={'color': '#999999'})
+            ),
+            html.Div(
+                title=book_data['title'],
+                children=html.Strong(title)
+            ),
             extra_html
         ],
         style={'padding': '20', 'text-align': 'center'}
