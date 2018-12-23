@@ -50,7 +50,7 @@ def serve_layout():
                         id='rated-books',
                         className='border mb-5',
                         style={
-                            'overflow': 'auto',
+                            'overflow': 'auto'
                         },
                     )
                 ]
@@ -168,7 +168,12 @@ def display_reviewed_books(selected_user_id):
     book_ratings = components.get_book_ratings(
         resources.USER_DATA, selected_user_id
     )
-    return components.rated_books_layout(resources.BOOK_DATA, book_ratings)
+    return components.create_books_layout(
+        resources.BOOK_DATA,
+        book_ratings,
+        'Rating',
+        '#F9A602'
+    )
 
 
 @app.callback(Output('recommended-books-cf', 'children'),
@@ -198,8 +203,12 @@ def display_cf_recommendations(model, selected_user_id):
         selected_user_id
     ) if book_ratings and model else list()
 
-    return components.recommended_books_layout(resources.BOOK_DATA,
-                                               recommended_books)
+    return components.create_books_layout(
+        resources.BOOK_DATA,
+        recommended_books,
+        'Predicted rating',
+        '#F9A602'
+    )
 
 
 @app.callback(Output('recomended-books-cb', 'children'),
@@ -221,8 +230,11 @@ def display_cb_recommendation(model, selected_book_id):
         selected_book_id: 5
     })
 
-    return components.recommended_books_layout(
-        resources.BOOK_DATA, recommended_books
+    return components.create_books_layout(
+        resources.BOOK_DATA,
+        recommended_books,
+        'Distance',
+        '#ADD8E6'
     )
 
 

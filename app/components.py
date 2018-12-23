@@ -88,7 +88,7 @@ def books_to_dropdown(book_data):
     The labels in the dropdown are book titles and the values
     are the ids from the dataset.
     """
-    return [{'label': row['original_title'], 'value': idx}
+    return [{'label': row['title'], 'value': idx}
             for idx, row in book_data.iterrows()]
 
 
@@ -113,13 +113,18 @@ def users_to_dropdown(user_data):
 ############################################################
 
 
-def render_book(book_data, rating=None):
+def render_book(book_data, extra_html):
     """Creates an html representation of a book.
     """
-    html_rating = html.Small(
-        f'Rating: {rating}',
-        style={'color': '#F9A602'}
-    ) if rating else html.Div()
+    extra_html = extra_html if extra_html else html.Div()
+
+    authors = book_data['authors'].split(',')
+    if len(authors) > 1:
+        authors = f'{authors[0]} et al.'
+
+    title = book_data['title']
+    if len(title) > 50:
+        title = f'{title[:50]}...'
 
     book_layout = html.Div(
         className='col-sm-2 d-flex flex-column align-items-center',
@@ -130,9 +135,15 @@ def render_book(book_data, rating=None):
                     html.Img(src=book_data['image_url']),
                 ]
             ),
-            html.Small(book_data['authors'], style={'color': '#999999'}),
-            html.Strong(book_data['original_title']),
-            html_rating
+            html.Div(
+                title=book_data['authors'],
+                children=html.Small(authors, style={'color': '#999999'})
+            ),
+            html.Div(
+                title=book_data['title'],
+                children=html.Strong(title)
+            ),
+            extra_html
         ],
         style={'padding': '20', 'text-align': 'center'}
     )
@@ -140,37 +151,40 @@ def render_book(book_data, rating=None):
     return book_layout
 
 
-def rated_books_layout(book_data, book_ratings):
-    """Creates an html layout composed of reviewed books.
+def create_books_layout(
+        book_data,
+        selected_books,
+        extra_html_label,
+        extra_html_color
+):
+    """Creates an html layout composed of specfied books.
     """
-    rated_books = book_data.loc[book_ratings.keys()]
-
     layout = html.Div(
-        className='d-flex flex-row',
-        children=[render_book(book, book_ratings[idx])
-                  for idx, book in rated_books.iterrows()],
+        className='d-flex flex-row flex-wrap',
+        children=[
+            render_book(
+                book_data.loc[book_id],
+                _create_extra_html(
+                    extra_html_label,
+                    selected_books[book_id],
+                    extra_html_color
+                )
+            )
+            for book_id in selected_books
+        ],
         style={
-            'width': '100%',
-            'margin': 10
+            'max-height': 500
         }
     )
 
     return layout
 
 
-def recommended_books_layout(book_data, book_ids):
-    """Creates an html layout composed of recommended books.
+def _create_extra_html(label, value, color):
+    """Creates extra html elements for book rendering.
     """
-    recommended_books = book_data.loc[book_ids]
-
-    layout = html.Div(
-        className='d-flex flex-row',
-        children=[render_book(book)
-                  for _, book in recommended_books.iterrows()],
-        style={
-            'width': '100%',
-            'margin': 10
-        }
+    value = round(value, 2)
+    return html.Small(
+        f'{label}: {value}',
+        style={'color': color}
     )
-
-    return layout
