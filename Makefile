@@ -94,7 +94,8 @@ CF_MODELS = models/cf_dummy_model.pkl $(BASIC_SVD_MODEL)
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
 MODELS = $(CB_MODELS) $(CF_MODELS)
-APP_MODELS = $(CB_MODELS) $(CF_MODELS)
+APP_CB_MODELS = $(CB_MODELS)
+APP_CF_MODELS = $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS)
 
 #################################################################################
@@ -141,7 +142,8 @@ create_environment:
 
 # Start web application
 app: models
-	cp --update $(APP_MODELS) app/assets/models/
+	cp --update $(APP_CB_MODELS) app/assets/models/cb
+	cp --update $(APP_CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation

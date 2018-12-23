@@ -1,7 +1,8 @@
 import pandas as pd
 
-from os.path import dirname, join, realpath
+from os.path import dirname, join, realpath, splitext, basename
 from src.models.load_models import load_model
+from glob import glob
 
 _MINI_LOGO = 'http://sfinks.fizyka.pw.edu.pl/img/logo_mini.png'
 GOODREADS_URL = 'https://www.goodreads.com/book/show'
@@ -19,23 +20,10 @@ def get_model(filename: str) -> str:
     return load_model(join(CURRENT_DIR, 'assets/models/', filename))
 
 
-CF_MODELS = {
-    'cf-dummy': get_model('cf_dummy_model.pkl'),
-    'cf-svd': get_model('basic-svd-model.pkl')
-}
+def read_models_from_dir(models_dir: str):
+    pkl_files = glob(join(models_dir, '*.pkl'))
+    return {splitext(basename(path))[0]: get_model(path) for path in pkl_files}
 
-CB_MODELS = {
-    'cb-dummy': get_model('cb_dummy_model.pkl'),
-    'tf-idf-nouns': get_model('tf-idf-nouns-model.pkl'),
-    'tf-idf-no-nouns': get_model('tf-idf-no-nouns-model.pkl'),
-    'tf-idf-nouns-2grams': get_model('tf-idf-nouns-2grams-model.pkl'),
-    'tf-idf-no-nouns-2grams': get_model('tf-idf-no-nouns-2grams-model.pkl'),
-    'tf-idf-nouns-3grams': get_model('tf-idf-nouns-3grams-model.pkl'),
-    'tf-idf-no-nouns-3grams': get_model('tf-idf-no-nouns-3grams-model.pkl'),
-    'count-nouns': get_model('count-nouns-model.pkl'),
-    'count-no-nouns': get_model('count-no-nouns-model.pkl'),
-    'count-nouns-2grams': get_model('count-nouns-2grams-model.pkl'),
-    'count-no-nouns-2grams': get_model('count-no-nouns-2grams-model.pkl'),
-    'count-nouns-3grams': get_model('count-nouns-3grams-model.pkl'),
-    'count-no-nouns-3grams': get_model('count-no-nouns-3grams-model.pkl'),
-}
+
+CB_MODELS = read_models_from_dir(join(CURRENT_DIR, 'assets/models/cb'))
+CF_MODELS = read_models_from_dir(join(CURRENT_DIR, 'assets/models/cf'))
