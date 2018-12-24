@@ -128,6 +128,7 @@ clean:
 
 ## Delete all downloaded and calculated files
 hard_clean: clean
+	rm -rf data/raw/books_xml
 	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
 	find models -type f -name '*.pkl' -delete
 	find models -type f -name '*.csv' -delete
