@@ -9,10 +9,10 @@ from sklearn.neighbors import NearestNeighbors
 class ICbRecommendationModel(metaclass=ABCMeta):
     @abstractmethod
     def recommend(self, book_id: int) -> Dict[int, float]:
-        """Recommends books similar to given book.
+        """Recommends books similar to the given book.
 
         Args:
-            book_id (int): Id of the book for which recommendation would be given.
+            book_id (int): Id of the book for which recommendations would be given.
 
         Returns:
             Dict[int, float]: Dictionary of ``similar_book_id: distance_between_book_and_similar_book`` key-value pairs.
@@ -29,7 +29,7 @@ class DummyModel(ICbRecommendationModel):
 
 
 class ContentBasedRecommendationModel(ICbRecommendationModel):
-    """Recommendation model using the text features.
+    """Recommendation model using text features.
     Later uses the cosine similarity in order to select
     the most similar books.
 
@@ -46,7 +46,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             recommendation_count: int,
             content_analyzer
     ):
-        """Initializes an instance of the TfIdfRecommendationModel class.
+        """Initializes an instance of the ContentBasedRecommendationModel class.
 
         Args:
             input_filepath: Filepath containing book data.
@@ -60,7 +60,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         )
 
     def train(self):
-        """Prepares tf_idf feature vectors.
+        """Prepares feature vectors.
         """
 
         descriptions = self.data['description']

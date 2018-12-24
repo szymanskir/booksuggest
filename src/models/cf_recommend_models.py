@@ -13,7 +13,7 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         """Recommends books for given user present in the training dataset.
 
         Args:
-            user_id (int): Id of the user for who recommendation would be given.
+            user_id (int): Id of the user for who recommendations would be given.
 
         Returns:
             Dict[int, float]: Dictionary of ``book_id: predicted_rating`` key-value pairs.
@@ -60,7 +60,7 @@ class SvdRecommendationModel(ICfRecommendationModel):
         self.model = algo
 
     def recommend(self, user_id: int) -> Dict[int, float]:
-        """Recommends top n books for given user.
+        """Recommends top n books for the given user.
         """
         try:
             user_inner_id = self.trainset.to_inner_uid(user_id)
