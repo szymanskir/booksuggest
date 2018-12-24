@@ -37,7 +37,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         data: Data frame containing book data.
         content_analyzer: Component used for feature extraction from the data.
         filtering_component: Component used for calculating most similar books
-        based on the features calculated by the content_analyzer.
+            based on the features calculated by the content_analyzer.
     """
 
     def __init__(
