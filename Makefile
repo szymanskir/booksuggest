@@ -36,6 +36,7 @@ TF_IDF_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
 TF_IDF_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
 TF_IDF_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
 
+
 ### Count based models
 COUNT_WITH_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
 COUNT_WITHOUT_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
@@ -44,8 +45,11 @@ COUNT_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
 COUNT_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
 COUNT_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
 
+### TF-IDF with tags models
+TF_IDF_WITH_NOUNS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-model.pkl
+
 CB_MODELS = models/cb_dummy_model.pkl \
-		$(TF_IDF_WITH_NOUNS) \
+	    $(TF_IDF_WITH_NOUNS) \
 	    $(TF_IDF_WITH_NOUNS_2GRAMS) \
 	    $(TF_IDF_WITH_NOUNS_3GRAMS) \
 	    $(TF_IDF_WITHOUT_NOUNS) \
@@ -100,7 +104,7 @@ CF_MODELS = models/cf_dummy_model.pkl $(BASIC_SVD_MODEL)
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
 MODELS = $(CB_MODELS) $(CF_MODELS)
-APP_CB_MODELS = $(CB_MODELS)
+APP_CB_MODELS = $(CB_MODELS) $(TF_IDF_WITH_NOUNS_TAGS)
 APP_CF_MODELS = $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS)
 
@@ -265,7 +269,7 @@ $(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
 models/cb_dummy_model.pkl: src/models/cb_dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.cb_dummy_model $@
 
-COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/cb_recommend_models.py
+COMMON_CB_DEPS = src/models/tf_idf_models.py
 
 
 TF_IDF_NOUNS_MODELS = $(TF_IDF_WITH_NOUNS) \
@@ -323,6 +327,10 @@ $(COUNT_2GRAM_MODELS):
 
 $(COUNT_3GRAM_MODELS):
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
+
+# Tf-idf with tags models
+$(TF_IDF_WITH_NOUNS_TAGS): $(TAG_FEATURES) $(CLEAN_DESCRIPTION_WITH_NOUNS)
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(CLEAN_DESCRIPTION_WITH_NOUNS) $@ --n $(REC_COUNT) --ngrams 2 --tag_features $(TAG_FEATURES)
 
 # Collaborative-Filtering Models
 

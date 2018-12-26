@@ -1,5 +1,6 @@
 import click
 import logging
+import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
@@ -15,12 +16,14 @@ from ..utils.serialization import save_object
 @click.option('--n', default=1,
               help='How many recommendations are returned by the model')
 @click.option('--tf_idf/--count', default=True)
+@click.option('--tag_features', default=None)
 def main(
         input_filepath: str,
         output_filepath: str,
         n: int,
         ngrams: int,
-        tf_idf: bool
+        tf_idf: bool,
+        tag_features
 ):
     logger = logging.getLogger(__name__)
 
@@ -32,7 +35,7 @@ def main(
         content_analyzer = CountVectorizer(ngram_range=(1, ngrams))
 
     cb_model = ContentBasedRecommendationModel(
-        input_filepath, n, content_analyzer
+        input_filepath, n, content_analyzer, tag_features
     )
     cb_model.train()
 

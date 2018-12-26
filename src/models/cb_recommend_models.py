@@ -1,8 +1,9 @@
+import scipy.sparse
 import pandas as pd
-from abc import ABCMeta, abstractmethod
-from typing import Dict
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+from abc import ABCMeta, abstractmethod
+from typing import Dict, List
+
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -44,7 +45,8 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             self,
             input_filepath: str,
             recommendation_count: int,
-            content_analyzer
+            content_analyzer,
+            tag_features=None
     ):
         """Initializes an instance of the ContentBasedRecommendationModel class.
 
@@ -58,6 +60,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
+        self.tag_features = pd.read_csv(tag_features) if tag_features is not None else None
 
     def train(self):
         """Prepares feature vectors.
@@ -65,7 +68,32 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
         descriptions = self.data['description']
         result = self.content_analyzer.fit_transform(descriptions)
+
+        if self.tag_features is not None:
+            result = scipy.sparse.hstack((
+                result,
+                self.tag_features.loc[descriptions.index].iloc[:, 1:]
+            ))
+
         self.filtering_component.fit(result)
+
+    def _get_feature_vector(self, book_id: int) -> List[float]:
+        descriptions = self.data['description']
+        book_description = descriptions.loc[book_id]
+
+        text_features = self.content_analyzer.transform(
+            [book_description])
+        tag_features = self.tag_features.loc[
+            book_id] if self.tag_features is not None else None
+
+        if self.tag_features is None:
+            feature_vec = text_features
+        else:
+            feature_vec = scipy.sparse.hstack((
+                text_features, tag_features.values[1:]
+            ))
+
+        return feature_vec
 
     def recommend(self, book_id: int) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
@@ -75,14 +103,10 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         which books are similar.
         """
         try:
-            descriptions = self.data['description']
-            selected_book_description = descriptions.loc[book_id]
+            feature_vec = self._get_feature_vector(book_id)
         except KeyError:
             return dict()
 
-        feature_vec = self.content_analyzer.transform(
-            [selected_book_description]
-        )
         distances, ids = self.filtering_component.kneighbors(feature_vec)
         recommendations = self.data['description'].index[ids.flatten()[1:]]
 
