@@ -15,8 +15,14 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 
 
 # Content Based Pipeline
+
+## DATA
 CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book_with_nouns.csv
 CLEAN_DESCRIPTION_WITHOUT_NOUNS = data/interim/cb-tf-idf/book_without_nouns.csv
+
+## FEATURES
+TAG_FEATURES = features/tag_based_features.csv
+
 CB_SCORES = results/cb-results.csv
 
 ## CB models
@@ -111,6 +117,9 @@ requirements:
 ## Download Dataset
 data: $(RAW_DATA_FILES)
 
+## Build features
+features: $(TAG_FEATURES)
+
 ## Train models
 models: $(MODELS)
 
@@ -178,7 +187,7 @@ data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
 	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
 data/processed/book_tags.csv: $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER)-m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
+	$(PYTHON_INTERPRETER) -m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -234,6 +243,17 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_des
 
 data/processed/ratings-train.csv data/processed/ratings-test.csv: 
 	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+
+################################################################################
+#
+# Feature building rules
+#
+################################################################################
+
+
+$(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
+	$(PYTHON_INTERPRETER) -m src.features.build_tag_features $< $@
+
 
 ################################################################################
 #
