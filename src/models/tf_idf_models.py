@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from .cb_recommend_models import ContentBasedRecommendationModel
+from .content_analyzer import build_content_analyzer
 from ..utils.serialization import save_object
 
 
@@ -29,13 +30,22 @@ def main(
 
     if tf_idf:
         logger.info('Training tf-idf model...')
-        content_analyzer = TfidfVectorizer(ngram_range=(1, ngrams))
+        text_feature_extractor = TfidfVectorizer(ngram_range=(1, ngrams))
     else:
         logger.info('Training count model...')
-        content_analyzer = CountVectorizer(ngram_range=(1, ngrams))
+        text_feature_extractor = CountVectorizer(ngram_range=(1, ngrams))
+
+    if tag_features:
+        tag_features = pd.read_csv(tag_features, index_col='book_id')
+
+    content_analyzer = build_content_analyzer(
+        book_data=pd.read_csv(input_filepath, index_col='book_id').dropna(),
+        text_feature_extractor=text_feature_extractor,
+        tag_features=tag_features
+    )
 
     cb_model = ContentBasedRecommendationModel(
-        input_filepath, n, content_analyzer, tag_features
+        content_analyzer, n
     )
     cb_model.train()
 
