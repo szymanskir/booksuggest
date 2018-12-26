@@ -126,6 +126,15 @@ clean:
 	find . -type d -name "__pycache__" -delete
 	rm -rf .mypy_cache
 
+## Delete all downloaded and calculated files
+hard_clean: clean
+	rm -rf data/raw/books_xml
+	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
+	find models -type f -name '*.pkl' -delete
+	find models -type f -name '*.csv' -delete
+	find results -type f -name '*.csv' -delete
+	find app/assets/models -type f -name '*.pkl' -delete
+
 ## Lint using flake8 and check types with mypy
 lint:
 	flake8 src
