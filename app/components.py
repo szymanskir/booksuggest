@@ -173,7 +173,7 @@ def create_books_layout(
             for book_id in selected_books
         ],
         style={
-            'max-height': 500
+            'max-height': 250
         }
     )
 
