@@ -92,13 +92,13 @@ def books_to_dropdown(book_data):
             for idx, row in book_data.iterrows()]
 
 
-def models_to_dropdown(cb_models):
+def models_to_dropdown(models):
     """Converts available models to the dash dropdown values format
 
     Both labels and values in the dropdown are model names.
     """
     return [{'label': cb_model_label, 'value': cb_model_label}
-            for cb_model_label in cb_models.keys()]
+            for cb_model_label in sorted(models.keys())]
 
 
 def users_to_dropdown(user_data):

@@ -4,18 +4,42 @@ src.models package
 Submodules
 ----------
 
-src.models.cf\_svd\_models module
----------------------------------
+src.models.cb\_dummy\_model module
+----------------------------------
 
-.. automodule:: src.models.cf_svd_models
+.. automodule:: src.models.cb_dummy_model
     :members:
     :undoc-members:
     :show-inheritance:
 
-src.models.dummy\_model module
-------------------------------
+src.models.cb\_recommend\_models module
+---------------------------------------
 
-.. automodule:: src.models.dummy_model
+.. automodule:: src.models.cb_recommend_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.models.cf\_dummy\_model module
+----------------------------------
+
+.. automodule:: src.models.cf_dummy_model
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.models.cf\_recommend\_models module
+---------------------------------------
+
+.. automodule:: src.models.cf_recommend_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.models.cf\_svd\_models module
+---------------------------------
+
+.. automodule:: src.models.cf_svd_models
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,14 +56,6 @@ src.models.predict\_models module
 ---------------------------------
 
 .. automodule:: src.models.predict_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-src.models.recommendation\_models module
-----------------------------------------
-
-.. automodule:: src.models.recommendation_models
     :members:
     :undoc-members:
     :show-inheritance:

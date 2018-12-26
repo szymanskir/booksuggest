@@ -3,7 +3,7 @@ import logging
 
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
-from .recommendation_models import ContentBasedRecommendationModel
+from .cb_recommend_models import ContentBasedRecommendationModel
 from ..utils.serialization import save_object
 
 

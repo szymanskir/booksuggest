@@ -1,7 +1,7 @@
 import click
 import logging
 
-from .recommendation_models import SvdRecommendationModel
+from .cf_recommend_models import SvdRecommendationModel
 from ..utils.serialization import save_object
 
 

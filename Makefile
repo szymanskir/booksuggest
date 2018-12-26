@@ -38,7 +38,8 @@ COUNT_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
 COUNT_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
 COUNT_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
 
-CB_MODELS = $(TF_IDF_WITH_NOUNS) \
+CB_MODELS = models/cb_dummy_model.pkl \
+		$(TF_IDF_WITH_NOUNS) \
 	    $(TF_IDF_WITH_NOUNS_2GRAMS) \
 	    $(TF_IDF_WITH_NOUNS_3GRAMS) \
 	    $(TF_IDF_WITHOUT_NOUNS) \
@@ -72,26 +73,29 @@ COUNT_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-predi
 COUNT_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-predictions.csv
 
 CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_PREDICTION) \
-		 $(TF_IDF_NOUNS_2GRAMS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION) \
-		 $(TF_IDF_NOUNS_3GRAMS_PREDICTION) \
-		 $(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION) \
-		 $(COUNT_NOUNS_PREDICTION) \
-		 $(COUNT_NO_NOUNS_PREDICTION) \
-		 $(COUNT_NOUNS_2GRAMS_PREDICTION) \
-		 $(COUNT_NOUNS_3GRAMS_PREDICTION) \
-		 $(COUNT_NO_NOUNS_2GRAMS_PREDICTION) \
-		 $(COUNT_NO_NOUNS_3GRAMS_PREDICTION)
+		$(TF_IDF_NO_NOUNS_PREDICTION) \
+		$(TF_IDF_NOUNS_2GRAMS_PREDICTION) \
+		$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION) \
+		$(TF_IDF_NOUNS_3GRAMS_PREDICTION) \
+		$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION) \
+		$(COUNT_NOUNS_PREDICTION) \
+		$(COUNT_NO_NOUNS_PREDICTION) \
+		$(COUNT_NOUNS_2GRAMS_PREDICTION) \
+		$(COUNT_NOUNS_3GRAMS_PREDICTION) \
+		$(COUNT_NO_NOUNS_2GRAMS_PREDICTION) \
+		$(COUNT_NO_NOUNS_3GRAMS_PREDICTION)
 
 ## SVD pipeline
 ### Basic model
 BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
 
+CF_MODELS = models/cf_dummy_model.pkl $(BASIC_SVD_MODEL)
+
 # Unified parts of the pipeline
 RESULT_FILES = $(CB_SCORES)
-MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
-APP_MODELS = models/dummy_model.pkl $(CB_MODELS) $(BASIC_SVD_MODEL)
+MODELS = $(CB_MODELS) $(CF_MODELS)
+APP_CB_MODELS = $(CB_MODELS)
+APP_CF_MODELS = $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS)
 
 #################################################################################
@@ -147,7 +151,8 @@ create_environment:
 
 # Start web application
 app: models
-	cp --update $(APP_MODELS) app/assets/models/
+	cp --update $(APP_CB_MODELS) app/assets/models/cb
+	cp --update $(APP_CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation
@@ -237,10 +242,10 @@ data/processed/ratings-train.csv data/processed/ratings-test.csv:
 ################################################################################
 
 
-models/dummy_model.pkl: src/models/dummy_model.py
-	$(PYTHON_INTERPRETER) -m src.models.dummy_model $@
+models/cb_dummy_model.pkl: src/models/cb_dummy_model.py
+	$(PYTHON_INTERPRETER) -m src.models.cb_dummy_model $@
 
-COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/recommendation_models.py
+COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/cb_recommend_models.py
 
 
 TF_IDF_NOUNS_MODELS = $(TF_IDF_WITH_NOUNS) \
@@ -300,7 +305,11 @@ $(COUNT_3GRAM_MODELS):
 	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
 
 # Collaborative-Filtering Models
-$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/recommendation_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
+
+models/cf_dummy_model.pkl: src/models/cf_dummy_model.py
+	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
+
+$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
 	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
 
 ################################################################################
