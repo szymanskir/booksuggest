@@ -9,6 +9,7 @@ Subpackages
     src.data
     src.models
     src.utils
+    src.validation
 
 Module contents
 ---------------
