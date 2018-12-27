@@ -239,8 +239,8 @@ $(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv src/data/prepare_descri
 $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
-data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratings.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split $< data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -354,7 +354,7 @@ SIMILAR_BOOKS = data/processed/similar_books.csv
 $(CB_SCORES): src/validation/cb_evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
 	$(PYTHON_INTERPRETER) -m src.validation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
-$(CF_SCORES):
+$(CF_SCORES): data/processed/ratings-test.csv data/raw/to_read.csv $(CF_MODELS)
 	$(PYTHON_INTERPRETER) -m src.validation.cf_evaluation $(CF_MODELS_DIR) data/processed/ratings-test.csv data/raw/to_read.csv $@
 
 #################################################################################
