@@ -11,7 +11,16 @@ from .metrics import precision
 from surprise import Reader, Dataset, accuracy
 
 
-def test_accuracy(model: ICfRecommendationModel, testset_filepath: str):
+def test_accuracy(model: ICfRecommendationModel, testset_filepath: str) -> float:
+    """Calculates RMSE value for the given model and testset
+
+    Args:
+        model (ICfRecommendationModel): Model to test
+        testset_filepath (str): Path to a file containing testset
+
+    Returns:
+        float: Value of the Root Mean Squared Error metric
+    """
     ratings_df = pd.read_csv(testset_filepath)
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(
@@ -21,7 +30,16 @@ def test_accuracy(model: ICfRecommendationModel, testset_filepath: str):
     return accuracy.rmse(est_ratings, verbose=False)
 
 
-def test_to_read(model: ICfRecommendationModel, to_read_filepath: str):
+def test_to_read(model: ICfRecommendationModel, to_read_filepath: str) -> float:
+    """Caulcates the precision of the given model using to_read data
+
+    Args:
+        model (ICfRecommendationModel): Model to test
+        to_read_filepath (str): Path to a file containg to_read data
+
+    Returns:
+        float: Average precision for all users
+    """
     to_read_df = pd.read_csv(to_read_filepath)
 
     def evaluate(group):

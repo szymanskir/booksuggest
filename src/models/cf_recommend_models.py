@@ -21,6 +21,14 @@ class ICfRecommendationModel(metaclass=ABCMeta):
 
     @abstractmethod
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        """Tests model on the given dataset
+
+        Args:
+            ratings (List[Tuple[int, int, float]]): list of (user_id, item_id, rating) tuples as a ground-truth
+
+        Returns:
+            List[Prediction]: List of (user_id, item_id, true_rating, estimated_rating) for the given dataset
+        """
         pass
 
 
@@ -38,7 +46,7 @@ class DummyModel(ICfRecommendationModel):
 
 class SurpriseBasedModel(ICfRecommendationModel):
     def __init__(self, input_filepath: str, recommendation_count: int):
-        """Initializes an instance of the SvdRecommendationModel class.
+        """Initializes an instance of the SurpriseBasedModel class.
 
         Args:
             input_filepath: Filepath containing ratings data.
@@ -79,8 +87,6 @@ class SvdRecommendationModel(SurpriseBasedModel):
         self.model = algo
 
     def recommend(self, user_id: int) -> Dict[int, float]:
-        """Recommends top n books for the given user.
-        """
         try:
             user_inner_id = self.trainset.to_inner_uid(user_id)
         except ValueError:
