@@ -20,9 +20,9 @@ def calculate_scores(
     present in the input directory.
 
     Args:
-        dir_path: directory in which calculated similar books predictions
+        dir_path: Directory in which calculated similar books predictions
         are saved for each model.
-        test_cases: similar books ground truth.
+        test_cases: Similar books ground truth.
 
     Returns:
         Data frame containg presicion and recall scores for all models.
@@ -48,7 +48,8 @@ def calculate_scores(
 
     scores = list()
     for prediction in prediction_files:
-        predicted_similar_books = read_similar_books(join(dir_path, prediction))
+        predicted_similar_books = read_similar_books(
+            join(dir_path, prediction))
         score = calculate_single_score(predicted_similar_books, test_cases)
         scores.append({
             'model': basename(prediction),

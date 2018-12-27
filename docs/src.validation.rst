@@ -4,10 +4,10 @@ src.validation namespace
 Submodules
 ----------
 
-src.validation.evaluation module
---------------------------------
+src.validation.cb\_evaluation module
+------------------------------------
 
-.. automodule:: src.validation.evaluation
+.. automodule:: src.validation.cb_evaluation
     :members:
     :undoc-members:
     :show-inheritance:
