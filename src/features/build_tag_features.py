@@ -1,4 +1,3 @@
-
 import click
 import logging
 import numpy as np
@@ -118,7 +117,7 @@ def validate_tags_data(tags: pd.DataFrame) -> bool:
 @click.command()
 @click.argument('book_tags_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
-def main(book_tags_filepath, output_filepath):
+def main(book_tags_filepath: str, output_filepath: str):
     """Calculates tag features for all books present in the book tags data frame and saves them to the specified output filepath.
 
         Args:
