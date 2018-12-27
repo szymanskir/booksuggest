@@ -47,11 +47,11 @@ COUNT_NO_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
 
 ### TF-IDF with tags models
 TF_IDF_NOUNS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-model.pkl
-TF_IDF_NOUNS_TAGS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-2grams-model.pkl
-TF_IDF_NOUNS_TAGS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-3grams-model.pkl
+TF_IDF_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-2grams-model.pkl
+TF_IDF_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-3grams-model.pkl
 TF_IDF_NO_NOUNS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-model.pkl
-TF_IDF_NO_NOUNS_TAGS_2GRAMS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-2grams-model.pkl
-TF_IDF_NO_NOUNS_TAGS_3GRAMS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-3grams-model.pkl
+TF_IDF_NO_NOUNS_2GRAMS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-2grams-model.pkl
+TF_IDF_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-3grams-model.pkl
 
 ### Count based with tags models
 COUNT_NOUNS_TAGS = $(CB_MODELS_DIR)/count-nouns-tags-model.pkl
@@ -183,6 +183,7 @@ clean:
 hard_clean: clean
 	rm -rf data/raw/books_xml
 	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
+	find features -type f -name '*.csv' -delete
 	find models -type f -name '*.pkl' -delete
 	find models -type f -name '*.csv' -delete
 	find results -type f -name '*.csv' -delete
@@ -341,6 +342,9 @@ NO_NOUN_MODELS = $(TF_IDF_NO_NOUNS) \
 	      $(COUNT_NO_NOUNS_2GRAMS_TAGS) \
 	      $(COUNT_NO_NOUNS_3GRAMS_TAGS)
 
+$(NOUN_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS)
+$(NO_NOUN_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS)
+
 $(NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITH_NOUNS)
 $(NO_NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITHOUT_NOUNS)
 
@@ -380,6 +384,7 @@ TAG_BASED_MODELS = $(1GRAMS_MODELS_TAGS) \
 		   $(3GRAMS_MODELS_TAGS)
 
 $(TAG_BASED_MODELS): TAG_OPTION := --tag_features $(TAG_FEATURES)
+$(TAG_BASED_MODELS): $(TAG_FEATURES)
 
 REC_COUNT = 20
 
