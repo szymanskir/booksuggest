@@ -6,6 +6,7 @@ from os import listdir
 from os.path import basename, join
 from ..utils.serialization import read_object
 from ..models.cf_recommend_models import ICfRecommendationModel
+from .metrics import precision
 
 from surprise import Reader, Dataset, accuracy
 
@@ -26,11 +27,7 @@ def test_to_read(model: ICfRecommendationModel, to_read_filepath: str):
     def evaluate(group):
         to_read_ids = group['book_id'].values
         recommended_ids = model.recommend(group.name).keys()
-        if len(recommended_ids) > 0:
-            common_ids = set(to_read_ids).intersection(set(recommended_ids))
-            return len(common_ids)/len(recommended_ids)
-        else:
-            return 0
+        return precision(recommended_ids, to_read_ids)
 
     return to_read_df.groupby('user_id').apply(evaluate).mean()
 
