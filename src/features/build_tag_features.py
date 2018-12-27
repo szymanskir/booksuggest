@@ -115,7 +115,7 @@ def main(book_tags_filepath, output_filepath):
         book_tags, tags
     )
 
-    tag_features_df.to_csv(output_filepath, index=False)
+    tag_features_df.to_csv(output_filepath)
 
 
 if __name__ == '__main__':

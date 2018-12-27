@@ -389,7 +389,7 @@ $(TAG_BASED_MODELS): $(TAG_FEATURES)
 REC_COUNT = 20
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) $@ --ngrams $(NGRAM) $(TEXT_MODEL_FLAG) --n $(REC_COUNT)
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) $@ --ngrams $(NGRAM) $(TEXT_MODEL_FLAG) --n $(REC_COUNT) $(TAG_OPTION)
 
 # Collaborative-Filtering Models
 
