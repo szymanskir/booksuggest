@@ -3,6 +3,7 @@ app/assets/models/cf/*
 data/**/*.csv
 data/**/*.xml
 data/**/*.zip
+features/*.csv
 .vscode/*
 src/src.egg-info/*
 src.egg-info/*
