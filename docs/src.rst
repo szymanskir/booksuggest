@@ -7,9 +7,9 @@ Subpackages
 .. toctree::
 
     src.data
-    src.features
     src.models
     src.utils
+    src.validation
 
 Module contents
 ---------------

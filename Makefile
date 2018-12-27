@@ -344,8 +344,8 @@ $(CB_PREDICTIONS):
 
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
-$(CB_SCORES): src/validation/evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+$(CB_SCORES): src/validation/cb_evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
