@@ -14,13 +14,14 @@ def build_all_tag_features(
         book_tags: pd.DataFrame,
         tags: pd.DataFrame
 ) -> List[List[float]]:
-    tag_features = book_tags.groupby(by='book_id').apply(
+    book_tags_grouped = book_tags.groupby(by='book_id')
+    tag_features = book_tags_grouped.apply(
         lambda single_book_tags: pd.Series(
             build_tag_features(single_book_tags, tags)
         )
     )
 
-    return tag_features.reset_index()
+    return tag_features.reset_index().set_index('book_id')
 
 
 def build_tag_features(

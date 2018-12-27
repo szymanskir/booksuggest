@@ -16,7 +16,8 @@ test_case_dir = join(dirname(realpath(__file__)), 'data', 'build_tag_features')
 def test_build_all_tag_features(book_tags, tags, expected):
     tag_features_list = btf.build_all_tag_features(pd.read_csv(book_tags),
                                                    pd.read_csv(tags))
-    assert tag_features_list.iloc[:, 1:].values.tolist() == expected
+    assert tag_features_list.values.tolist() == expected
+    assert tag_features_list.index.tolist() == [2, 3]
 
 
 @pytest.mark.parametrize("book_tags, tags, expected", [(
