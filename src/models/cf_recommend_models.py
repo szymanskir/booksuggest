@@ -1,10 +1,9 @@
 import pandas as pd
 from abc import ABCMeta, abstractmethod
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from surprise import SVD
-from surprise import Reader
-from surprise import Dataset
+from surprise import Reader, Dataset, Prediction
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):
@@ -20,6 +19,10 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
+    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        pass
+
 
 class DummyModel(ICfRecommendationModel):
     """Dummy recommendation model used for web app integration purposes.
@@ -28,15 +31,12 @@ class DummyModel(ICfRecommendationModel):
     def recommend(self, user_id: int) -> Dict[int, float]:
         return {book_id: 5.00 for book_id in range(1, 5)}
 
+    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        ui, ii, rating = ratings[0]
+        return [Prediction(ui, ii, rating, 0, {})]
 
-class SvdRecommendationModel(ICfRecommendationModel):
-    """Recommendation model using the Singular Value Decomposition operation.
 
-    Attributes:
-        recommendation_count: How many recommendations should be returned for a single user.
-        trainset: Dataset containing (user_id, book_id, rating) tuples.
-    """
-
+class SurpriseBasedModel(ICfRecommendationModel):
     def __init__(self, input_filepath: str, recommendation_count: int):
         """Initializes an instance of the SvdRecommendationModel class.
 
@@ -45,12 +45,31 @@ class SvdRecommendationModel(ICfRecommendationModel):
             recommendation_count: How many recommendations should be returned for a single user.
         """
         self.recommendation_count = recommendation_count
+        self.trainset = self._read_trainset(input_filepath)
 
+    @staticmethod
+    def _read_trainset(input_filepath: str):
         ratings_df = pd.read_csv(input_filepath)
         reader = Reader(rating_scale=(1, 5))
         dataset = Dataset.load_from_df(
             ratings_df[['user_id', 'book_id', 'rating']], reader)
-        self.trainset = dataset.build_full_trainset()
+        return dataset.build_full_trainset()
+
+    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        ratings_inner = list()
+        for ui, ii, rating in ratings:
+            try:
+                ratings_inner.append((self.trainset.to_inner_uid(
+                    ui), self.trainset.to_inner_iid(ii), rating))
+            except ValueError:
+                print(f"Unknown user {ui} or item {ii}")
+
+        return self.model.test(ratings_inner)
+
+
+class SvdRecommendationModel(SurpriseBasedModel):
+    """Recommendation model using the Singular Value Decomposition operation.
+    """
 
     def train(self):
         """Prepares user and items vectors.
