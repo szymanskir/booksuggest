@@ -1,6 +1,7 @@
 import pandas as pd
 from abc import ABCMeta, abstractmethod
 from typing import Dict, List, Tuple
+import logging
 
 from surprise import SVD
 from surprise import Reader, Dataset, Prediction
@@ -70,7 +71,7 @@ class SurpriseBasedModel(ICfRecommendationModel):
                 ratings_inner.append((self.trainset.to_inner_uid(
                     ui), self.trainset.to_inner_iid(ii), rating))
             except ValueError:
-                print(f"Unknown user {ui} or item {ii}")
+                logging.debug(f"Unknown user {ui} or item {ii}")
 
         return self.model.test(ratings_inner)
 
