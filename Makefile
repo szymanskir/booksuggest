@@ -159,12 +159,16 @@ CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 
 ## SVD pipeline
 ### Basic model
-BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
+BASIC_SVD_MODEL = $(CF_MODELS_DIR)/basic-svd-model.pkl
 
-CF_MODELS = models/cf_dummy_model.pkl $(BASIC_SVD_MODEL)
+DUMMY_CF_MODEL = $(CF_MODELS_DIR)/cf_dummy_model.pkl
+
+CF_MODELS = $(DUMMY_CF_MODEL) $(BASIC_SVD_MODEL)
+CF_SCORES = results/cf-results.csv
+CF_MODELS_DIR = models/collaborative-filtering-models
 
 # Unified parts of the pipeline
-RESULT_FILES = $(CB_SCORES)
+RESULT_FILES = $(CB_SCORES) $(CF_SCORES)
 MODELS = $(CB_MODELS) $(CF_MODELS)
 APP_CB_MODELS = $(CB_MODELS)
 APP_CF_MODELS = $(CF_MODELS)
@@ -292,6 +296,9 @@ data/raw/tags.csv: src/data/download_dataset.py
 
 data/raw/to_read.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 1000
+endif
 
 data/raw/books_xml.zip: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_xml_zip) $@
@@ -308,8 +315,8 @@ $(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv src/data/prepare_descri
 $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_description.py 
 	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
 
-data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
+data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratings.csv
+	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split $< data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 ################################################################################
 #
@@ -419,7 +426,7 @@ $(CB_MODELS): $(COMMON_CB_DEPS)
 
 # Collaborative-Filtering Models
 
-models/cf_dummy_model.pkl: src/models/cf_dummy_model.py
+$(DUMMY_CF_MODEL): src/models/cf_dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
 
 $(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
@@ -477,6 +484,7 @@ $(COUNT_NO_NOUNS_TAGS_PREDICTION): $(COUNT_NO_NOUNS_TAGS)
 $(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NOUNS_2GRAMS_TAGS)
 $(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION): $(COUNT_NOUNS_2GRAMS_TAGS)
 
+
 $(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NOUNS_3GRAMS_TAGS)
 $(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION): $(COUNT_NOUNS_3GRAMS_TAGS)
 
@@ -515,8 +523,11 @@ $(CB_PREDICTIONS): $(CB_TEST_CASES)
 
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
-$(CB_SCORES): src/validation/evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+$(CB_SCORES): src/validation/cb_evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+
+$(CF_SCORES): data/processed/ratings-test.csv data/raw/to_read.csv $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_evaluation $(CF_MODELS_DIR) data/processed/ratings-test.csv data/raw/to_read.csv $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
