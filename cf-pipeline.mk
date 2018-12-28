@@ -1,15 +1,24 @@
-
 #################################################################################
 # Collaborative filtering pipeline                                              #
 ################################################################################
 
-BASIC_SVD_MODEL = $(CF_MODELS_DIR)/basic-svd-model.pkl
-
-DUMMY_CF_MODEL = $(CF_MODELS_DIR)/cf_dummy_model.pkl
-
-CF_MODELS = $(DUMMY_CF_MODEL) $(BASIC_SVD_MODEL)
-CF_SCORES = results/cf-results.csv
+# MODELS
 CF_MODELS_DIR = models/collaborative-filtering-models
+
+SVD_MODEL = $(CF_MODELS_DIR)/svd-model.pkl
+DUMMY_CF_MODEL = $(CF_MODELS_DIR)/cf_dummy-model.pkl
+
+CF_MODELS = $(DUMMY_CF_MODEL) $(SVD_MODEL)
+
+# PREDICTIONS
+CF_PREDICTIONS_DIR = models/predictions/cf-results
+SVD_PREDICTION = $(CF_PREDICTIONS_DIR)/svd-predictions.csv
+
+CF_PREDICTIONS = $(SVD_PREDICTION)
+
+CF_TEST_SCORES = results/cf-test-results.csv
+CF_TO_READ_SCORES = results/cf-to_read-results.csv
+CF_SCORES = $(CF_TEST_SCORES) $(CF_TO_READ_SCORES)
 
 ################################################################################
 #
@@ -29,7 +38,7 @@ data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratin
 $(DUMMY_CF_MODEL): src/models/cf_dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
 
-$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
+$(SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
 	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
 
 ################################################################################
@@ -38,7 +47,11 @@ $(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.p
 #
 ################################################################################
 
+$(SVD_PREDICTION): MODEL := $(SVD_MODEL)
+$(SVD_PREDICTION): $(SVD_MODEL)
 
+$(CF_PREDICTIONS):
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@
 
 ################################################################################
 #
@@ -46,5 +59,8 @@ $(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.p
 #
 ################################################################################
 
-$(CF_SCORES): data/processed/ratings-test.csv data/raw/to_read.csv $(CF_MODELS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_evaluation $(CF_MODELS_DIR) data/processed/ratings-test.csv data/raw/to_read.csv $@
+$(CF_TEST_SCORES): src/validation/cf_testset_evaluation.py data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m src.validation.cf_testset_evaluation $(CF_MODELS_DIR) data/processed/ratings-test.csv $@
+
+$(CF_TO_READ_SCORES): src/validation/cf_to_read_evaluation.py data/raw/to_read.csv $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) data/raw/to_read.csv $@
