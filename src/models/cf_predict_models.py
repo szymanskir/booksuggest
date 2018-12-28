@@ -1,7 +1,7 @@
 import click
 import logging
 import pandas as pd
-from typing import List, Tuple
+from typing import List, Tuple, Iterable, Any
 
 from .cf_recommend_models import ICfRecommendationModel
 from ..utils.serialization import read_object
@@ -24,7 +24,7 @@ def predict_model(model: ICfRecommendationModel) -> pd.DataFrame:
     for batchiter in _batch(model.generate_antitest_set(), 100000):
         logger.debug(f"Batch: {x}")
         x += 1
-        df = _predict_batch(model, [x for x in batchiter])
+        df = _predict_batch(model, list(batchiter))
         main_df = main_df.append(df)
 
     return main_df
@@ -40,10 +40,10 @@ def _predict_batch(model: ICfRecommendationModel, cases_batch: List[Tuple[int, i
     return pred_df.reset_index(level=0)
 
 
-def _batch(iterable, n):
+def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
     iterable = iter(iterable)
     while True:
-        group = itertools.islice(iterable, n)
+        group = itertools.islice(iterable, batch_size)
         try:
             item = next(group)
         except StopIteration:

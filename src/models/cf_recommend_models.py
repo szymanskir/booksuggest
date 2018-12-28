@@ -7,28 +7,47 @@ from surprise import SVD
 from surprise import Reader, Dataset, Prediction
 
 
+class UntrainedModel(Exception):
+    pass
+
+
 class ICfRecommendationModel(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def recommendation_count(self):
+        pass
+
     @abstractmethod
     def recommend(self, user_id: int) -> Dict[int, float]:
-        """Recommends books for given user present in the training dataset.
+        """Returns a top `recommendation_count` recommendations for specific user.
 
         Args:
-            user_id (int): Id of the user for who recommendations would be given.
+            user_id (int): Id of the user.
 
         Returns:
-            Dict[int, float]: Dictionary of ``book_id: predicted_rating`` key-value pairs.
+            Dict[int, float]: `book_id: estimated_rating` pairs
         """
         pass
 
     @abstractmethod
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
-        """Tests _algo on the given dataset
+        """Tests the model on the given ground-truth dataset.
 
         Args:
-            ratings (List[Tuple[int, int, float]]): list of (user_id, item_id, rating) tuples as a ground-truth
+            ratings (List[Tuple[int, int, float]]): `(user_id, book_id, true_rating)` tuples
 
         Returns:
-            List[Prediction]: List of (user_id, item_id, true_rating, estimated_rating) for the given dataset
+            List[Prediction]: List of predictions with true and estimated ratings. 
+        """
+        pass
+
+    def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
+        """Yields a list of ratings which are not already present in the trainset.
+
+        All the ratings where user is known and item is know, but rating for (user, item) is not present in the trainset.
+
+        Yields:
+            Iterable[Tuple[int, int, float]]: A list of tuples (uid, iid, global_mean)
         """
         pass
 
@@ -55,6 +74,7 @@ class SurpriseBasedModel(ICfRecommendationModel):
         """
         self._recommendation_count = recommendation_count
         self._trainset = self._read_trainset(input_filepath)
+        self._algo = None
 
     @staticmethod
     def _read_trainset(input_filepath: str):
@@ -69,31 +89,20 @@ class SurpriseBasedModel(ICfRecommendationModel):
         return self._recommendation_count
 
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
-        """Tests the model on the given ground-truth dataset.
+        if not self._algo:
+            raise UntrainedModel
 
-        Args:
-            ratings (List[Tuple[int, int, float]]): `(user_id, book_id, true_rating)` tuples
-
-        Returns:
-            List[Prediction]: List of predictions with true and estimated ratings. 
-        """
         return self._algo.test(ratings)
 
     def recommend(self, user_id: int) -> Dict[int, float]:
-        """Returns a top `recommendation_count` recommendations for specific user.
-
-        Args:
-            user_id (int): Id of the user.
-
-        Returns:
-            Dict[int, float]: `book_id: estimated_rating` pairs
-        """
         try:
             user_inner_id = self._trainset.to_inner_uid(user_id)
         except ValueError:
             return dict()
 
         to_predict = [x for x in self._generate_antitest(user_inner_id)]
+        if not self._algo:
+            raise UntrainedModel
         predictions = self._algo.test(to_predict)
 
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
@@ -103,13 +112,6 @@ class SurpriseBasedModel(ICfRecommendationModel):
         return rec_books
 
     def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
-        """Yields a list of ratings which are not already present in the trainset.
-
-        All the ratings where user is known and item is know, but rating for (user, item) is not present in the trainset.
-
-        Yields:
-            Iterable[Tuple[int, int, float]]: A list of tuples (uid, iid, global_mean)
-        """
         for uiid in self._trainset.all_users():
             yield from self._generate_antitest(uiid)
 

@@ -1,7 +1,7 @@
 from typing import List
 
 
-def precision(recommendations: List[int], ground_truth: List[int]) -> int:
+def precision(recommendations: List[int], ground_truth: List[int]) -> float:
     """Calculates the precision of the recommendations based on
     the given sets of book ids.
 
@@ -16,7 +16,7 @@ def precision(recommendations: List[int], ground_truth: List[int]) -> int:
     return precision_score
 
 
-def recall(recommendations: List[int], ground_truth: List[int]) -> int:
+def recall(recommendations: List[int], ground_truth: List[int]) -> float:
     """Calculates the recall of the recommendations based on
     the given sets of book ids.
 
