@@ -1,4 +1,4 @@
-book_id,tag_id,count
-NaN, 1, 8
-NaN, 2, 1
-NaN, 3, 1
+book_id,tag_name,count
+NaN,fantasy, 8
+NaN,psychology, 1
+NaN,television, 1

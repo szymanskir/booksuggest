@@ -49,7 +49,7 @@ def build_tag_features(
     if check_book_tags_and_tags_compatibility(book_tags, tags):
         raise InvalidTagFeaturesData
 
-    tags_data = tags.merge(book_tags, on='tag_id', how='left')
+    tags_data = tags.merge(book_tags, on='tag_name', how='left')
     tags_counts = tags_data['count'].fillna(0)
     feature_vector = tags_counts/tags_counts.sum()
     return feature_vector.tolist()
@@ -74,7 +74,7 @@ def check_book_tags_and_tags_compatibility(
     if not validate_tags_data(tags):
         return False
 
-    return set(book_tags['tag_id']) < set(tags['tag_id'])
+    return set(book_tags['tag_name']) < set(tags['tag_name'])
 
 
 def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
@@ -86,7 +86,7 @@ def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
         Returns:
             bool: True if the data frame is a valid book_tags data frame.
     """
-    required_columns = {'book_id', 'tag_id'}
+    required_columns = {'book_id', 'tag_name'}
 
     if not required_columns < set(book_tags.columns):
         return False
@@ -110,7 +110,7 @@ def validate_tags_data(tags: pd.DataFrame) -> bool:
         Returns:
             bool: True if the data frame is a valid book_tags data frame
     """
-    required_columns = {'tag_id', 'tag_names'}
+    required_columns = {'tag_name'}
     return required_columns < set(tags.columns)
 
 
@@ -126,7 +126,7 @@ def main(book_tags_filepath: str, output_filepath: str):
 
     """
     book_tags = pd.read_csv(book_tags_filepath)
-    tags = pd.DataFrame({'tag_id': list(book_tags['tag_id'].unique())})
+    tags = pd.DataFrame({'tag_name': list(book_tags['tag_name'].unique())})
 
     tag_features_df = build_all_tag_features(
         book_tags, tags

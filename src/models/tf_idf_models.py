@@ -38,8 +38,9 @@ def main(
     if tag_features:
         tag_features = pd.read_csv(tag_features, index_col='book_id')
 
+    book_data = pd.read_csv(input_filepath, index_col='book_id')
     content_analyzer = build_content_analyzer(
-        book_data=pd.read_csv(input_filepath, index_col='book_id').dropna(),
+        book_data=book_data[~book_data['description'].isna()],
         text_feature_extractor=text_feature_extractor,
         tag_features=tag_features
     )

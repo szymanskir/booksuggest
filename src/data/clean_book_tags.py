@@ -50,7 +50,7 @@ def join_tag_names(book_tags_df: pd.DataFrame, tags_df: pd.DataFrame) -> pd.Data
         pd.DataFrame: Book tags data frame with tag names and tag ids.
     """
     book_tags_joined_df = book_tags_df.merge(tags_df, on='tag_id')
-    return book_tags_joined_df[['book_id', 'tag_id', 'tag_name', 'count']]
+    return book_tags_joined_df[['book_id', 'tag_name', 'count']]
 
 
 @click.command()
