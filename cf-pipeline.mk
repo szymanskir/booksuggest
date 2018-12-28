@@ -29,6 +29,9 @@ CF_SCORES = $(CF_TEST_SCORES) $(CF_TO_READ_SCORES)
 data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratings.csv
 	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split $< data/processed/ratings-train.csv data/processed/ratings-test.csv
 
+data/processed/to_read.csv: data/raw/to_read.csv data/processed/ratings-train.csv
+	$(PYTHON_INTERPRETER) -m src.data.clean_to_read $< data/processed/ratings-train.csv $@
+
 ################################################################################
 #
 # Model training rules
@@ -62,5 +65,5 @@ $(CF_PREDICTIONS):
 $(CF_TEST_SCORES): src/validation/cf_testset_evaluation.py data/processed/ratings-test.csv
 	$(PYTHON_INTERPRETER) -m src.validation.cf_testset_evaluation $(CF_MODELS_DIR) data/processed/ratings-test.csv $@
 
-$(CF_TO_READ_SCORES): src/validation/cf_to_read_evaluation.py data/raw/to_read.csv $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) data/raw/to_read.csv $@
+$(CF_TO_READ_SCORES): src/validation/cf_to_read_evaluation.py data/processed/to_read.csv $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv $@
