@@ -1,9 +1,9 @@
-import pandas as pd
 from abc import ABCMeta, abstractmethod
 from typing import Dict
 
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
+
+from .content_analyzer import IContentAnalyzer
 
 
 class ICbRecommendationModel(metaclass=ABCMeta):
@@ -34,7 +34,6 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
     the most similar books.
 
     Attributes:
-        data: Data frame containing book data.
         content_analyzer: Component used for feature extraction from the data.
         filtering_component: Component used for calculating most similar books
             based on the features calculated by the content_analyzer.
@@ -42,9 +41,8 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
     def __init__(
             self,
-            input_filepath: str,
+            content_analyzer: IContentAnalyzer,
             recommendation_count: int,
-            content_analyzer
     ):
         """Initializes an instance of the ContentBasedRecommendationModel class.
 
@@ -52,7 +50,6 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             input_filepath: Filepath containing book data.
             recommendation_count: How many recommendations should be returned for a single book.
         """
-        self.data = pd.read_csv(input_filepath, index_col='book_id').dropna()
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
@@ -62,9 +59,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
     def train(self):
         """Prepares feature vectors.
         """
-
-        descriptions = self.data['description']
-        result = self.content_analyzer.fit_transform(descriptions)
+        result = self.content_analyzer.build_features()
         self.filtering_component.fit(result)
 
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -75,15 +70,12 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         which books are similar.
         """
         try:
-            descriptions = self.data['description']
-            selected_book_description = descriptions.loc[book_id]
+            feature_vec = self.content_analyzer.get_feature_vector(book_id)
         except KeyError:
             return dict()
 
-        feature_vec = self.content_analyzer.transform(
-            [selected_book_description]
-        )
         distances, ids = self.filtering_component.kneighbors(feature_vec)
-        recommendations = self.data['description'].index[ids.flatten()[1:]]
+        recommendations = self.content_analyzer.book_data.index[
+            ids.flatten()[1:]]
 
-        return dict(zip(recommendations, distances.flatten()))
+        return dict(zip(recommendations, distances.flatten()[1:]))

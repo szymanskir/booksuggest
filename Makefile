@@ -1,3 +1,4 @@
+
 .PHONY: clean data lint requirements app tests docs
 
 #################################################################################
@@ -15,43 +16,88 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 
 
 # Content Based Pipeline
+
+## DATA
 CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book_with_nouns.csv
 CLEAN_DESCRIPTION_WITHOUT_NOUNS = data/interim/cb-tf-idf/book_without_nouns.csv
+
+## FEATURES
+TAG_FEATURES = features/tag_based_features.csv
+
 CB_SCORES = results/cb-results.csv
 
 ## CB models
 CB_MODELS_DIR = models/content-based-models
 
 ### TF-IDF models
-TF_IDF_WITH_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
-TF_IDF_WITHOUT_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
-TF_IDF_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-2grams-model.pkl
-TF_IDF_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
-TF_IDF_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
-TF_IDF_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
+TF_IDF_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
+TF_IDF_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-2grams-model.pkl
+TF_IDF_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
+TF_IDF_NO_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
+TF_IDF_NO_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
+TF_IDF_NO_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
 
 ### Count based models
-COUNT_WITH_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
-COUNT_WITHOUT_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
-COUNT_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-nouns-2grams-model.pkl
-COUNT_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
-COUNT_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
-COUNT_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
+COUNT_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
+COUNT_NO_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
+COUNT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-nouns-2grams-model.pkl
+COUNT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
+COUNT_NO_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
+COUNT_NO_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
 
-CB_MODELS = models/cb_dummy_model.pkl \
-		$(TF_IDF_WITH_NOUNS) \
-	    $(TF_IDF_WITH_NOUNS_2GRAMS) \
-	    $(TF_IDF_WITH_NOUNS_3GRAMS) \
-	    $(TF_IDF_WITHOUT_NOUNS) \
-	    $(TF_IDF_WITHOUT_NOUNS_2GRAMS) \
-	    $(TF_IDF_WITHOUT_NOUNS_3GRAMS) \
-	    $(COUNT_WITH_NOUNS) \
-	    $(COUNT_WITHOUT_NOUNS) \
-	    $(COUNT_WITH_NOUNS_2GRAMS) \
-	    $(COUNT_WITH_NOUNS_3GRAMS) \
-	    $(COUNT_WITHOUT_NOUNS_2GRAMS) \
-	    $(COUNT_WITHOUT_NOUNS_3GRAMS)
+### TF-IDF with tags models
+TF_IDF_NOUNS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-model.pkl
+TF_IDF_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-2grams-model.pkl
+TF_IDF_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-3grams-model.pkl
+TF_IDF_NO_NOUNS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-model.pkl
+TF_IDF_NO_NOUNS_2GRAMS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-2grams-model.pkl
+TF_IDF_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-3grams-model.pkl
 
+### Count based with tags models
+COUNT_NOUNS_TAGS = $(CB_MODELS_DIR)/count-nouns-tags-model.pkl
+COUNT_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/count-nouns-2grams-tags-model.pkl
+COUNT_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-nouns-3grams-tags-model.pkl
+COUNT_NO_NOUNS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-tags-model.pkl
+COUNT_NO_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-2grams-tags-model.pkl
+COUNT_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-3grams-tags-model.pkl
+
+### CB models groups
+1GRAMS_MODELS_TAGS = $(TF_IDF_NOUNS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_TAGS) \
+		     $(COUNT_NOUNS_TAGS) \
+		     $(COUNT_NO_NOUNS_TAGS)
+
+1GRAMS_MODELS = $(TF_IDF_NOUNS) \
+		$(TF_IDF_NO_NOUNS) \
+		$(COUNT_NOUNS) \
+		$(COUNT_NO_NOUNS) \
+		$(1GRAMS_MODELS_TAGS)
+
+2GRAMS_MODELS_TAGS = $(TF_IDF_NOUNS_2GRAMS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
+		     $(COUNT_NOUNS_2GRAMS_TAGS) \
+		     $(COUNT_NO_NOUNS_2GRAMS_TAGS)
+
+2GRAMS_MODELS = $(TF_IDF_NOUNS_2GRAMS) \
+		$(TF_IDF_NO_NOUNS_2GRAMS) \
+		$(COUNT_NOUNS_2GRAMS) \
+		$(COUNT_NO_NOUNS_2GRAMS) \
+		$(2GRAMS_MODELS_TAGS)
+
+3GRAMS_MODELS_TAGS = $(TF_IDF_NOUNS_3GRAMS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_3GRAMS_TAGS) \
+		     $(COUNT_NOUNS_3GRAMS_TAGS) \
+		     $(COUNT_NO_NOUNS_3GRAMS_TAGS)
+
+3GRAMS_MODELS = $(TF_IDF_NOUNS_3GRAMS) \
+		$(TF_IDF_NO_NOUNS_3GRAMS) \
+		$(COUNT_NOUNS_3GRAMS) \
+		$(COUNT_NO_NOUNS_3GRAMS) \
+		$(3GRAMS_MODELS_TAGS)
+
+CB_MODELS = $(1GRAMS_MODELS) \
+	    $(2GRAMS_MODELS) \
+	    $(3GRAMS_MODELS)
 
 ## CB predictions
 CB_RESULTS_DIR = models/predictions/cb-results
@@ -64,6 +110,13 @@ TF_IDF_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-2grams-pre
 TF_IDF_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-3grams-predictions.csv
 TF_IDF_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-3grams-predictions.csv
 
+TF_IDF_NOUNS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-tags-predictions.csv
+TF_IDF_NO_NOUNS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-tags-predictions.csv
+TF_IDF_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-2grams-tags-predictions.csv
+TF_IDF_NO_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-2grams-tags-predictions.csv
+TF_IDF_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-3grams-tags-predictions.csv
+TF_IDF_NO_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-3grams-tags-predictions.csv
+
 ### Count based predictions
 COUNT_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-predictions.csv
 COUNT_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-predictions.csv
@@ -71,6 +124,13 @@ COUNT_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-predictions
 COUNT_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-3grams-predictions.csv
 COUNT_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-predictions.csv
 COUNT_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-predictions.csv
+
+COUNT_NOUNS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-tags-predictions.csv
+COUNT_NO_NOUNS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-tags-predictions.csv
+COUNT_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-tags-predictions.csv
+COUNT_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-3grams-tags-predictions.csv
+COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-tags-predictions.csv
+COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-tags-predictions.csv
 
 CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 		$(TF_IDF_NO_NOUNS_PREDICTION) \
@@ -83,7 +143,19 @@ CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 		$(COUNT_NOUNS_2GRAMS_PREDICTION) \
 		$(COUNT_NOUNS_3GRAMS_PREDICTION) \
 		$(COUNT_NO_NOUNS_2GRAMS_PREDICTION) \
-		$(COUNT_NO_NOUNS_3GRAMS_PREDICTION)
+		$(COUNT_NO_NOUNS_3GRAMS_PREDICTION) \
+		$(TF_IDF_NOUNS_TAGS_PREDICTION) \
+		$(TF_IDF_NO_NOUNS_TAGS_PREDICTION) \
+		$(TF_IDF_NOUNS_2GRAMS_TAGS_PREDICTION) \
+		$(TF_IDF_NO_NOUNS_2GRAMS_TAGS_PREDICTION) \
+		$(TF_IDF_NOUNS_3GRAMS_TAGS_PREDICTION) \
+		$(TF_IDF_NO_NOUNS_3GRAMS_TAGS_PREDICTION) \
+		$(COUNT_NOUNS_TAGS_PREDICTION) \
+		$(COUNT_NO_NOUNS_TAGS_PREDICTION) \
+		$(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION) \
+		$(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION) \
+		$(COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION) \
+		$(COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION) 
 
 ## SVD pipeline
 ### Basic model
@@ -115,6 +187,9 @@ requirements:
 ## Download Dataset
 data: $(RAW_DATA_FILES)
 
+## Build features
+features: $(TAG_FEATURES)
+
 ## Train models
 models: $(MODELS)
 
@@ -138,6 +213,7 @@ clean:
 hard_clean: clean
 	rm -rf data/raw/books_xml
 	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
+	find features -type f -name '*.csv' -delete
 	find models -type f -name '*.pkl' -delete
 	find models -type f -name '*.csv' -delete
 	find results -type f -name '*.csv' -delete
@@ -182,7 +258,7 @@ data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
 	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
 data/processed/book_tags.csv: $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER)-m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
+	$(PYTHON_INTERPRETER) -m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -244,6 +320,17 @@ data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratin
 
 ################################################################################
 #
+# Feature building rules
+#
+################################################################################
+
+
+$(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
+	$(PYTHON_INTERPRETER) -m src.features.build_tag_features $< $@
+
+
+################################################################################
+#
 # Model training rules
 #
 ################################################################################
@@ -252,64 +339,90 @@ data/processed/ratings-train.csv data/processed/ratings-test.csv: data/raw/ratin
 models/cb_dummy_model.pkl: src/models/cb_dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.cb_dummy_model $@
 
-COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/cb_recommend_models.py
+COMMON_CB_DEPS = src/models/tf_idf_models.py
 
+$(CB_MODELS): $(COMMON_CB_DEPS)
 
-TF_IDF_NOUNS_MODELS = $(TF_IDF_WITH_NOUNS) \
-		      $(TF_IDF_WITH_NOUNS_2GRAMS) \
-		      $(TF_IDF_WITH_NOUNS_3GRAMS)
+# ngram prerequisites
+$(1GRAMS_MODELS): NGRAM := 1
+$(2GRAMS_MODELS): NGRAM := 2
+$(3GRAMS_MODELS): NGRAM := 3
 
-TF_IDF_WITHOUT_NOUNS_MODELS = $(TF_IDF_WITHOUT_NOUNS) \
-			      $(TF_IDF_WITHOUT_NOUNS_2GRAMS) \
-			      $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+# noun/no-noun prerequisites
+NOUN_MODELS = $(TF_IDF_NOUNS) \
+	      $(TF_IDF_NOUNS_2GRAMS) \
+	      $(TF_IDF_NOUNS_3GRAMS) \
+	      $(TF_IDF_NOUNS_TAGS) \
+	      $(TF_IDF_NOUNS_2GRAMS_TAGS) \
+	      $(TF_IDF_NOUNS_3GRAMS_TAGS) \
+	      $(COUNT_NOUNS) \
+	      $(COUNT_NOUNS_2GRAMS) \
+	      $(COUNT_NOUNS_3GRAMS) \
+	      $(COUNT_NOUNS_TAGS) \
+	      $(COUNT_NOUNS_2GRAMS_TAGS) \
+	      $(COUNT_NOUNS_3GRAMS_TAGS)
 
-TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
-TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+NO_NOUN_MODELS = $(TF_IDF_NO_NOUNS) \
+	      $(TF_IDF_NO_NOUNS_2GRAMS) \
+	      $(TF_IDF_NO_NOUNS_3GRAMS) \
+	      $(TF_IDF_NO_NOUNS_TAGS) \
+	      $(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
+	      $(TF_IDF_NO_NOUNS_3GRAMS_TAGS) \
+	      $(COUNT_NO_NOUNS) \
+	      $(COUNT_NO_NOUNS_2GRAMS) \
+	      $(COUNT_NO_NOUNS_3GRAMS) \
+	      $(COUNT_NO_NOUNS_TAGS) \
+	      $(COUNT_NO_NOUNS_2GRAMS_TAGS) \
+	      $(COUNT_NO_NOUNS_3GRAMS_TAGS)
 
+$(NOUN_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS)
+$(NO_NOUN_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS)
 
-COUNT_NOUNS_MODELS = $(COUNT_WITH_NOUNS) \
-		     $(COUNT_WITH_NOUNS_2GRAMS) \
-		     $(COUNT_WITH_NOUNS_3GRAMS)
+$(NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITH_NOUNS)
+$(NO_NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITHOUT_NOUNS)
 
-COUNT_WITHOUT_NOUNS_MODELS = $(COUNT_WITHOUT_NOUNS) \
-			     $(COUNT_WITHOUT_NOUNS_2GRAMS) \
-			     $(COUNT_WITHOUT_NOUNS_3GRAMS)
+# counter/tf-idf prerequisites
+TF_IDF_MODELS = $(TF_IDF_NOUNS) \
+		$(TF_IDF_NOUNS_2GRAMS) \
+	        $(TF_IDF_NOUNS_3GRAMS) \
+	        $(TF_IDF_NOUNS_TAGS) \
+	        $(TF_IDF_NOUNS_2GRAMS_TAGS) \
+	        $(TF_IDF_NOUNS_3GRAMS_TAGS) \
+		$(TF_IDF_NO_NOUNS) \
+	        $(TF_IDF_NO_NOUNS_2GRAMS) \
+	        $(TF_IDF_NO_NOUNS_3GRAMS) \
+	        $(TF_IDF_NO_NOUNS_TAGS) \
+	        $(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
+	        $(TF_IDF_NO_NOUNS_3GRAMS_TAGS) \
 
-TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
-TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+COUNT_MODELS = $(COUNT_NOUNS) \
+	       $(COUNT_NOUNS_2GRAMS) \
+	       $(COUNT_NOUNS_3GRAMS) \
+	       $(COUNT_NOUNS_TAGS) \
+	       $(COUNT_NOUNS_2GRAMS_TAGS) \
+	       $(COUNT_NOUNS_3GRAMS_TAGS) \
+	       $(COUNT_NO_NOUNS) \
+	       $(COUNT_NO_NOUNS_2GRAMS) \
+	       $(COUNT_NO_NOUNS_3GRAMS) \
+	       $(COUNT_NO_NOUNS_TAGS) \
+	       $(COUNT_NO_NOUNS_2GRAMS_TAGS) \
+	       $(COUNT_NO_NOUNS_3GRAMS_TAGS)
 
-COUNT_1GRAM_MODELS = $(COUNT_WITH_NOUNS) $(COUNT_WITHOUT_NOUNS)
-COUNT_2GRAM_MODELS = $(COUNT_WITH_NOUNS_2GRAMS) $(COUNT_WITHOUT_NOUNS_2GRAMS)
-COUNT_3GRAM_MODELS = $(COUNT_WITH_NOUNS_3GRAMS) $(COUNT_WITHOUT_NOUNS_3GRAMS)
+$(TF_IDF_MODELS): TEXT_MODEL_FLAG := --tf_idf
+$(COUNT_MODELS): TEXT_MODEL_FLAG := --count
 
-$(TF_IDF_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
-$(TF_IDF_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
+# tag prerequisites
+TAG_BASED_MODELS = $(1GRAMS_MODELS_TAGS) \
+		   $(2GRAMS_MODELS_TAGS) \
+		   $(3GRAMS_MODELS_TAGS)
 
-$(COUNT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
-$(COUNT_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
-REC_COUNT = 10
+$(TAG_BASED_MODELS): TAG_OPTION := --tag_features $(TAG_FEATURES)
+$(TAG_BASED_MODELS): $(TAG_FEATURES)
 
-# Tf-idf models
-$(TF_IDF_1GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) 
+REC_COUNT = 20
 
-$(TF_IDF_2GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2
-
-$(TF_IDF_3GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3
-
-# Count based models
-$(COUNT_1GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --count
-
-$(COUNT_2GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2 --count
-
-$(COUNT_3GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
+$(CB_MODELS): $(COMMON_CB_DEPS)
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) $@ --ngrams $(NGRAM) $(TEXT_MODEL_FLAG) --n $(REC_COUNT) $(TAG_OPTION)
 
 # Collaborative-Filtering Models
 
@@ -326,22 +439,81 @@ $(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.p
 ################################################################################
 CB_TEST_CASES = data/processed/similar_books.csv
 
-$(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_WITH_NOUNS)
-$(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS)
-$(TF_IDF_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_2GRAMS)
-$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-$(TF_IDF_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_3GRAMS)
-$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
+$(TF_IDF_NOUNS_PREDICTION): MODEL := $(TF_IDF_NOUNS)
+$(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_NOUNS)
 
-$(COUNT_NOUNS_PREDICTION): $(COUNT_WITH_NOUNS)
-$(COUNT_NO_NOUNS_PREDICTION): $(COUNT_WITHOUT_NOUNS)
-$(COUNT_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_2GRAMS)
-$(COUNT_NO_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_2GRAMS)
-$(COUNT_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_3GRAMS)
-$(COUNT_NO_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_3GRAMS)
+$(TF_IDF_NO_NOUNS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS)
+$(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_NO_NOUNS)
 
-$(CB_PREDICTIONS): 
-	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
+$(TF_IDF_NOUNS_2GRAMS_PREDICTION): MODEL := $(TF_IDF_NOUNS_2GRAMS)
+$(TF_IDF_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_NOUNS_2GRAMS)
+
+$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS_2GRAMS)
+$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_NO_NOUNS_2GRAMS)
+
+$(TF_IDF_NOUNS_3GRAMS_PREDICTION): MODEL := $(TF_IDF_NOUNS_3GRAMS)
+$(TF_IDF_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_NOUNS_3GRAMS)
+
+$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS_3GRAMS)
+$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_NO_NOUNS_3GRAMS)
+
+$(TF_IDF_NOUNS_TAGS_PREDICTION): MODEL := $(TF_IDF_NOUNS_TAGS)
+$(TF_IDF_NOUNS_TAGS_PREDICTION): $(TF_IDF_NOUNS_TAGS)
+
+$(TF_IDF_NO_NOUNS_TAGS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS_TAGS)
+$(TF_IDF_NO_NOUNS_TAGS_PREDICTION): $(TF_IDF_NO_NOUNS_TAGS)
+
+$(TF_IDF_NOUNS_2GRAMS_TAGS_PREDICTION): MODEL := $(TF_IDF_NOUNS_2GRAMS_TAGS)
+$(TF_IDF_NOUNS_2GRAMS_TAGS_PREDICTION): $(TF_IDF_NOUNS_2GRAMS_TAGS)
+
+$(TF_IDF_NO_NOUNS_2GRAMS_TAGS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS_2GRAMS_TAGS)
+$(TF_IDF_NO_NOUNS_2GRAMS_TAGS_PREDICTION): $(TF_IDF_NO_NOUNS_2GRAMS_TAGS)
+
+$(TF_IDF_NOUNS_3GRAMS_TAGS_PREDICTION): MODEL := $(TF_IDF_NOUNS_3GRAMS_TAGS)
+$(TF_IDF_NOUNS_3GRAMS_TAGS_PREDICTION): $(TF_IDF_NOUNS_3GRAMS_TAGS)
+
+$(TF_IDF_NO_NOUNS_3GRAMS_TAGS_PREDICTION): MODEL := $(TF_IDF_NO_NOUNS_3GRAMS_TAGS)
+$(TF_IDF_NO_NOUNS_3GRAMS_TAGS_PREDICTION): $(TF_IDF_NO_NOUNS_3GRAMS_TAGS)
+
+$(COUNT_NOUNS_TAGS_PREDICTION): MODEL := $(COUNT_NOUNS_TAGS)
+$(COUNT_NOUNS_TAGS_PREDICTION): $(COUNT_NOUNS_TAGS)
+
+$(COUNT_NO_NOUNS_TAGS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_TAGS) 
+$(COUNT_NO_NOUNS_TAGS_PREDICTION): $(COUNT_NO_NOUNS_TAGS) 
+
+$(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NOUNS_2GRAMS_TAGS)
+$(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION): $(COUNT_NOUNS_2GRAMS_TAGS)
+
+
+$(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NOUNS_3GRAMS_TAGS)
+$(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION): $(COUNT_NOUNS_3GRAMS_TAGS)
+
+$(COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_2GRAMS_TAGS)
+$(COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION): $(COUNT_NO_NOUNS_2GRAMS_TAGS)
+
+$(COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_3GRAMS_TAGS)
+$(COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION): $(COUNT_NO_NOUNS_3GRAMS_TAGS)
+
+$(COUNT_NOUNS_PREDICTION): MODEL := $(COUNT_NOUNS)
+$(COUNT_NOUNS_PREDICTION): $(COUNT_NOUNS)
+
+$(COUNT_NO_NOUNS_PREDICTION): MODEL := $(COUNT_NO_NOUNS)
+$(COUNT_NO_NOUNS_PREDICTION): $(COUNT_NO_NOUNS)
+
+$(COUNT_NOUNS_2GRAMS_PREDICTION): MODEL := $(COUNT_NOUNS_2GRAMS)
+$(COUNT_NOUNS_2GRAMS_PREDICTION): $(COUNT_NOUNS_2GRAMS)
+
+$(COUNT_NO_NOUNS_2GRAMS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_2GRAMS)
+$(COUNT_NO_NOUNS_2GRAMS_PREDICTION): $(COUNT_NO_NOUNS_2GRAMS)
+
+$(COUNT_NOUNS_3GRAMS_PREDICTION): MODEL := $(COUNT_NOUNS_3GRAMS)
+$(COUNT_NOUNS_3GRAMS_PREDICTION): $(COUNT_NOUNS_3GRAMS)
+
+$(COUNT_NO_NOUNS_3GRAMS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_3GRAMS)
+$(COUNT_NO_NOUNS_3GRAMS_PREDICTION): $(COUNT_NO_NOUNS_3GRAMS)
+
+$(CB_PREDICTIONS): $(CB_TEST_CASES)
+	$(PYTHON_INTERPRETER) -m src.models.predict_models $(MODEL) $(CB_TEST_CASES) $@
 
 ################################################################################
 #
