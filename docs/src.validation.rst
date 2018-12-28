@@ -12,10 +12,18 @@ src.validation.cb\_evaluation module
     :undoc-members:
     :show-inheritance:
 
-src.validation.cf\_evaluation module
-------------------------------------
+src.validation.cf\_testset\_evaluation module
+---------------------------------------------
 
-.. automodule:: src.validation.cf_evaluation
+.. automodule:: src.validation.cf_testset_evaluation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.validation.cf\_to\_read\_evaluation module
+----------------------------------------------
+
+.. automodule:: src.validation.cf_to_read_evaluation
     :members:
     :undoc-members:
     :show-inheritance:
