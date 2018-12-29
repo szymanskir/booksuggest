@@ -20,7 +20,7 @@ include cb-pipeline.mk cf-pipeline.mk
 MODELS = $(CB_MODELS) $(CF_MODELS)
 APP_CB_MODELS = $(CB_MODELS)
 APP_CF_MODELS = $(CF_MODELS)
-PREDICTIONS = $(CB_PREDICTIONS)
+PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
 
 #################################################################################
