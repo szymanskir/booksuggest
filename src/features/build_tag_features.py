@@ -62,7 +62,7 @@ def check_book_tags_and_tags_compatibility(
     """Checks if the book tags and tags data are compatible.
 
         Args:
-            book_tags: Data frame containg information about tags assigned to books.
+            book_tags: Data frame containing data about tags assigned to books.
             tags: Data frame containg information about tags.
 
         Returns:
@@ -118,11 +118,14 @@ def validate_tags_data(tags: pd.DataFrame) -> bool:
 @click.argument('book_tags_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(book_tags_filepath: str, output_filepath: str):
-    """Calculates tag features for all books present in the book tags data frame and saves them to the specified output filepath.
+    """Calculates tag features for all books present in the book
+    tags data frame and saves them to the specified output filepath.
 
         Args:
-            book_tags: Data frame containg information about tags assigned to books.
-            output_filepath: Speficies the files in which the results should be saved.
+            book_tags:
+                Data frame containg information about tags assigned to books.
+            output_filepath:
+                Speficies the files in which the results should be saved.
 
     """
     book_tags = pd.read_csv(book_tags_filepath)

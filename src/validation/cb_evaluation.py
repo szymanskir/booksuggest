@@ -74,13 +74,16 @@ def read_similar_books(similar_books_filepath: str) -> Dict[int, List[int]]:
     """Converts similar books data from data frame form to dictionary form.
 
         Example:
-            If books 2, 3 are similar to 1 then the result dictionary will have a record in the following form: 1: [2, 3].
+            If books 2, 3 are similar to 1 then the result dictionary
+            will have a record in the following form: 1: [2, 3].
 
         Args:
-            similar_books_filepath: Path to the file containing similar books data.
+            similar_books_filepath:
+                Path to the file containing similar books data.
 
         Returns:
-            Dictionary in which keys are book_ids and values are lists of books that are similar to the book_id key.
+            Dictionary in which keys are book_ids and values
+            are lists of books that are similar to the book_id key.
     """
     similar_books = pd.read_csv(similar_books_filepath)
     return {
