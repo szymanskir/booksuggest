@@ -17,6 +17,7 @@ before_deploy:
 deploy:
   provider: heroku
   app: rec-sys-bsc
+  skip_cleanup: true
   on:
     all_branches: true
   api_key:
