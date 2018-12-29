@@ -3,12 +3,8 @@ import logging
 import pandas as pd
 
 from os import listdir
-from os.path import basename, join
-from ..utils.serialization import read_object
-from ..models.cf_recommend_models import ICfRecommendationModel
+from os.path import join
 from .metrics import precision
-
-from surprise import Reader, Dataset, accuracy
 
 
 def test_to_read(predictions_df: pd.DataFrame, to_read_df: pd.DataFrame) -> float:

@@ -1,6 +1,5 @@
 import click
 import logging
-import os
 import zipfile
 
 logger = logging.getLogger(__name__)

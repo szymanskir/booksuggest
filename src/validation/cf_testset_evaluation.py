@@ -3,10 +3,9 @@ import logging
 import pandas as pd
 
 from os import listdir
-from os.path import basename, join
+from os.path import join
 from ..utils.serialization import read_object
 from ..models.cf_recommend_models import ICfRecommendationModel
-from .metrics import precision
 
 from surprise import Reader, Dataset, accuracy
 

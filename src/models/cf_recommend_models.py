@@ -1,7 +1,6 @@
 import pandas as pd
 from abc import ABCMeta, abstractmethod
 from typing import Dict, List, Tuple, Iterable
-import logging
 
 from surprise import SVD
 from surprise import Reader, Dataset, Prediction
