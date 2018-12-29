@@ -1,8 +1,8 @@
 language: python
 sudo: required
 dist: xenial
-python: "3.7.0"
-cache: 
+python: 3.7.0
+cache:
   pip: true
 install:
   - make requirements
@@ -10,3 +10,12 @@ script:
   - make scores TEST_RUN=1
   - make tests
   - make docs
+before_deploy:
+  - cp src app/src -r
+  - cp setup.py app
+  - cd app
+deploy:
+  provider: heroku
+  app: rec-sys-bsc
+  api_key:
+    secure: QxS+4XZpM2kkpn9iFmYj55Ekx2RGPm7uH4oV9QWXOtsOtGSu5Xany+DEIjHrAJirihzW2hBu/V0jDcMvqXmKEKzuNq1TnkwbLzpAik+HJLLJGTWv0cv9hqh0zbphjcAN+IYN3LY09RB3SeoykzfIhpd7PzThbwEjyaZfZUYovyI+oVPCOJzZdhNEYScXB5H9zHBax6GSo+4owwg6eOYSahPiQGlv82clcKgsw4qzRpuusquN7rg2YUkqM6aTk9adyFM9PC34VK9IN9pSzG+v/AFqt7GMNJIWr1X5ME04JqiEZO9aDeOMavGHHrmPhHQsIo6KxDoR+CaMv2Q7NouvmucT8GvJGogiCqpQF/a/FVWqhyUSGffr7JueHLjq5tyO5tAdI/uHDonR+75YV3mEh5Vo7jonnRBCWDC903te/zGxqxv972OotFyAFxedLcQ2msBmKuwx//B50ZuOSQckXRp0ojk7JX2Hc98oNTmuJMQ6q+3SBDPDXUgl6ZYeX/0upGix+dhU/b17SgobgQor+bg8I0q4T/o3V272nrJS1K3dwDrHOYJJyLJA6OKyt6h9Wj2o6p0oSIFe8ITFwjgnYR8YwmihBz7vhGkuQUmDg9YFfC3fh9S0b1h1wCSYJ6NZhScDxtgq1X7cDbJbe6xwBbXGDvYW5LqcCNWZ0RaogHI=
