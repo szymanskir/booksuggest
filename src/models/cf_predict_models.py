@@ -10,18 +10,22 @@ import itertools
 logger = logging.getLogger(__name__)
 
 
-def predict_model(model: ICfRecommendationModel) -> pd.DataFrame:
+def predict_model(model: ICfRecommendationModel, batch_size=100000) -> pd.DataFrame:
     """Calculates top recommendations for every user in the trainset.
+
+    Calculations are done in batches to avoid huge memory consumption.
 
     Args:
         model (ICfRecommendationModel): Already trained model.
+        batch_size (int, optional): Defaults to 100000. Size of single batch.
+
 
     Returns:
         pd.DataFrame: Data frame with predictions.
     """
     x = 1
     main_df = pd.DataFrame(columns=['user_id', 'book_id', 'est'])
-    for batchiter in _batch(model.generate_antitest_set(), 100000):
+    for batchiter in _batch(model.generate_antitest_set(), batch_size):
         logger.debug(f"Batch: {x}")
         x += 1
         df = _predict_batch(model, list(batchiter))

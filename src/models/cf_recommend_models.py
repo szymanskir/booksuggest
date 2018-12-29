@@ -7,7 +7,7 @@ from surprise import SVD
 from surprise import Reader, Dataset, Prediction
 
 
-class UntrainedModel(Exception):
+class UntrainedModelError(Exception):
     pass
 
 
@@ -24,6 +24,9 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         Args:
             user_id (int): Id of the user.
 
+        Raises:
+            UntrainedModelError: Raised when method is used before model is trained.
+
         Returns:
             Dict[int, float]: `book_id: estimated_rating` pairs
         """
@@ -35,6 +38,9 @@ class ICfRecommendationModel(metaclass=ABCMeta):
 
         Args:
             ratings (List[Tuple[int, int, float]]): `(user_id, book_id, true_rating)` tuples
+
+        Raises:
+            UntrainedModelError: Raised when method is used before model is trained.
 
         Returns:
             List[Prediction]: List of predictions with true and estimated ratings. 
@@ -53,7 +59,7 @@ class ICfRecommendationModel(metaclass=ABCMeta):
 
 
 class DummyModel(ICfRecommendationModel):
-    """Dummy recommendation _algo used for web app integration purposes.
+    """Dummy recommendation algorithm used for web app integration purposes.
     """
 
     def recommend(self, user_id: int) -> Dict[int, float]:
@@ -65,6 +71,12 @@ class DummyModel(ICfRecommendationModel):
 
 
 class SurpriseBasedModel(ICfRecommendationModel):
+    """Base class for models, which use algorithms from Surprise package.
+
+    Attributes:
+        ICfRecommendationModel ([type]): [description]
+    """
+
     def __init__(self, input_filepath: str, recommendation_count: int):
         """Initializes an instance of the SurpriseBasedModel class.
 
@@ -74,7 +86,7 @@ class SurpriseBasedModel(ICfRecommendationModel):
         """
         self._recommendation_count = recommendation_count
         self._trainset = self._read_trainset(input_filepath)
-        self._algo = None
+        self._algorithm = None
 
     @staticmethod
     def _read_trainset(input_filepath: str):
@@ -89,10 +101,10 @@ class SurpriseBasedModel(ICfRecommendationModel):
         return self._recommendation_count
 
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
-        if not self._algo:
-            raise UntrainedModel
+        if not self._algorithm:
+            raise UntrainedModelError
 
-        return self._algo.test(ratings)
+        return self._algorithm.test(ratings)
 
     def recommend(self, user_id: int) -> Dict[int, float]:
         try:
@@ -101,9 +113,9 @@ class SurpriseBasedModel(ICfRecommendationModel):
             return dict()
 
         to_predict = [x for x in self._generate_antitest(user_inner_id)]
-        if not self._algo:
-            raise UntrainedModel
-        predictions = self._algo.test(to_predict)
+        if not self._algorithm:
+            raise UntrainedModelError
+        predictions = self._algorithm.test(to_predict)
 
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
             :self._recommendation_count]
@@ -123,7 +135,7 @@ class SurpriseBasedModel(ICfRecommendationModel):
 
 
 class SvdRecommendationModel(SurpriseBasedModel):
-    """Recommendation _algo using the Singular Value Decomposition operation.
+    """Recommendation _algorithm using the Singular Value Decomposition operation.
     """
 
     def train(self):
@@ -131,4 +143,4 @@ class SvdRecommendationModel(SurpriseBasedModel):
         """
         algo = SVD()
         algo.fit(self._trainset)
-        self._algo = algo
+        self._algorithm = algo
