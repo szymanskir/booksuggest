@@ -1,2 +1,2 @@
-release: python setup.py install
+release: pip install scikit-surprise; python setup.py install
 web: gunicorn app:app
