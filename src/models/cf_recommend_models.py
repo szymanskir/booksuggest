@@ -11,17 +11,13 @@ class UntrainedModelError(Exception):
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):
-    @property
     @abstractmethod
-    def recommendation_count(self):
-        pass
-
-    @abstractmethod
-    def recommend(self, user_id: int) -> Dict[int, float]:
+    def recommend(self, user_id: int, recommendations_count: int = 10) -> Dict[int, float]:
         """Returns a top `recommendation_count` recommendations for specific user.
 
         Args:
             user_id (int): Id of the user.
+            recommendations_count (int, optional): Defaults to 10. Specifies how many recommendations to return.
 
         Raises:
             UntrainedModelError: Raised when method is used before model is trained.
@@ -72,18 +68,15 @@ class DummyModel(ICfRecommendationModel):
 class SurpriseBasedModel(ICfRecommendationModel):
     """Base class for models, which use algorithms from Surprise package.
 
+    Args:
+        input_filepath: Filepath containing ratings data.
+
     Attributes:
-        ICfRecommendationModel ([type]): [description]
+        _trainset (Trainset): Dataset used for model training.
+        _algorithm (AlgoBase): Algorithm(defined in Surprise package) used by model.
     """
 
-    def __init__(self, input_filepath: str, recommendation_count: int):
-        """Initializes an instance of the SurpriseBasedModel class.
-
-        Args:
-            input_filepath: Filepath containing ratings data.
-            recommendation_count: How many recommendations should be returned for a single user.
-        """
-        self._recommendation_count = recommendation_count
+    def __init__(self, input_filepath: str):
         self._trainset = self._read_trainset(input_filepath)
         self._algorithm = None
 
@@ -95,17 +88,13 @@ class SurpriseBasedModel(ICfRecommendationModel):
             ratings_df[['user_id', 'book_id', 'rating']], reader)
         return dataset.build_full_trainset()
 
-    @property
-    def recommendation_count(self):
-        return self._recommendation_count
-
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
         if not self._algorithm:
             raise UntrainedModelError
 
         return self._algorithm.test(ratings)
 
-    def recommend(self, user_id: int) -> Dict[int, float]:
+    def recommend(self, user_id: int, recommendations_count: int = 10) -> Dict[int, float]:
         try:
             user_inner_id = self._trainset.to_inner_uid(user_id)
         except ValueError:

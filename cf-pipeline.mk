@@ -39,7 +39,7 @@ $(DUMMY_CF_MODEL): src/models/cf_dummy_model.py
 	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
 
 $(SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
-	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
+	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@
 
 ################################################################################
 #
@@ -51,7 +51,7 @@ $(SVD_PREDICTION): MODEL := $(SVD_MODEL)
 $(SVD_PREDICTION): $(SVD_MODEL)
 
 $(CF_PREDICTIONS):
-	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10
 
 ################################################################################
 #
