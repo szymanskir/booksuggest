@@ -13,7 +13,7 @@ class InvalidTagFeaturesData(Exception):
 def build_all_tag_features(
         book_tags: pd.DataFrame,
         tags: pd.DataFrame
-) -> List[List[float]]:
+) -> pd.DataFrame:
     """Calculates tag features for all books in the provided book_tags data frame.
 
         Each feature represents a single tag, the value if the
