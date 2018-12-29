@@ -1,6 +1,6 @@
 import os
 import errno
-from typing import List, Generic, TypeVar
+from typing import TypeVar, Union
 
 from ..utils.serialization import read_object
 from .cb_recommend_models import ICbRecommendationModel
@@ -32,7 +32,7 @@ def load_model(model_file_path: str) -> T:
             errno.ENOENT, os.strerror(errno.ENOENT), model_file_path)
 
     model = read_object(model_file_path)
-    if isinstance(model, ICbRecommendationModel) or isinstance(model, ICfRecommendationModel):
+    if isinstance(model, (ICbRecommendationModel, ICfRecommendationModel)):
         return model
 
     raise InvalidModelException()
