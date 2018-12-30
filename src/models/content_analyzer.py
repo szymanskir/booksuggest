@@ -32,9 +32,9 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
     from book descriptions.
 
     Attributes:
-        book_data: Data frame containing book data
-        text_feature_extractor: object responsible for
-                                extracting text based features
+        _book_data: Data frame containing book data.
+        text_feature_extractor:
+            Object responsible for extracting text based features.
     """
 
     def __init__(
