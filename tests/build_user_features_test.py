@@ -22,7 +22,7 @@ def test_build_interaction_matrix_exception():
 
 @pytest.mark.parametrize("user_data, expected", [
     (join(CURRENT_PATH, 'data/build_interaction_matrix-user_data-1.csv'),
-     coo_matrix([[5, 4, 0], [3, 0, 2]]))
+     coo_matrix([[1, 1, 0], [1, 0, 1]]))
 ])
 def test_build_interaction_matrix(user_data, expected):
     result = build_interaction_matrix(pd.read_csv(user_data))

@@ -32,10 +32,14 @@ def build_interaction_matrix(
     """Builds the interaction matrix based on the received
     user data.
     """
-    return coo_matrix(
+
+    user_data['rating'][user_data['rating'] > 0] = 1
+    interaction_matrix = coo_matrix(
         user_data.pivot(
             index='user_id',
             columns='book_id',
             values='rating'
         ).fillna(0)
     )
+
+    return interaction_matrix
