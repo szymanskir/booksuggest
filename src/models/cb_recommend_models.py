@@ -7,17 +7,20 @@ from .content_analyzer import IContentAnalyzer
 
 
 class ICbRecommendationModel(metaclass=ABCMeta):
+
     @abstractmethod
     def recommend(self, book_id: int) -> Dict[int, float]:
         """Recommends books similar to the given book.
 
         Args:
-            book_id (int): Id of the book for which recommendations would be given.
+            book_id (int):
+                Id of the book for which recommendations would be given.
 
         Returns:
-            Dict[int, float]: Dictionary of ``similar_book_id: distance_between_book_and_similar_book`` key-value pairs.
+            Dict[int, float]:
+                Dictionary composed of book ids and their distances
+                from the original book key value pairs.
         """
-        pass
 
 
 class DummyModel(ICbRecommendationModel):
