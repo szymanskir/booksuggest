@@ -32,7 +32,6 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         Returns:
             Dict[int, float]: `book_id: estimated_rating` pairs
         """
-        pass
 
     @abstractmethod
     def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
@@ -50,7 +49,6 @@ class ICfRecommendationModel(metaclass=ABCMeta):
             List[Prediction]:
                 List of predictions with true and estimated ratings.
         """
-        pass
 
     def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
         """Yields a list of ratings which are not already present in the trainset.
@@ -62,19 +60,6 @@ class ICfRecommendationModel(metaclass=ABCMeta):
             Iterable[Tuple[int, int, float]]:
                 A list of tuples (uid, iid, global_mean)
         """
-        pass
-
-
-class DummyModel(ICfRecommendationModel):
-    """Dummy recommendation algorithm used for web app integration purposes.
-    """
-
-    def recommend(self, user_id: int) -> Dict[int, float]:
-        return {book_id: 5.00 for book_id in range(1, 5)}
-
-    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
-        ui, ii, rating = ratings[0]
-        return [Prediction(ui, ii, rating, 0, {})]
 
 
 class SurpriseBasedModel(ICfRecommendationModel):

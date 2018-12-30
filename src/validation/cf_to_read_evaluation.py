@@ -1,9 +1,9 @@
-import click
 import logging
-import pandas as pd
-
 from os import listdir
 from os.path import join
+import click
+import pandas as pd
+
 from .metrics import precision
 
 
@@ -41,14 +41,14 @@ def main(predictions_dir: str, to_read_filepath: str, output_filepath: str):
                          if filename.endswith('.csv')]
     to_read_df = pd.read_csv(to_read_filepath)
 
-    logger.info(f'Evaluating predictions from {predictions_dir}...')
+    logger.info('Evaluating predictions from %s...', predictions_dir)
     results = list()
     for prediction_file in predictions_files:
         prediction_df = pd.read_csv(join(predictions_dir, prediction_file))
         precision = test_to_read(prediction_df, to_read_df)
         results.append((prediction_file, precision))
 
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     labels = ['model', 'precision']
     results_df = pd.DataFrame.from_records(results, columns=labels)
     results_df.to_csv(output_filepath, index=False)
@@ -56,4 +56,4 @@ def main(predictions_dir: str, to_read_filepath: str, output_filepath: str):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

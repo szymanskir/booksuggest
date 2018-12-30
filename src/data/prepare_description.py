@@ -1,5 +1,12 @@
-import click
+"""Description cleaning functions.
+
+This module contains functions used for cleaning book descriptions.
+The main script is responsible for preparing descriptions that will
+be later used for feature extraction.
+"""
+
 import logging
+import click
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer

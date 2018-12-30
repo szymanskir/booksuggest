@@ -1,11 +1,11 @@
-import click
+import itertools
 import logging
-import pandas as pd
 from typing import List, Tuple, Iterable, Any
+import click
+import pandas as pd
 
 from .cf_recommend_models import ICfRecommendationModel
 from ..utils.serialization import read_object
-import itertools
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ def predict_model(
     batch_counter = 1
     main_df = pd.DataFrame(columns=['user_id', 'book_id', 'est'])
     for batchiter in _batch(model.generate_antitest_set(), batch_size):
-        logger.debug(f"Batch: {batch_counter}")
+        logger.debug('Batch: %s', batch_counter)
         batch_counter += 1
         df = _predict_batch(model, list(batchiter), recommendation_count)
         main_df = main_df.append(df)
@@ -76,7 +76,7 @@ def main(model_filepath: str, output_filepath: str, n: int):
     logger.info('Calculating predictions...')
     predictions = predict_model(model, n)
 
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     predictions.to_csv(output_filepath, index=False)
 
 

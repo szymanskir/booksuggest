@@ -1,11 +1,13 @@
-import click
+"""Functions used for calculating recommendation models scores.
+Main script is responsible for summarizing all created models.
+"""
 import logging
-import pandas as pd
-
-from glob import glob
 from os.path import basename, join
 from typing import Dict, List, Union
 from statistics import mean
+from glob import glob
+import click
+import pandas as pd
 
 from .metrics import precision, recall
 
@@ -97,18 +99,31 @@ def read_similar_books(similar_books_filepath: str) -> Dict[int, List[int]]:
 @click.argument('similar_books_input', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(input_directory: str, similar_books_input: str, output_filepath: str):
+    """Main function used for summarizing prediction scores.
+
+    Args:
+        input_directory:
+            Path to the directory containing similar books predictions.
+        similar_books_input:
+            Path to file containing similar books ground truth.
+        output_filepath:
+            Path to file in which results should be stored.
+    """
     logger = logging.getLogger(__name__)
-    logger.info(f'Preparing test cases...')
+    logger.info('Preparing test cases...')
     test_cases = read_similar_books(similar_books_input)
 
-    logger.info(f'Evaluating scores for predictions from {input_directory}...')
+    logger.info(
+        'Evaluating scores for predictions from %s...',
+        input_directory
+    )
     scores = calculate_scores(input_directory, test_cases)
 
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     save_csv(scores, output_filepath,
              ['model', 'precision', 'recall', 'correct_hits'])
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

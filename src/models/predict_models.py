@@ -1,3 +1,6 @@
+"""Functions used for predicting similar books using content based
+recommendation models.
+"""
 import logging
 
 from typing import List
@@ -48,7 +51,7 @@ def predict_model(model: ICbRecommendationModel,
     book.
     """
     def recommend_helper(model, test_case_id):
-        logging.debug(f'Computing {test_case_id}')
+        logging.debug('Computing %s', test_case_id)
         recommendations = list(model.recommend(test_case_id).keys())
         return [{'book_id': test_case_id,
                  'similar_book_id': recommended_book}
@@ -82,7 +85,7 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
     logger.info('Calculating predictions...')
     predictions = predict_model(model, test_cases)
 
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     save_csv(predictions, output_filepath, ['book_id', 'similar_book_id'])
 
 

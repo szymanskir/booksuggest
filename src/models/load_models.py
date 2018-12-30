@@ -1,3 +1,7 @@
+"""Function used for loading recommendation models.
+"""
+
+
 import os
 import errno
 from typing import TypeVar
@@ -6,7 +10,9 @@ from ..utils.serialization import read_object
 from .cb_recommend_models import ICbRecommendationModel
 from .cf_recommend_models import ICfRecommendationModel
 
-T = TypeVar('T', 'ICbRecommendationModel', 'ICfRecommendationModel')
+IRecommendationModel = TypeVar(
+    'T', 'ICbRecommendationModel', 'ICfRecommendationModel'
+)
 
 
 class InvalidModelException(Exception):
@@ -14,7 +20,7 @@ class InvalidModelException(Exception):
     """
 
 
-def load_model(model_file_path: str) -> T:
+def load_model(model_file_path: str) -> IRecommendationModel:
     """Loads the model specified stored in model_file_path
 
     Args:
@@ -26,7 +32,7 @@ def load_model(model_file_path: str) -> T:
             or ICfRecommendationModel interface.
 
     Returns:
-        T: Recommendation model object.
+        IRecommendationModel: Recommendation model object.
     """
     if not os.path.isfile(model_file_path):
         raise FileNotFoundError(

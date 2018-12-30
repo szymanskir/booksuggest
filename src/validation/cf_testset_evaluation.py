@@ -1,13 +1,13 @@
-import click
 import logging
-import pandas as pd
-
 from os import listdir
 from os.path import join
+
+import click
+import pandas as pd
+from surprise import Reader, Dataset, accuracy
+
 from ..utils.serialization import read_object
 from ..models.cf_recommend_models import ICfRecommendationModel
-
-from surprise import Reader, Dataset, accuracy
 
 
 def test_accuracy(
@@ -43,7 +43,7 @@ def main(models_dir: str, testset_filepath: str, output_filepath: str):
     models_files = [filename for filename in models_files
                     if filename.endswith('.pkl')]
 
-    logger.info(f'Evaluating models from {models_dir}...')
+    logger.info('Evaluating models from %s...', models_dir)
     results = list()
     for model_file in models_files:
         model = read_object(join(models_dir, model_file))
@@ -51,7 +51,7 @@ def main(models_dir: str, testset_filepath: str, output_filepath: str):
 
     labels = ['model', 'rmse']
     results_df = pd.DataFrame.from_records(results, columns=labels)
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     results_df.to_csv(output_filepath, index=False)
 
 
