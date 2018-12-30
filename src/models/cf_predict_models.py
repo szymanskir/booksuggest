@@ -10,7 +10,11 @@ import itertools
 logger = logging.getLogger(__name__)
 
 
-def predict_model(model: ICfRecommendationModel, recommendation_count: int, batch_size: int = 100000) -> pd.DataFrame:
+def predict_model(
+        model: ICfRecommendationModel,
+        recommendation_count: int,
+        batch_size: int = 100000
+) -> pd.DataFrame:
     """Calculates top recommendations for every user in the trainset.
 
     Calculations are done in batches to avoid huge memory consumption.
@@ -35,7 +39,11 @@ def predict_model(model: ICfRecommendationModel, recommendation_count: int, batc
     return main_df
 
 
-def _predict_batch(model: ICfRecommendationModel, cases_batch: List[Tuple[int, int, float]], recommendation_count: int) -> pd.DataFrame:
+def _predict_batch(
+        model: ICfRecommendationModel,
+        cases_batch: List[Tuple[int, int, float]],
+        recommendation_count: int
+) -> pd.DataFrame:
     predictions = model.test(cases_batch)
     labels = ['user_id', 'book_id', '2', 'est', '4']
     pred_df = pd.DataFrame.from_records(
@@ -74,4 +82,4 @@ def main(model_filepath: str, output_filepath: str, n: int):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

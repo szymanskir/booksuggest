@@ -10,7 +10,10 @@ from ..models.cf_recommend_models import ICfRecommendationModel
 from surprise import Reader, Dataset, accuracy
 
 
-def test_accuracy(model: ICfRecommendationModel, testset_filepath: str) -> float:
+def test_accuracy(
+        model: ICfRecommendationModel,
+        testset_filepath: str
+) -> float:
     """Calculates RMSE value for the given model and testset
 
     Args:
@@ -54,4 +57,4 @@ def main(models_dir: str, testset_filepath: str, output_filepath: str):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

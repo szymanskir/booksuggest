@@ -1,15 +1,13 @@
 import click
 import logging
 import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.stem.snowball import SnowballStemmer
 import numpy as np
 import pandas as pd
 
 from langdetect import detect
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from nltk.stem.snowball import SnowballStemmer
-
-from ..utils.logging import setup_root_logger
 
 
 def clean_single_description(
@@ -58,12 +56,15 @@ def clean_descriptions(
     file.
 
     Args:
-        input_filepath (str): Filepath to the data containing a ``description``
-        column that will be cleaned.
+        input_filepath (str):
+            Filepath to the data containing a ``description`` column that
+            will be cleaned.
         remove_proper_nouns (bool): Whether to remove proper nouns from text.
 
     Returns:
-        pd.DataFrame: The original data frame but with the ``description`` column cleaned.
+        pd.DataFrame:
+            The original data frame but with the ``description``
+            column cleaned.
     """
     data = pd.read_csv(input_filepath, index_col='book_id')
     descriptions = data['description'].dropna()
@@ -91,10 +92,10 @@ def main(input_filepath: str, output_filepath: str, remove_nouns: bool):
     logging.info('Cleaning descriptions...')
     cleaned_descriptions = clean_descriptions(input_filepath, remove_nouns)
 
-    logging.info(f'Saving results to {output_filepath}...')
+    logging.info('Saving results to %s...', output_filepath)
     cleaned_descriptions.to_csv(output_filepath)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

@@ -1,6 +1,6 @@
 import os
 import errno
-from typing import TypeVar, Union
+from typing import TypeVar
 
 from ..utils.serialization import read_object
 from .cb_recommend_models import ICbRecommendationModel
@@ -12,7 +12,6 @@ T = TypeVar('T', 'ICbRecommendationModel', 'ICfRecommendationModel')
 class InvalidModelException(Exception):
     """Custom exception for handling model retrieval errors.
     """
-    pass
 
 
 def load_model(model_file_path: str) -> T:
@@ -22,7 +21,9 @@ def load_model(model_file_path: str) -> T:
         model_file_path (str): Path to a file containing recommendation model.
 
     Raises:
-        InvalidModelException: Raised when object does not implement ICbRecommendationModel or ICfRecommendationModel interface.
+        InvalidModelException:
+            Raised when object does not implement ICbRecommendationModel
+            or ICfRecommendationModel interface.
 
     Returns:
         T: Recommendation model object.

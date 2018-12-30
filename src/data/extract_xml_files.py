@@ -1,6 +1,7 @@
-import click
 import logging
 import zipfile
+
+import click
 
 logger = logging.getLogger(__name__)
 
@@ -11,14 +12,14 @@ logger = logging.getLogger(__name__)
 def main(xml_archive_path: str, output_dir: str):
     """Extract .xml files from ``archive xml_archive_path`` to ``output_dir``
     """
-    logger.info(f"Extracting {xml_archive_path}...")
+    logger.info('Extracting %s...', xml_archive_path)
     zip_reference = zipfile.ZipFile(xml_archive_path, 'r')
     zip_reference.extractall(output_dir)
     zip_reference.close()
 
-    logger.info(f"Extracted files into {output_dir}")
+    logger.info('Extracted files into %s', output_dir)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

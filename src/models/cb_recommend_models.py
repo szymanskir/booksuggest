@@ -19,7 +19,6 @@ class ICbRecommendationModel(metaclass=ABCMeta):
             Dict[int, float]: Dictionary of ``similar_book_id:
                 distance_between_book_and_similar_book`` key-value pairs.
         """
-        pass
 
 
 class DummyModel(ICbRecommendationModel):
@@ -50,7 +49,8 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
         Args:
             input_filepath: Filepath containing book data.
-            recommendation_count: How many recommendations should be returned for a single book.
+            recommendation_count:
+                How many recommendations should be returned for a single book.
         """
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(

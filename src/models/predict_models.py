@@ -1,7 +1,9 @@
-import click
 import logging
-import pandas as pd
+
 from typing import List
+
+import click
+import pandas as pd
 
 from .cb_recommend_models import ICbRecommendationModel
 
@@ -86,4 +88,4 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

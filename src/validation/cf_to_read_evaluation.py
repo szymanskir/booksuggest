@@ -7,7 +7,10 @@ from os.path import join
 from .metrics import precision
 
 
-def test_to_read(predictions_df: pd.DataFrame, to_read_df: pd.DataFrame) -> float:
+def test_to_read(
+        predictions_df: pd.DataFrame,
+        to_read_df: pd.DataFrame
+) -> float:
     """Calculates the precision of predictions using to_read data.
 
     Args:
@@ -19,7 +22,8 @@ def test_to_read(predictions_df: pd.DataFrame, to_read_df: pd.DataFrame) -> floa
     """
     def evaluate(group):
         to_read_ids = group['book_id'].values
-        recommended_ids = predictions_df.loc[predictions_df['user_id'] == group.name]
+        recommended_ids = predictions_df.loc[
+            predictions_df['user_id'] == group.name]
         return precision(recommended_ids, to_read_ids)
 
     return to_read_df.groupby('user_id').apply(evaluate).mean()

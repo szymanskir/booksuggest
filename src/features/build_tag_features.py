@@ -140,4 +140,4 @@ def main(book_tags_filepath: str, output_filepath: str):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

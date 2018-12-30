@@ -1,6 +1,7 @@
-import pandas as pd
 from abc import ABCMeta, abstractmethod
 from typing import Dict, List, Tuple, Iterable
+
+import pandas as pd
 
 from surprise import SVD
 from surprise import Reader, Dataset, Prediction
@@ -12,15 +13,21 @@ class UntrainedModelError(Exception):
 
 class ICfRecommendationModel(metaclass=ABCMeta):
     @abstractmethod
-    def recommend(self, user_id: int, recommendations_count: int = 10) -> Dict[int, float]:
+    def recommend(
+            self,
+            user_id: int,
+            recommendations_count: int = 10
+    ) -> Dict[int, float]:
         """Returns a top `recommendation_count` recommendations for specific user.
 
         Args:
             user_id (int): Id of the user.
-            recommendations_count (int, optional): Defaults to 10. Specifies how many recommendations to return.
+            recommendations_count (int, optional):
+                Defaults to 10. Specifies how many recommendations to return.
 
         Raises:
-            UntrainedModelError: Raised when method is used before model is trained.
+            UntrainedModelError:
+                Raised when method is used before model is trained.
 
         Returns:
             Dict[int, float]: `book_id: estimated_rating` pairs
@@ -32,23 +39,28 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         """Tests the model on the given ground-truth dataset.
 
         Args:
-            ratings (List[Tuple[int, int, float]]): `(user_id, book_id, true_rating)` tuples
+            ratings (List[Tuple[int, int, float]]):
+                `(user_id, book_id, true_rating)` tuples
 
         Raises:
-            UntrainedModelError: Raised when method is used before model is trained.
+            UntrainedModelError:
+                Raised when method is used before model is trained.
 
         Returns:
-            List[Prediction]: List of predictions with true and estimated ratings. 
+            List[Prediction]:
+                List of predictions with true and estimated ratings.
         """
         pass
 
     def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
         """Yields a list of ratings which are not already present in the trainset.
 
-        All the ratings where user is known and item is know, but rating for (user, item) is not present in the trainset.
+        All the ratings where user is known and item is know, but rating for
+        (user, item) is not present in the trainset.
 
         Yields:
-            Iterable[Tuple[int, int, float]]: A list of tuples (uid, iid, global_mean)
+            Iterable[Tuple[int, int, float]]:
+                A list of tuples (uid, iid, global_mean)
         """
         pass
 
@@ -73,7 +85,8 @@ class SurpriseBasedModel(ICfRecommendationModel):
 
     Attributes:
         _trainset (Trainset): Dataset used for model training.
-        _algorithm (AlgoBase): Algorithm(defined in Surprise package) used by model.
+        _algorithm (AlgoBase):
+            Algorithm(defined in Surprise package) used by model.
     """
 
     def __init__(self, input_filepath: str):
@@ -94,7 +107,11 @@ class SurpriseBasedModel(ICfRecommendationModel):
 
         return self._algorithm.test(ratings)
 
-    def recommend(self, user_id: int, recommendations_count: int = 10) -> Dict[int, float]:
+    def recommend(
+            self,
+            user_id: int,
+            recommendations_count: int = 10
+    ) -> Dict[int, float]:
         try:
             user_inner_id = self._trainset.to_inner_uid(user_id)
         except ValueError:
@@ -119,7 +136,8 @@ class SurpriseBasedModel(ICfRecommendationModel):
         fill = self._trainset.global_mean
         user_id = self._trainset.to_raw_uid(user_inner_id)
         user_items = set([j for (j, _) in self._trainset.ur[user_inner_id]])
-        yield from [(user_id, self._trainset.to_raw_iid(i), fill) for i in self._trainset.all_items() if i not in user_items]
+        yield from [(user_id, self._trainset.to_raw_iid(i), fill)
+                    for i in self._trainset.all_items() if i not in user_items]
 
 
 class SvdRecommendationModel(SurpriseBasedModel):

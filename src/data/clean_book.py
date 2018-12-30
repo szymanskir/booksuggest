@@ -1,13 +1,13 @@
-import click
 import logging
-import pandas as pd
-
-from .xml_parser import extract_all_book_xml_roots
 
 from typing import List, Tuple
+
+import click
+import pandas as pd
+
 from lxml import etree
 
-logger = logging.getLogger(__name__)
+from .xml_parser import extract_all_book_xml_roots
 
 
 def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, str, str]]:
@@ -17,7 +17,8 @@ def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, str, str]]:
         xmls_dir (str): Directory with .xml files.
 
     Returns:
-        List[Tuple[int, str, str]]: List of ``(work_id, isbn13, description)`` book data.
+        List[Tuple[int, str, str]]:
+            List of ``(work_id, isbn13, description)`` book data.
     """
     return [_extract_book_info(book)
             for book in extract_all_book_xml_roots(xmls_dir)]
@@ -30,13 +31,17 @@ def _extract_book_info(book: etree.Element) -> Tuple[int, str, str]:
     return book_info
 
 
-def process_book_extra_info(book_extra_info_rows: List[Tuple[int, str, str]]) -> pd.DataFrame:
+def process_book_extra_info(
+        book_extra_info_rows: List[Tuple[int, str, str]]
+) -> pd.DataFrame:
     """Processes books extra data and transforms it to a data frame.
 
-    Apart from joining data it also removes HTML tags from ``description`` column.
+    Apart from joining data it also removes HTML tags from
+    the ``description`` column.
 
     Args:
-        book_extra_info_rows (List[Tuple[int, str, str]]): List of ``(work_id, isbn13, description)`` book data.
+        book_extra_info_rows (List[Tuple[int, str, str]]):
+            List of ``(work_id, isbn13, description)`` book data.
 
     Returns:
         pd.DataFrame: Data frame with columns corresponding to input tuple.
@@ -55,7 +60,10 @@ def process_book_extra_info(book_extra_info_rows: List[Tuple[int, str, str]]) ->
     return book_extra_info_df
 
 
-def merge_book_data(book_df: pd.DataFrame, book_extra_info_df: pd.DataFrame) -> pd.DataFrame:
+def merge_book_data(
+        book_df: pd.DataFrame,
+        book_extra_info_df: pd.DataFrame
+) -> pd.DataFrame:
     """Merges standard book data with new extra info.
 
     Args:
@@ -75,7 +83,8 @@ def merge_book_data(book_df: pd.DataFrame, book_extra_info_df: pd.DataFrame) -> 
 @click.argument('books_xml_dir', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(book_filepath: str, books_xml_dir: str, output_filepath: str):
-    """Extracts additional data about books from .xml files and joins it with previous data.
+    """Extracts additional data about books from .xml files
+       and joins it with previous data.
 
     Args:
         book_filepath (str): Book data frame.
@@ -89,9 +98,9 @@ def main(book_filepath: str, books_xml_dir: str, output_filepath: str):
     book_merged_data_df = merge_book_data(book_df, book_extra_info_df)
 
     book_merged_data_df.to_csv(output_filepath, index=False)
-    logger.info(f"Created: {output_filepath}")
+    logging.info(f"Created: {output_filepath}")
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter
