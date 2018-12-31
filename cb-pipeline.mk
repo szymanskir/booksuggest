@@ -256,8 +256,10 @@ $(TF_IDF_MODELS): MODEL_NAME := tf-idf
 $(TF_IDF_TAGS_MODELS): MODEL_NAME := tf-idf-tag
 $(COUNT_MODELS): MODEL_NAME := count
 $(COUNT_TAGS_MODELS): MODEL_NAME := count-tag
+$(TAG_MODEL): data/processed/book.csv
 $(TAG_MODEL): MODEL_NAME := tag
-$(TAG_MODEL):DESCR_FILE := data/processed/book.csv
+$(TAG_MODEL): DESCR_FILE := data/processed/book.csv
+
 
 # tag prerequisites
 TAG_BASED_MODELS = $(1GRAMS_MODELS_TAGS) \

@@ -106,7 +106,7 @@ data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
 data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
 	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
-data/processed/book_tags.csv: $(RAW_DATA_FILES)
+data/processed/book_tags.csv: $(RAW_DATA_FILES) data/processed/book.csv
 	$(PYTHON_INTERPRETER) -m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
