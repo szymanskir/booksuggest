@@ -22,8 +22,8 @@ def test_to_read(
     """
     def evaluate(group):
         to_read_ids = group['book_id'].values
-        recommended_ids = predictions_df.loc[
-            predictions_df['user_id'] == group.name]
+        recommended_ids = predictions_df[predictions_df['user_id']
+                                         == group.name]['book_id'].values
         return precision(recommended_ids, to_read_ids)
 
     return to_read_df.groupby('user_id').apply(evaluate).mean()
@@ -45,7 +45,7 @@ def main(predictions_dir: str, to_read_filepath: str, output_filepath: str):
     results = list()
     for prediction_file in predictions_files:
         prediction_df = pd.read_csv(join(predictions_dir, prediction_file))
-        precision = test_to_read(prediction_df, to_read_df)
+        precision = evaluate_to_read(prediction_df, to_read_df)
         results.append((prediction_file, precision))
 
     logger.info('Saving results to %s...', output_filepath)
