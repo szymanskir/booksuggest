@@ -25,7 +25,7 @@ def main(
     merged_df = merged_df.drop('rating', axis=1).sort_values([
         'user_id', 'book_id'])
 
-    logger.info('Saving results to %...', output_filepath)
+    logger.info('Saving results to %s...', output_filepath)
     merged_df.to_csv(output_filepath, index=False)
 
 

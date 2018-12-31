@@ -98,7 +98,7 @@ def main(book_filepath: str, books_xml_dir: str, output_filepath: str):
     book_merged_data_df = merge_book_data(book_df, book_extra_info_df)
 
     book_merged_data_df.to_csv(output_filepath, index=False)
-    logging.info('Created: %', output_filepath)
+    logging.info('Created: %s', output_filepath)
 
 
 if __name__ == '__main__':
