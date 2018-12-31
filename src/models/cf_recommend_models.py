@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List, Tuple, Iterable
+from typing import Dict, Iterable, List, Tuple
 
 import pandas as pd
 
-from surprise import SVD, SlopeOne, KNNBaseline
-from surprise import Reader, Dataset, Prediction
+from surprise import Dataset, Prediction, Reader
+from surprise import KNNBaseline, SlopeOne, SVD
 
 
 class UntrainedModelError(Exception):
