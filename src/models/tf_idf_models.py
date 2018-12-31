@@ -48,9 +48,10 @@ def main(
 
     logger.info('Reading data...')
     book_data = pd.read_csv(input_filepath, index_col='book_id')
-    tag_features = pd._read_csv(tag_features_filepath, index_col='book_id')
+    tag_features = (pd.read_csv(tag_features_filepath, index_col='book_id')
+                    if tag_features_filepath else None)
 
-    logger.info('Training {name} model...')
+    logger.info('Training %s model...', name)
     content_analyzer_builder = ContentAnalyzerBuilder(
         name, ngrams, rec_count, tag_features
     )

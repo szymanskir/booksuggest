@@ -31,7 +31,7 @@ def create_mock_text_feature_extractor():
         return_value=[[0.1, 0.3, 0.5], [0.3, 0.1, 0.2]]
     )
     text_feature_extractor.transform = MagicMock(
-        return_value=[0.1, 0.3, 0.5]
+        return_value=[[0.1, 0.3, 0.5]]
     )
 
     return text_feature_extractor
@@ -41,14 +41,14 @@ text_based_test_case = (
     book_data,
     TextBasedContentAnalyzer(create_mock_text_feature_extractor()),
     np.array([[0.1, 0.3, 0.5], [0.3, 0.1, 0.2]]),
-    np.array([0.1, 0.3, 0.5])
+    np.array([[0.1, 0.3, 0.5]])
 )
 
 tag_based_test_case = (
     book_data,
     TagBasedContentAnalyzer(tag_features),
     np.array([[0.1, 0.3, 0.5], [0.3, 0.1, 0.2]]),
-    np.array([0.1, 0.3, 0.5])
+    np.array([[0.1, 0.3, 0.5]])
 )
 
 ensemble_test_case = (
@@ -58,7 +58,7 @@ ensemble_test_case = (
         TagBasedContentAnalyzer(tag_features),
     ]),
     np.array([[0.1, 0.3, 0.5, 0.1, 0.3, 0.5], [0.3, 0.1, 0.2, 0.3, 0.1, 0.2]]),
-    np.array([0.1, 0.3, 0.5, 1, 0.3, 0.5])
+    np.array([[0.1, 0.3, 0.5, 1, 0.3, 0.5]])
 )
 
 

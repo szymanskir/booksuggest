@@ -109,7 +109,7 @@ class TagBasedContentAnalyzer(ContentAnalyzer):
 
     def get_feature_vector(self, book_id):
         self._has_built_features()
-        return self.tag_features.loc[book_id].values
+        return self.tag_features.loc[book_id].values.reshape(1, -1)
 
 
 class EnsembledContentAnalyzer(ContentAnalyzer):
