@@ -1,16 +1,20 @@
-import click
+import itertools
 import logging
-import pandas as pd
 from typing import List, Tuple, Iterable, Any
+import click
+import pandas as pd
 
 from .cf_recommend_models import ICfRecommendationModel
 from ..utils.serialization import read_object
-import itertools
 
 logger = logging.getLogger(__name__)
 
 
-def predict_model(model: ICfRecommendationModel, recommendation_count: int, batch_size: int = 100000) -> pd.DataFrame:
+def predict_model(
+        model: ICfRecommendationModel,
+        recommendation_count: int,
+        batch_size: int = 100000
+) -> pd.DataFrame:
     """Calculates top recommendations for every user in the trainset.
 
     Calculations are done in batches to avoid huge memory consumption.
@@ -27,7 +31,7 @@ def predict_model(model: ICfRecommendationModel, recommendation_count: int, batc
     batch_counter = 1
     main_df = pd.DataFrame(columns=['user_id', 'book_id', 'est'])
     for batchiter in _batch(model.generate_antitest_set(), batch_size):
-        logger.debug(f"Batch: {batch_counter}")
+        logger.debug('Batch: %s', batch_counter)
         batch_counter += 1
         df = _predict_batch(model, list(batchiter), recommendation_count)
         main_df = main_df.append(df)
@@ -35,7 +39,11 @@ def predict_model(model: ICfRecommendationModel, recommendation_count: int, batc
     return main_df
 
 
-def _predict_batch(model: ICfRecommendationModel, cases_batch: List[Tuple[int, int, float]], recommendation_count: int) -> pd.DataFrame:
+def _predict_batch(
+        model: ICfRecommendationModel,
+        cases_batch: List[Tuple[int, int, float]],
+        recommendation_count: int
+) -> pd.DataFrame:
     predictions = model.test(cases_batch)
     labels = ['user_id', 'book_id', '2', 'est', '4']
     pred_df = pd.DataFrame.from_records(
@@ -68,10 +76,10 @@ def main(model_filepath: str, output_filepath: str, n: int):
     logger.info('Calculating predictions...')
     predictions = predict_model(model, n)
 
-    logger.info(f'Saving results to {output_filepath}...')
+    logger.info('Saving results to %s...', output_filepath)
     predictions.to_csv(output_filepath, index=False)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

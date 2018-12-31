@@ -1,10 +1,9 @@
-import click
 import logging
-import pandas as pd
 
 from typing import List
 
-logger = logging.getLogger(__name__)
+import click
+import pandas as pd
 
 
 def switch_to_book_id(
@@ -105,4 +104,4 @@ def main(
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

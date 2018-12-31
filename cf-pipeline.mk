@@ -6,9 +6,8 @@
 CF_MODELS_DIR = models/collaborative-filtering-models
 
 SVD_MODEL = $(CF_MODELS_DIR)/svd-model.pkl
-DUMMY_CF_MODEL = $(CF_MODELS_DIR)/cf_dummy-model.pkl
 
-CF_MODELS = $(DUMMY_CF_MODEL) $(SVD_MODEL)
+CF_MODELS = $(SVD_MODEL)
 
 # PREDICTIONS
 CF_PREDICTIONS_DIR = models/predictions/cf-results
@@ -37,9 +36,6 @@ data/processed/to_read.csv: data/raw/to_read.csv data/processed/ratings-train.cs
 # Model training rules
 #
 ################################################################################
-
-$(DUMMY_CF_MODEL): src/models/cf_dummy_model.py
-	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
 
 $(SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
 	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@

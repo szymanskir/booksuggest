@@ -170,9 +170,6 @@ $(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
 #
 ################################################################################
 
-models/cb_dummy_model.pkl: src/models/cb_dummy_model.py
-	$(PYTHON_INTERPRETER) -m src.models.cb_dummy_model $@
-
 COMMON_CB_DEPS = src/models/tf_idf_models.py
 
 $(CB_MODELS): $(COMMON_CB_DEPS)

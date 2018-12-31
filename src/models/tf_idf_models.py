@@ -1,7 +1,10 @@
-import click
-import logging
-import pandas as pd
+"""Command used for creating different types of content based recommendation
+models.
+"""
 
+import logging
+import click
+import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from .cb_recommend_models import ContentBasedRecommendationModel
@@ -26,6 +29,22 @@ def main(
         tf_idf: bool,
         tag_features
 ):
+    """Main script used for training content based recommendation models.
+
+    Args:
+        input_filepath:
+            Path to file containg training data.
+        output_filepath:
+            Path to file in which the trained model should be saved.
+        n:
+            Specifies how many recommendations the model should return.
+        ngrams:
+            Specifies the ngram range used when extracting text features.
+        tf_idf:
+            If True tf idf features will be used as text features.
+        tag_features:
+        Path to file containing precalculated tag features.
+    """
     logger = logging.getLogger(__name__)
 
     if tf_idf:
@@ -50,10 +69,10 @@ def main(
     )
     cb_model.train()
 
-    logger.info(f'Saving model to {output_filepath}...')
+    logger.info('Saving model to %s...', output_filepath)
     save_object(cb_model, output_filepath)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

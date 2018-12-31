@@ -1,3 +1,5 @@
+"""Functions used for serializing python objects.
+"""
 import pickle
 
 from typing import Any

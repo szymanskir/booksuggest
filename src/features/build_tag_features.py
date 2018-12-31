@@ -1,13 +1,21 @@
-import click
+"""Functions used for building features compose of tags.
+
+The book data contains information about what tags were assigned
+to books by users. Those tags include genres which can be very helpful
+when creating book representations.
+"""
+
 import logging
+from typing import List
+import click
 import numpy as np
 import pandas as pd
 
-from typing import List
 
-
-class InvalidTagFeaturesData(Exception):
-    pass
+class InvalidTagFeaturesError(Exception):
+    """Exception signifying that the passed
+    tag data is invalid.
+    """
 
 
 def build_all_tag_features(
@@ -47,7 +55,7 @@ def build_tag_features(
     """
     logging.debug('Building single feature...')
     if check_book_tags_and_tags_compatibility(book_tags, tags):
-        raise InvalidTagFeaturesData
+        raise InvalidTagFeaturesError
 
     tags_data = tags.merge(book_tags, on='tag_name', how='left')
     tags_counts = tags_data['count'].fillna(0)
@@ -140,4 +148,4 @@ def main(book_tags_filepath: str, output_filepath: str):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

@@ -1,7 +1,12 @@
+"""Content analyzers used by content based recommendation models.
+
+Content analyzers are objects that extract features from the items
+of interest. They play a main part in content based recommendation
+systems.
+"""
+from abc import ABCMeta, abstractmethod, abstractproperty
 import numpy as np
 import pandas as pd
-
-from abc import ABCMeta, abstractmethod, abstractproperty
 from sklearn.feature_extraction.text import (
     VectorizerMixin
 )
@@ -15,16 +20,27 @@ class IContentAnalyzer(metaclass=ABCMeta):
     """
 
     @abstractproperty
-    def book_data(self):
-        pass
+    def book_data(self) -> pd.DataFrame:
+        """Returns data frame containing book data.
+        """
 
     @abstractmethod
-    def build_features(self):
-        pass
+    def build_features(self) -> np.ndarray:
+        """Builds feature matrix for the book_data data frame.
+        """
 
     @abstractmethod
-    def get_feature_vector(self, book_id):
-        pass
+    def get_feature_vector(self, book_id: int) -> np.ndarray:
+        """Returns the feature vector of a specific book.
+
+        Args:
+            book_id:
+                Specifies the book for which the feature vector
+                will be returned.
+
+        Returns:
+            Feature vector of the given book.
+        """
 
 
 class TextBasedContentAnalyzer(IContentAnalyzer):
@@ -110,9 +126,9 @@ def build_content_analyzer(
     """Builds a content analyzer based on the input arguments.
     """
     text_content_analyzer = TextBasedContentAnalyzer(
-            book_data=book_data,
-            text_feature_extractor=text_feature_extractor,
-        )
+        book_data=book_data,
+        text_feature_extractor=text_feature_extractor
+    )
 
     if tag_features is None:
         return text_content_analyzer

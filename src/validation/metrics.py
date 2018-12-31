@@ -1,3 +1,6 @@
+"""Functions calculating metric scores used for recommendation models
+evaluation.
+"""
 from typing import List
 
 

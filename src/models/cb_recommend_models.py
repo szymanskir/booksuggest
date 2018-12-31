@@ -1,3 +1,6 @@
+"""Recommendation models using content based methods.
+"""
+
 from abc import ABCMeta, abstractmethod
 from typing import Dict
 
@@ -7,6 +10,8 @@ from .content_analyzer import IContentAnalyzer
 
 
 class ICbRecommendationModel(metaclass=ABCMeta):
+    """Interface for content based recommendation models.
+    """
 
     @abstractmethod
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -21,14 +26,6 @@ class ICbRecommendationModel(metaclass=ABCMeta):
                 Dictionary composed of book ids and their distances
                 from the original book key value pairs.
         """
-
-
-class DummyModel(ICbRecommendationModel):
-    """Dummy recommendation model used for web app integration purposes.
-    """
-
-    def recommend(self, book_id: int) -> Dict[int, float]:
-        return {book_id: 0.00}
 
 
 class ContentBasedRecommendationModel(ICbRecommendationModel):
@@ -51,7 +48,8 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
         Args:
             input_filepath: Filepath containing book data.
-            recommendation_count: How many recommendations should be returned for a single book.
+            recommendation_count:
+                How many recommendations should be returned for a single book.
         """
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
