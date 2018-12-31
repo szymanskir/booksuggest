@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from .cf_recommend_models import SvdRecommendationModel
+from .cf_recommend_models import SlopeOneRecommendationModel
 from ..utils.serialization import save_object
 
 
@@ -12,12 +12,12 @@ from ..utils.serialization import save_object
 def main(input_filepath: str, output_filepath: str):
     logger = logging.getLogger(__name__)
 
-    logger.info('Training SVD model...')
-    svd_model = SvdRecommendationModel(input_filepath)
-    svd_model.train()
+    logger.info('Training SlopeOne model...')
+    slopeone_model = SlopeOneRecommendationModel(input_filepath)
+    slopeone_model.train()
 
-    logger.info('Saving SVD model to %s...', output_filepath)
-    save_object(svd_model, output_filepath)
+    logger.info('Saving SlopeOne model to %s...', output_filepath)
+    save_object(slopeone_model, output_filepath)
 
 
 if __name__ == '__main__':

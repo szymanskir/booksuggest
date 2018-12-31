@@ -1,10 +1,10 @@
 from abc import ABCMeta, abstractmethod
-from typing import Dict, List, Tuple, Iterable
+from typing import Dict, Iterable, List, Tuple
 
 import pandas as pd
 
-from surprise import SVD
-from surprise import Reader, Dataset, Prediction
+from surprise import Dataset, Prediction, Reader
+from surprise import KNNBaseline, SlopeOne, SVD
 
 
 class UntrainedModelError(Exception):
@@ -125,13 +125,40 @@ class SurpriseBasedModel(ICfRecommendationModel):
                     for i in self._trainset.all_items() if i not in user_items]
 
 
+class SlopeOneRecommendationModel(SurpriseBasedModel):
+    """Recommendation algorithm using the SlopeOne algorithm.
+    """
+
+    def train(self):
+        """Computes users average ratings based on common items.
+        """
+        self._algorithm = SlopeOne().fit(self._trainset)
+
+
 class SvdRecommendationModel(SurpriseBasedModel):
-    """Recommendation _algorithm using the Singular Value Decomposition operation.
+    """Recommendation algorithm using the Singular Value Decomposition operation.
     """
 
     def train(self):
         """Prepares user and items vectors.
         """
-        algo = SVD()
-        algo.fit(self._trainset)
-        self._algorithm = algo
+        self._algorithm = SVD().fit(self._trainset)
+
+
+class KNNRecommendationModel(SurpriseBasedModel):
+    """Recommendation algorithm using the neighbor similarity.
+    """
+
+    def train(self):
+        """Computes user and items similarities.
+        """
+        bsl_options = {'method': 'als',
+                       'n_epochs': 10,
+                       'reg_u': 15,
+                       'reg_i': 10}
+        sim_options = {'name': 'pearson_baseline',
+                       'user_based': False,
+                       'min_support': 1}
+        algo = KNNBaseline(bsl_options=bsl_options,
+                           sim_options=sim_options, verbose=False)
+        self._algorithm = algo.fit(self._trainset)
