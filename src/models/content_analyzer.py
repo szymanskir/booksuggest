@@ -48,9 +48,9 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
     from book descriptions.
 
     Attributes:
-        book_data: Data frame containing book data
-        text_feature_extractor: object responsible for
-                                extracting text based features
+        _book_data: Data frame containing book data.
+        text_feature_extractor:
+            Object responsible for extracting text based features.
     """
 
     def __init__(
@@ -66,12 +66,12 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
         return self._book_data
 
     def build_features(self) -> np.ndarray:
-        descriptions = self._book_data['description']
+        descriptions = self.book_data['description']
         features = self.text_feature_extractor.fit_transform(descriptions)
         return features
 
     def get_feature_vector(self, book_id):
-        descriptions = self._book_data['description']
+        descriptions = self.book_data['description']
         book_description = descriptions[book_id]
         feature_vector = self.text_feature_extractor.transform(
             [book_description])
@@ -84,8 +84,8 @@ class TextAndTagBasedContentAnalyzer(IContentAnalyzer):
     both text features and tag features.
 
     Attributes:
-        text_content_analyzer: content analyzer repsonsible
-                               for extracting text features.
+        text_content_analyzer:
+            Content analyzer repsonsible for extracting text features.
         tag_features: Path to tag based features.
     """
 
@@ -95,7 +95,6 @@ class TextAndTagBasedContentAnalyzer(IContentAnalyzer):
             tag_features: pd.DataFrame
     ):
         self.text_content_analyzer = text_content_analyzer
-
         self.tag_features = tag_features.loc[self.book_data.index]
 
     @property
@@ -104,7 +103,7 @@ class TextAndTagBasedContentAnalyzer(IContentAnalyzer):
 
     def build_features(self) -> np.ndarray:
         text_features = self.text_content_analyzer.build_features()
-        features = hstack((text_features, self.tag_features.iloc[:, 1:]))
+        features = hstack((text_features, self.tag_features.values))
 
         return features
 
@@ -113,7 +112,7 @@ class TextAndTagBasedContentAnalyzer(IContentAnalyzer):
             book_id)
         feature_vector = hstack((
             text_feature_vector,
-            self.tag_features.loc[book_id].values[1:]
+            self.tag_features.loc[book_id].values
         ))
 
         return feature_vector
