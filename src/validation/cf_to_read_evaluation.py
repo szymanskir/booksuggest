@@ -7,7 +7,7 @@ import pandas as pd
 from .metrics import precision
 
 
-def test_to_read(
+def evaluate_to_read(
         predictions_df: pd.DataFrame,
         to_read_df: pd.DataFrame
 ) -> float:
