@@ -41,6 +41,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
     def __init__(
             self,
+            book_data,
             content_analyzer: IContentAnalyzer,
             recommendation_count: int,
     ):
@@ -51,6 +52,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             recommendation_count:
                 How many recommendations should be returned for a single book.
         """
+        self._book_data = book_data
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
@@ -60,7 +62,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
     def train(self):
         """Prepares feature vectors.
         """
-        result = self.content_analyzer.build_features()
+        result = self.content_analyzer.build_features(self._book_data)
         self.filtering_component.fit(result)
 
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -76,7 +78,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             return dict()
 
         distances, ids = self.filtering_component.kneighbors(feature_vec)
-        recommendations = self.content_analyzer.book_data.index[
+        recommendations = self._book_data.index[
             ids.flatten()[1:]]
 
         return dict(zip(recommendations, distances.flatten()[1:]))
