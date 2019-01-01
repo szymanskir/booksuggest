@@ -4,7 +4,6 @@ from os.path import dirname, join, realpath
 
 from src.validation.cb_evaluation import (
     calculate_single_score,
-    calculate_scores,
     read_similar_books
 )
 

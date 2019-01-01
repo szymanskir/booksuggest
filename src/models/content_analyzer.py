@@ -6,7 +6,7 @@ systems.
 """
 from abc import ABCMeta, abstractmethod
 from functools import partial
-from typing import List
+from typing import Callable, Dict, List
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import (
@@ -32,7 +32,7 @@ class IContentAnalyzer(metaclass=ABCMeta):
             raise UnbuiltFeaturesError()
 
     @abstractmethod
-    def build_features(self) -> np.ndarray:
+    def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
         """Builds feature matrix for the book_data data frame.
         """
 
@@ -134,6 +134,8 @@ class EnsembledContentAnalyzer(IContentAnalyzer):
 
 
 class TextAndTagBasedContentAnalyzer(EnsembledContentAnalyzer):
+    """Content analyzer combining text and tag based features.
+    """
     def __init__(
             self,
             text_feature_extractor: VectorizerMixin,
@@ -194,7 +196,10 @@ class ContentAnalyzerBuilder():
             raise InvalidBuilderConfigError()
 
     def build_content_analyzer(self) -> IContentAnalyzer:
-        building_rules = {
+        """Build a content analyzer based on the object
+        configuration.
+        """
+        building_rules: Dict[str, Callable] = {
             'tf-idf': partial(
                 TextBasedContentAnalyzer,
                 TfidfVectorizer(ngram_range=(1, self._ngrams))
