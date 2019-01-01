@@ -27,7 +27,7 @@ def calculate_scores(
         test_cases: Similar books ground truth.
 
     Returns:
-        Data frame containg presicion and recall scores for all models.
+        Data frame containing presicion and recall scores for all models.
     """
     prediction_files = glob(join(dir_path, '*.csv'))
 

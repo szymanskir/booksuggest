@@ -2,7 +2,11 @@ import pytest
 
 from os.path import dirname, join, realpath
 
-from src.validation.cb_evaluation import calculate_single_score, read_similar_books
+from src.validation.cb_evaluation import (
+    calculate_single_score,
+    calculate_scores,
+    read_similar_books
+)
 
 
 test_case_dir = join(dirname(realpath(__file__)), 'data')
