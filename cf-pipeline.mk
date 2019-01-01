@@ -66,8 +66,11 @@ $(KNN_PREDICTION): $(KNN_MODEL)
 $(SVD_PREDICTION): MODEL := $(SVD_MODEL)
 $(SVD_PREDICTION): $(SVD_MODEL)
 
-$(CF_PREDICTIONS):
-	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10
+$(CF_PREDICTIONS): $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10 --chunk-count 4 --chunk 0
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10 --chunk-count 4 --chunk 1
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10 --chunk-count 4 --chunk 2	
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $@ --n 10 --chunk-count 4 --chunk 3
 
 ################################################################################
 #
