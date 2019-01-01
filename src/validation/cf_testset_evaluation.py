@@ -29,7 +29,9 @@ def test_accuracy(
         ratings_df[['user_id', 'book_id', 'rating']], reader)
     testset = dataset.build_full_trainset().build_testset()
     est_ratings = model.test(testset)
-    return accuracy.rmse(est_ratings, verbose=False)
+    return (accuracy.rmse(est_ratings, verbose=False),
+            accuracy.mae(est_ratings, verbose=False),
+            accuracy.fcp(est_ratings, verbose=False))
 
 
 @click.command()
@@ -47,9 +49,10 @@ def main(models_dir: str, testset_filepath: str, output_filepath: str):
     results = list()
     for model_file in models_files:
         model = read_object(join(models_dir, model_file))
-        results.append((model_file, test_accuracy(model, testset_filepath)))
+        result = [model_file] + list(test_accuracy(model, testset_filepath))
+        results.append(result)
 
-    labels = ['model', 'rmse']
+    labels = ['model', 'rmse', 'mae', 'fcp']
     results_df = pd.DataFrame.from_records(results, columns=labels)
     logger.info('Saving results to %s...', output_filepath)
     results_df.to_csv(output_filepath, index=False)

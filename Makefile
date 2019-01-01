@@ -146,7 +146,7 @@ data/raw/tags.csv: src/data/download_dataset.py
 data/raw/to_read.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 1000
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 100
 endif
 
 data/raw/books_xml.zip: src/data/download_dataset.py
