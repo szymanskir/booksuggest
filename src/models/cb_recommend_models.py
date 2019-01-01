@@ -3,15 +3,36 @@
 
 from abc import ABCMeta, abstractmethod
 from typing import Dict
+import pandas as pd
 
 from sklearn.neighbors import NearestNeighbors
 
 from .content_analyzer import IContentAnalyzer
+from .model_exceptions import UntrainedModelError
 
 
 class ICbRecommendationModel(metaclass=ABCMeta):
     """Interface for content based recommendation models.
     """
+
+    def __init__(self):
+        self._book_data = None
+
+    def _is_trained(self):
+        if self._book_data is None:
+            raise UntrainedModelError()
+
+    @abstractmethod
+    def train(self, book_data: pd.DataFrame):
+        """Trains the content based recommendation model.
+
+        Args:
+            book_data:
+                Data frame containing book data, composed of the following
+                columns: book_id, authors, original_publication_year,
+                original_title, title, isbn13, description.
+
+        """
 
     @abstractmethod
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -51,16 +72,18 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             recommendation_count:
                 How many recommendations should be returned for a single book.
         """
+        super().__init__()
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
 
-    def train(self):
+    def train(self, book_data: pd.DataFrame):
         """Prepares feature vectors.
         """
-        result = self.content_analyzer.build_features()
+        self._book_data = book_data
+        result = self.content_analyzer.build_features(self._book_data)
         self.filtering_component.fit(result)
 
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -70,13 +93,14 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         descriptions. The cosine metric is used in order to determine
         which books are similar.
         """
+        self._is_trained()
         try:
             feature_vec = self.content_analyzer.get_feature_vector(book_id)
         except KeyError:
             return dict()
 
         distances, ids = self.filtering_component.kneighbors(feature_vec)
-        recommendations = self.content_analyzer.book_data.index[
+        recommendations = self._book_data.index[
             ids.flatten()[1:]]
 
         return dict(zip(recommendations, distances.flatten()[1:]))

@@ -49,3 +49,19 @@ validate_book_tags_invalid_book = join(
 def test_validate_book_tags_data(book_tags, expected):
     result = btf.validate_book_tags_data(pd.read_csv(book_tags))
     assert result == expected
+
+
+validate_tags_correct = join(
+    test_case_dir, 'validate_tags_data-correct.csv')
+
+validate_tags_incorrect = join(
+    test_case_dir, 'validate_tags_data-incorrect.csv')
+
+
+@pytest.mark.parametrize("tags, expected", [
+    (validate_tags_correct, True),
+    (validate_tags_incorrect, False),
+])
+def test_validate_tags_data(tags, expected):
+    result = btf.validate_tags_data(pd.read_csv(tags))
+    assert result == expected

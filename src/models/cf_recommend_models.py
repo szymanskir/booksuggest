@@ -6,9 +6,7 @@ import pandas as pd
 from surprise import Dataset, Prediction, Reader
 from surprise import KNNBaseline, SlopeOne, SVD
 
-
-class UntrainedModelError(Exception):
-    pass
+from .model_exceptions import UntrainedModelError
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):

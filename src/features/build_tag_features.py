@@ -54,7 +54,7 @@ def build_tag_features(
             tags: Data frame containing tag_id and tag_names columns.
     """
     logging.debug('Building single feature...')
-    if check_book_tags_and_tags_compatibility(book_tags, tags):
+    if not check_book_tags_and_tags_compatibility(book_tags, tags):
         raise InvalidTagFeaturesError
 
     tags_data = tags.merge(book_tags, on='tag_name', how='left')
@@ -82,7 +82,7 @@ def check_book_tags_and_tags_compatibility(
     if not validate_tags_data(tags):
         return False
 
-    return set(book_tags['tag_name']) < set(tags['tag_name'])
+    return set(book_tags['tag_name']) <= set(tags['tag_name'])
 
 
 def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
@@ -96,7 +96,7 @@ def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
     """
     required_columns = {'book_id', 'tag_name'}
 
-    if not required_columns < set(book_tags.columns):
+    if not required_columns <= set(book_tags.columns):
         return False
 
     book_ids = book_tags['book_id'].unique()
@@ -119,7 +119,7 @@ def validate_tags_data(tags: pd.DataFrame) -> bool:
             bool: True if the data frame is a valid book_tags data frame
     """
     required_columns = {'tag_name'}
-    return required_columns < set(tags.columns)
+    return required_columns <= set(tags.columns)
 
 
 @click.command()

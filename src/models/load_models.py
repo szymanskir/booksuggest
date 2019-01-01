@@ -11,7 +11,7 @@ from .cb_recommend_models import ICbRecommendationModel
 from .cf_recommend_models import ICfRecommendationModel
 
 IRecommendationModel = TypeVar(
-    'T', 'ICbRecommendationModel', 'ICfRecommendationModel'
+    'IRecommendationModel', 'ICbRecommendationModel', 'ICfRecommendationModel'
 )
 
 

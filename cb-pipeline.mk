@@ -15,7 +15,7 @@ CB_SCORES = results/cb-results.csv
 # MODELS
 CB_MODELS_DIR = models/content-based-models
 
-## TF-IDF models
+### TF-IDF models
 TF_IDF_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
 TF_IDF_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-2grams-model.pkl
 TF_IDF_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
@@ -23,7 +23,7 @@ TF_IDF_NO_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
 TF_IDF_NO_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
 TF_IDF_NO_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
 
-## Count based models
+### Count based models
 COUNT_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
 COUNT_NO_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
 COUNT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-nouns-2grams-model.pkl
@@ -31,7 +31,7 @@ COUNT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
 COUNT_NO_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
 COUNT_NO_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
 
-## TF-IDF with tags models
+### TF-IDF with tags models
 TF_IDF_NOUNS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-model.pkl
 TF_IDF_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-2grams-model.pkl
 TF_IDF_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-nouns-tags-3grams-model.pkl
@@ -39,13 +39,17 @@ TF_IDF_NO_NOUNS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-model.pkl
 TF_IDF_NO_NOUNS_2GRAMS_TAGS= $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-2grams-model.pkl
 TF_IDF_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/tf-idf-no-nouns-tags-3grams-model.pkl
 
-## Count based with tags models
+### Count based with tags models
 COUNT_NOUNS_TAGS = $(CB_MODELS_DIR)/count-nouns-tags-model.pkl
 COUNT_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/count-nouns-2grams-tags-model.pkl
 COUNT_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-nouns-3grams-tags-model.pkl
 COUNT_NO_NOUNS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-tags-model.pkl
 COUNT_NO_NOUNS_2GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-2grams-tags-model.pkl
 COUNT_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-3grams-tags-model.pkl
+
+### Tag only based models
+TAG_MODEL = $(CB_MODELS_DIR)/tags-model.pkl
+
 
 ## CB models groups
 1GRAMS_MODELS_TAGS = $(TF_IDF_NOUNS_TAGS) \
@@ -83,12 +87,13 @@ COUNT_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-3grams-tags-model.p
 
 CB_MODELS = $(1GRAMS_MODELS) \
 	    $(2GRAMS_MODELS) \
-	    $(3GRAMS_MODELS)
+	    $(3GRAMS_MODELS) \
+	    $(TAG_MODEL)
 
 # PREDICTIONS
 CB_RESULTS_DIR = models/predictions/cb-results
 
-## Tf-idf predictions
+### Tf-idf predictions
 TF_IDF_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-predictions.csv
 TF_IDF_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-predictions.csv
 TF_IDF_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-2grams-predictions.csv
@@ -103,7 +108,7 @@ TF_IDF_NO_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-2gram
 TF_IDF_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-3grams-tags-predictions.csv
 TF_IDF_NO_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-3grams-tags-predictions.csv
 
-## Count based predictions
+### Count based predictions
 COUNT_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-predictions.csv
 COUNT_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-predictions.csv
 COUNT_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-predictions.csv
@@ -117,6 +122,9 @@ COUNT_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-tags-p
 COUNT_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-3grams-tags-predictions.csv
 COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-tags-predictions.csv
 COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-tags-predictions.csv
+
+### Tag based predictions
+TAG_PREDICTION = $(CB_RESULTS_DIR)/tag-predictions.csv
 
 CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 		$(TF_IDF_NO_NOUNS_PREDICTION) \
@@ -141,7 +149,8 @@ CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 		$(COUNT_NOUNS_2GRAMS_TAGS_PREDICTION) \
 		$(COUNT_NOUNS_3GRAMS_TAGS_PREDICTION) \
 		$(COUNT_NO_NOUNS_2GRAMS_TAGS_PREDICTION) \
-		$(COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION) 
+		$(COUNT_NO_NOUNS_3GRAMS_TAGS_PREDICTION) \
+		$(TAG_PREDICTION)
 
 ################################################################################
 #
@@ -175,9 +184,9 @@ COMMON_CB_DEPS = src/models/tf_idf_models.py
 $(CB_MODELS): $(COMMON_CB_DEPS)
 
 # ngram prerequisites
-$(1GRAMS_MODELS): NGRAM := 1
-$(2GRAMS_MODELS): NGRAM := 2
-$(3GRAMS_MODELS): NGRAM := 3
+$(1GRAMS_MODELS): NGRAM_OPTION := --ngrams 1
+$(2GRAMS_MODELS): NGRAM_OPTION := --ngrams 2
+$(3GRAMS_MODELS): NGRAM_OPTION := --ngrams 3
 
 # noun/no-noun prerequisites
 NOUN_MODELS = $(TF_IDF_NOUNS) \
@@ -213,47 +222,63 @@ $(NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITH_NOUNS)
 $(NO_NOUN_MODELS): DESCR_FILE := $(CLEAN_DESCRIPTION_WITHOUT_NOUNS)
 
 # counter/tf-idf prerequisites
+
+TF_IDF_TAGS_MODELS = $(TF_IDF_NOUNS_TAGS) \
+		     $(TF_IDF_NOUNS_2GRAMS_TAGS) \
+		     $(TF_IDF_NOUNS_3GRAMS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
+		     $(TF_IDF_NO_NOUNS_3GRAMS_TAGS) \
+
 TF_IDF_MODELS = $(TF_IDF_NOUNS) \
 		$(TF_IDF_NOUNS_2GRAMS) \
 	        $(TF_IDF_NOUNS_3GRAMS) \
-	        $(TF_IDF_NOUNS_TAGS) \
-	        $(TF_IDF_NOUNS_2GRAMS_TAGS) \
-	        $(TF_IDF_NOUNS_3GRAMS_TAGS) \
 		$(TF_IDF_NO_NOUNS) \
 	        $(TF_IDF_NO_NOUNS_2GRAMS) \
 	        $(TF_IDF_NO_NOUNS_3GRAMS) \
-	        $(TF_IDF_NO_NOUNS_TAGS) \
-	        $(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
-	        $(TF_IDF_NO_NOUNS_3GRAMS_TAGS) \
+
 
 COUNT_MODELS = $(COUNT_NOUNS) \
 	       $(COUNT_NOUNS_2GRAMS) \
 	       $(COUNT_NOUNS_3GRAMS) \
-	       $(COUNT_NOUNS_TAGS) \
-	       $(COUNT_NOUNS_2GRAMS_TAGS) \
-	       $(COUNT_NOUNS_3GRAMS_TAGS) \
 	       $(COUNT_NO_NOUNS) \
 	       $(COUNT_NO_NOUNS_2GRAMS) \
 	       $(COUNT_NO_NOUNS_3GRAMS) \
-	       $(COUNT_NO_NOUNS_TAGS) \
-	       $(COUNT_NO_NOUNS_2GRAMS_TAGS) \
-	       $(COUNT_NO_NOUNS_3GRAMS_TAGS)
 
-$(TF_IDF_MODELS): TEXT_MODEL_FLAG := --tf_idf
-$(COUNT_MODELS): TEXT_MODEL_FLAG := --count
+COUNT_TAGS_MODELS = $(COUNT_NOUNS_TAGS) \
+		    $(COUNT_NOUNS_2GRAMS_TAGS) \
+	   	    $(COUNT_NOUNS_3GRAMS_TAGS) \
+	   	    $(COUNT_NO_NOUNS_TAGS) \
+	   	    $(COUNT_NO_NOUNS_2GRAMS_TAGS) \
+	   	    $(COUNT_NO_NOUNS_3GRAMS_TAGS)
+
+$(TF_IDF_MODELS): MODEL_NAME := tf-idf
+$(TF_IDF_TAGS_MODELS): MODEL_NAME := tf-idf-tag
+$(COUNT_MODELS): MODEL_NAME := count
+$(COUNT_TAGS_MODELS): MODEL_NAME := count-tag
+$(TAG_MODEL): data/processed/book.csv
+$(TAG_MODEL): MODEL_NAME := tag
+$(TAG_MODEL): DESCR_FILE := data/processed/book.csv
+
 
 # tag prerequisites
 TAG_BASED_MODELS = $(1GRAMS_MODELS_TAGS) \
 		   $(2GRAMS_MODELS_TAGS) \
-		   $(3GRAMS_MODELS_TAGS)
+		   $(3GRAMS_MODELS_TAGS) \
+		   $(TAG_MODEL)
 
-$(TAG_BASED_MODELS): TAG_OPTION := --tag_features $(TAG_FEATURES)
+$(TAG_BASED_MODELS): TAG_OPTION := --tag_features_filepath $(TAG_FEATURES)
 $(TAG_BASED_MODELS): $(TAG_FEATURES)
 
 REC_COUNT = 20
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) $@ --ngrams $(NGRAM) $(TEXT_MODEL_FLAG) --n $(REC_COUNT) $(TAG_OPTION)
+	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) \
+							  $@ \
+							  --name $(MODEL_NAME) \
+							  --rec_count $(REC_COUNT) \
+							  $(NGRAM_OPTION) \
+							  $(TAG_OPTION)
 
 ################################################################################
 #
@@ -333,6 +358,9 @@ $(COUNT_NOUNS_3GRAMS_PREDICTION): $(COUNT_NOUNS_3GRAMS)
 
 $(COUNT_NO_NOUNS_3GRAMS_PREDICTION): MODEL := $(COUNT_NO_NOUNS_3GRAMS)
 $(COUNT_NO_NOUNS_3GRAMS_PREDICTION): $(COUNT_NO_NOUNS_3GRAMS)
+
+$(TAG_PREDICTION): MODEL := $(TAG_MODEL)
+$(TAG_PREDICTION): $(TAG_MODEL)
 
 $(CB_PREDICTIONS): $(CB_TEST_CASES)
 	$(PYTHON_INTERPRETER) -m src.models.predict_models $(MODEL) $(CB_TEST_CASES) $@
