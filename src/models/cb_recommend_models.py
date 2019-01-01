@@ -3,15 +3,32 @@
 
 from abc import ABCMeta, abstractmethod
 from typing import Dict
+import pandas as pd
 
 from sklearn.neighbors import NearestNeighbors
 
 from .content_analyzer import IContentAnalyzer
+from .model_exceptions import UntrainedModelError
 
 
 class ICbRecommendationModel(metaclass=ABCMeta):
     """Interface for content based recommendation models.
     """
+
+    def __init__(self):
+        self._book_data = None
+
+    def _is_trained(self):
+        if self._book_data is None:
+            raise UntrainedModelError()
+
+    @abstractmethod
+    def train(self, book_data: pd.DataFrame):
+        """Trains the content based recommendation model.
+
+        Args:
+            book_data: Data frame containing book data.
+        """
 
     @abstractmethod
     def recommend(self, book_id: int) -> Dict[int, float]:
@@ -41,7 +58,6 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
     def __init__(
             self,
-            book_data,
             content_analyzer: IContentAnalyzer,
             recommendation_count: int,
     ):
@@ -52,16 +68,17 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             recommendation_count:
                 How many recommendations should be returned for a single book.
         """
-        self._book_data = book_data
+        super().__init__()
         self.content_analyzer = content_analyzer
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
         )
 
-    def train(self):
+    def train(self, book_data: pd.DataFrame):
         """Prepares feature vectors.
         """
+        self._book_data = book_data
         result = self.content_analyzer.build_features(self._book_data)
         self.filtering_component.fit(result)
 
@@ -72,6 +89,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         descriptions. The cosine metric is used in order to determine
         which books are similar.
         """
+        self._is_trained()
         try:
             feature_vec = self.content_analyzer.get_feature_vector(book_id)
         except KeyError:

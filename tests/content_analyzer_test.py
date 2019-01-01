@@ -5,7 +5,6 @@ import pytest
 from os.path import dirname, join, realpath
 from unittest.mock import MagicMock, Mock
 from src.models.content_analyzer import (
-    ContentAnalyzer,
     ContentAnalyzerBuilder,
     EnsembledContentAnalyzer,
     InvalidBuilderConfigError,
@@ -81,48 +80,43 @@ def test_content_analyzers(
 
 
 @pytest.mark.parametrize(
-    "name, ngrams, recommendation_count, tag_features, expected", [
-        ('blank_model', 3, 10, None, 'Invalid model name blank_model'),
-        ('tf-idf', 3, None, None, 'Invalid recommendation count: None'),
-        ('tf-idf', 3, -1, None, 'Invalid recommendation count: -1'),
-        ('tf-idf', 3, -1, None, 'Invalid recommendation count: -1'),
-        ('tf-idf', None, 10, None, ''),
-        ('tf-idf', -1, 10, None, ''),
-        ('tag', -1, 10, None, ''),
-        ('tf-idf-tag', -1, 10, None, ''),
-        ('tf-idf-tag', -1, 10, tag_features, ''),
+    "name, ngrams, tag_features, expected", [
+        ('blank_model', 3, None, 'Invalid model name blank_model'),
+        ('tf-idf', None, None, ''),
+        ('tf-idf', -1,  None, ''),
+        ('tag', -1,  None, ''),
+        ('tf-idf-tag', -1, None, ''),
+        ('tf-idf-tag', -1, tag_features, ''),
     ])
 def test_content_analyzer_builder_config_validation(
         name,
         ngrams,
-        recommendation_count,
         tag_features,
         expected
 ):
     with pytest.raises(InvalidBuilderConfigError) as excinfo:
         ContentAnalyzerBuilder(
-            name, ngrams, recommendation_count, tag_features
+            name, ngrams, tag_features
         )
     assert str(excinfo.value) == expected
 
 
 @pytest.mark.parametrize(
-    "name, ngrams, recommendation_count, tag_features, expected", [
-        ('tf-idf', 3, 20, None, TextBasedContentAnalyzer),
-        ('count', 3, 20, None, TextBasedContentAnalyzer),
-        ('tag', None, 20, tag_features, TagBasedContentAnalyzer),
-        ('tf-idf-tag', 2, 20, tag_features, TextAndTagBasedContentAnalyzer),
-        ('count-tag', 2, 20, tag_features, TextAndTagBasedContentAnalyzer),
+    "name, ngrams, tag_features, expected", [
+        ('tf-idf', 3, None, TextBasedContentAnalyzer),
+        ('count', 3, None, TextBasedContentAnalyzer),
+        ('tag', None, tag_features, TagBasedContentAnalyzer),
+        ('tf-idf-tag', 20, tag_features, TextAndTagBasedContentAnalyzer),
+        ('count-tag', 20, tag_features, TextAndTagBasedContentAnalyzer),
     ])
 def test_content_analyzer_builder(
         name,
         ngrams,
-        recommendation_count,
         tag_features,
         expected
 ):
     builder = ContentAnalyzerBuilder(
-        name, ngrams, recommendation_count, tag_features
+        name, ngrams, tag_features
     )
     content_analyzer = builder.build_content_analyzer()
     assert isinstance(content_analyzer, expected)

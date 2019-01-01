@@ -17,17 +17,20 @@ from sklearn.feature_extraction.text import (
 
 from scipy.sparse import hstack
 
-
-class UnbuiltFeaturesError(Exception):
-    """Error is thrown when the content analyzer
-    are used before feature_building.
-    """
+from .model_exceptions import UnbuiltFeaturesError
 
 
 class IContentAnalyzer(metaclass=ABCMeta):
     """Interface for content analyzers responsible
     for creating feature vectors for books.
     """
+    def __init__(self):
+        self._book_data = None
+
+    def _has_built_features(self):
+        if self._book_data is None:
+            raise UnbuiltFeaturesError()
+
     @abstractmethod
     def build_features(self) -> np.ndarray:
         """Builds feature matrix for the book_data data frame.
@@ -47,19 +50,7 @@ class IContentAnalyzer(metaclass=ABCMeta):
         """
 
 
-class ContentAnalyzer(IContentAnalyzer):
-    """Base class representing a content analyzer.
-    """
-
-    def __init__(self):
-        self._book_data = None
-
-    def _has_built_features(self):
-        if self._book_data is None:
-            raise UnbuiltFeaturesError()
-
-
-class TextBasedContentAnalyzer(ContentAnalyzer):
+class TextBasedContentAnalyzer(IContentAnalyzer):
     """Content analyzer that extracts tf idf text features
     from book descriptions.
 
@@ -91,7 +82,7 @@ class TextBasedContentAnalyzer(ContentAnalyzer):
         return feature_vector
 
 
-class TagBasedContentAnalyzer(ContentAnalyzer):
+class TagBasedContentAnalyzer(IContentAnalyzer):
     """Content analyzer that uses book tags to construct
     feature vectors.
     """
@@ -112,7 +103,7 @@ class TagBasedContentAnalyzer(ContentAnalyzer):
         return self.tag_features.loc[book_id].values.reshape(1, -1)
 
 
-class EnsembledContentAnalyzer(ContentAnalyzer):
+class EnsembledContentAnalyzer(IContentAnalyzer):
     """Content analyzer that creates feature vectors composed of
     both text features and tag features.
 
@@ -160,16 +151,22 @@ class InvalidBuilderConfigError(Exception):
 
 
 class ContentAnalyzerBuilder():
+    """Builder class used for creating content analyzers
+    based on the given configuration.
+
+    Args:
+        name: Type of the content analyzer.
+        ngram: Maximal number of words in a single feature.
+        tag_features: Data frame containing calculated tag features.
+    """
     def __init__(
             self,
             name: str,
             ngrams: int = None,
-            recommendation_count: int = 20,
             tag_features: pd.DataFrame = None
     ):
         self._name = name
         self._ngrams = ngrams
-        self._recommendation_count = recommendation_count
         self._tag_features = tag_features
         self._validate_config()
 
@@ -189,12 +186,6 @@ class ContentAnalyzerBuilder():
             ])
         }
         valid_model_name = self._name in validation_rules.keys()
-
-        if (not isinstance(self._recommendation_count, int) or
-                self._recommendation_count < 0):
-            raise InvalidBuilderConfigError(
-                f'Invalid recommendation count: {self._recommendation_count}'
-            )
 
         if not valid_model_name:
             raise InvalidBuilderConfigError(f'Invalid model name {self._name}')

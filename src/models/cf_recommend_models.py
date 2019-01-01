@@ -6,9 +6,7 @@ import pandas as pd
 from surprise import SVD
 from surprise import Reader, Dataset, Prediction
 
-
-class UntrainedModelError(Exception):
-    pass
+from .model_exceptions import UntrainedModelError
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):
