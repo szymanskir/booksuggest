@@ -1,5 +1,5 @@
 
-.PHONY: clean data lint requirements app tests docs notebooks
+.PHONY: clean data lint requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -22,6 +22,17 @@ APP_CB_MODELS = $(CB_MODELS)
 APP_CF_MODELS = $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
+
+# Notebooks
+PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx
+nbs = $(wildcard notebooks/*.ipynb)
+pdfs = $(subst notebooks,reports, $(nbs:%.ipynb=%.pdf))
+
+reports/%.pdf: notebooks/%.ipynb $(PDF_TEMPLATE)
+	jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=$(VENV_NAME) --template better-article $<
+
+$(PDF_TEMPLATE):
+	cp reports/better-article.tplx $(PDF_TEMPLATE)
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -90,9 +101,7 @@ docs:
 	make -C docs/ html
 
 ## Convert all notebooks to PDF
-notebooks:
-	find notebooks/ -maxdepth 1 -type f -name "*.ipynb" -exec jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=rs-venv {} +
-	find notebooks/ -maxdepth 1 -type f -name "*.ipynb" -exec nbstripout {} +
+notebooks: $(pdfs)
 
 ################################################################################
 #
