@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod, abstractproperty
 from typing import Dict, Iterable, List, Tuple
 
 import pandas as pd
@@ -10,6 +10,14 @@ from .model_exceptions import UntrainedModelError
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):
+    @abstractproperty
+    def users(self) -> Iterable[int]:
+        """Returns iterator over users in training set.
+
+        Yields:
+            Iterable[int]: Users iterator.
+        """
+
     @abstractmethod
     def recommend(
             self,
@@ -95,29 +103,30 @@ class SurpriseBasedModel(ICfRecommendationModel):
             user_id: int,
             recommendations_count: int = 10
     ) -> Dict[int, float]:
-        try:
-            user_inner_id = self._trainset.to_inner_uid(user_id)
-        except ValueError:
-            return dict()
-
-        to_predict = [x for x in self._generate_antitest(user_inner_id)]
         if not self._algorithm:
             raise UntrainedModelError
+
+        to_predict = [x for x in self._generate_antitest(user_id)]
         predictions = self._algorithm.test(to_predict)
 
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
-            :self._recommendation_count]
+            :recommendations_count]
         rec_books = {iid: est for _, iid, _, est, _ in top_n}
 
         return rec_books
 
-    def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
-        for uiid in self._trainset.all_users():
-            yield from self._generate_antitest(uiid)
+    @property
+    def users(self) -> Iterable[int]:
+        yield from [self._trainset.to_raw_uid(x)
+                    for x in self._trainset.all_users()]
 
-    def _generate_antitest(self, user_inner_id: int):
+    def generate_antitest_set(self, users_ids: List[int]) -> Iterable[Tuple[int, int, float]]:
+        for uid in users_ids:
+            yield from self._generate_antitest(uid)
+
+    def _generate_antitest(self, user_id: int):
         fill = self._trainset.global_mean
-        user_id = self._trainset.to_raw_uid(user_inner_id)
+        user_inner_id = self._trainset.to_inner_uid(user_id)
         user_items = set([j for (j, _) in self._trainset.ur[user_inner_id]])
         yield from [(user_id, self._trainset.to_raw_iid(i), fill)
                     for i in self._trainset.all_items() if i not in user_items]
