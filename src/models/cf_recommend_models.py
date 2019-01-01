@@ -105,18 +105,14 @@ class SurpriseBasedModel(ICfRecommendationModel):
             user_id: int,
             recommendations_count: int = 10
     ) -> Dict[int, float]:
-        try:
-            user_inner_id = self._trainset.to_inner_uid(user_id)
-        except ValueError:
-            return dict()
-
-        to_predict = [x for x in self._generate_antitest(user_inner_id)]
         if not self._algorithm:
             raise UntrainedModelError
+
+        to_predict = [x for x in self._generate_antitest(user_id)]
         predictions = self._algorithm.test(to_predict)
 
         top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
-            :self._recommendation_count]
+            :recommendations_count]
         rec_books = {iid: est for _, iid, _, est, _ in top_n}
 
         return rec_books
