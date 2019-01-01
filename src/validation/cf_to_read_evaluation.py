@@ -25,18 +25,18 @@ def evaluate_to_read(
     """
     def evaluate(group):
         to_read_ids = group['book_id'].values
-        predictions = predictions_df[predictions_df['user_id'] ==
-                                     group.name][['book_id', 'est']]
+        predictions = predictions_grouped_df.get_group(group.name)
         pred_tuples = [(x.book_id, x.est)
                        for x in predictions.itertuples()]
-
         return (precision_thresholded(pred_tuples, to_read_ids, threshold),
                 recall_thresholded(pred_tuples, to_read_ids, threshold))
 
+    predictions_grouped_df = predictions_df.groupby('user_id')[
+        'book_id', 'est']
     metrics_series = to_read_df.groupby('user_id').apply(evaluate)
     df = pd.DataFrame(metrics_series.values.tolist(),
                       index=metrics_series.index)
-    return (df[df.columns[0]].mean(), df[df.columns[1]].mean())
+    return tuple(df.mean().values)
 
 
 @click.command()
