@@ -88,7 +88,7 @@ def main(model_filepath: str, output_filepath: str, n: int, chunk_count: int, ch
     logger.info('Calculating predictions...')
     predictions = predict_model(model, n, chunk_count, chunk)
 
-    logger.info('Saving results to %s...', output_filepath)
+    logger.info('Appending results to %s...', output_filepath)
     with open(output_filepath, 'a') as f:
         predictions.to_csv(f, header=f.tell() == 0, index=False)
 
