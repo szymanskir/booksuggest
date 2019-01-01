@@ -1,5 +1,5 @@
 
-.PHONY: clean data lint requirements app tests docs
+.PHONY: clean data lint requirements app tests docs notebooks
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -88,6 +88,11 @@ app: models
 docs: 
 	$(PYTHON_INTERPRETER) setup.py install
 	make -C docs/ html
+
+## Convert all notebooks to PDF
+notebooks:
+	find notebooks/ -maxdepth 1 -type f -name "*.ipynb" -exec jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=rs-venv {} +
+	find notebooks/ -maxdepth 1 -type f -name "*.ipynb" -exec nbstripout {} +
 
 ################################################################################
 #
