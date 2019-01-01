@@ -27,7 +27,11 @@ class ICbRecommendationModel(metaclass=ABCMeta):
         """Trains the content based recommendation model.
 
         Args:
-            book_data: Data frame containing book data.
+            book_data:
+                Data frame containing book data, composed of the following
+                columns: book_id, authors, original_publication_year,
+                original_title, title, isbn13, description.
+
         """
 
     @abstractmethod
