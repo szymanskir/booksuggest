@@ -59,22 +59,22 @@ $(SVD_MODEL): data/processed/ratings-train.csv
 #
 ################################################################################
 
+TASKS = task0 task1 task2 task3
+
 $(SLOPEONE_PREDICTION): MODEL := $(SLOPEONE_MODEL)
 $(SLOPEONE_PREDICTION): PREDICTION := $(SLOPEONE_PREDICTION)
-$(SLOPEONE_PREDICTION): $(SLOPEONE_MODEL)
+$(SLOPEONE_PREDICTION): $(SLOPEONE_MODEL) $(TASKS:task%=cf_pred_task_so_%)
 
 $(KNN_PREDICTION): MODEL := $(KNN_MODEL)
 $(KNN_PREDICTION): PREDICTION := $(KNN_PREDICTION)
-$(KNN_PREDICTION): $(KNN_MODEL)
+$(KNN_PREDICTION): $(KNN_MODEL) $(TASKS:task%=cf_pred_task_knn_%)
 
 $(SVD_PREDICTION): MODEL := $(SVD_MODEL)
 $(SVD_PREDICTION): PREDICTION := $(SVD_PREDICTION)
-$(SVD_PREDICTION): $(SVD_MODEL)
+$(SVD_PREDICTION): $(SVD_MODEL) $(TASKS:task%=cf_pred_task_svd_%)
 
-cf_prediction_task%: $(CF_MODELS)
-	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $(PREDICTION) --n 10 --chunk-count 4 --chunk $*
-
-$(CF_PREDICTIONS): cf_prediction_task0 cf_prediction_task1 cf_prediction_task2 cf_prediction_task3
+cf_pred_task%: $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m src.models.cf_predict_models $(MODEL) $(PREDICTION) --n 10 --chunk-count 4 --chunk $(lastword $(subst _, ,$*))
 
 ################################################################################
 #
