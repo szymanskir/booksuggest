@@ -85,5 +85,5 @@ cf_pred_task%: $(CF_MODELS)
 $(CF_TEST_SCORES): data/processed/ratings-test.csv  src/validation/cf_testset_evaluation.py $(CF_MODELS)
 	$(PYTHON_INTERPRETER) -m src.validation.cf_testset_evaluation $(CF_MODELS_DIR) $< $@
 
-$(CF_TO_READ_SCORES): data/processed/to_read.csv src/validation/cf_to_read_evaluation.py  $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) $< $@
+$(CF_TO_READ_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv src/validation/cf_to_read_evaluation.py  $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
