@@ -47,7 +47,8 @@ def svd_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
     """
     params = {'n_epochs': [20, 25],
               'lr_all': [0.002, 0.010],
-              'reg_all': [0.01, 0.4]}
+              'reg_all': [0.01, 0.4],
+              'random_state': [44]}
     algo = SVD
     return (algo, _perform_grid_search(algo, params, dataset))
 
