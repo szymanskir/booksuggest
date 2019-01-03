@@ -86,7 +86,7 @@ def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
 @click.option('--n', default=10,
               help='How many recommendations should be returned by the model')
 @click.option('--chunks-count', type=int, help='Numbers of chunks')
-def main(model_filepath: str, output_filepath: str, n: int, chunk_count: int):
+def main(model_filepath: str, output_filepath: str, n: int, chunks_count: int):
     logger.info('Loading model...')
     model = read_object(model_filepath)
 
