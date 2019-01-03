@@ -149,7 +149,8 @@ class SvdRecommendationModel(SurpriseBasedModel):
     def train(self):
         """Prepares user and items vectors.
         """
-        self._algorithm = SVD().fit(self._trainset)
+        algo = SVD(random_state=44)
+        self._algorithm = algo.fit(self._trainset)
 
 
 class KNNRecommendationModel(SurpriseBasedModel):
