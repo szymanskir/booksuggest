@@ -1,9 +1,10 @@
-from itertools import islice, chain, repeat
-import logging
-from typing import List, Tuple, Iterable, Any
 import click
+import logging
 import pandas as pd
+
 import concurrent.futures as cf
+from itertools import chain, islice, repeat
+from typing import Any, Iterable, List, Tuple
 
 from .cf_recommend_models import ICfRecommendationModel
 from ..utils.serialization import read_object
