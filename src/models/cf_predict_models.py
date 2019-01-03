@@ -88,6 +88,15 @@ def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
               help='How many recommendations should be returned by the model')
 @click.option('--chunks-count', type=int, help='Numbers of chunks')
 def main(model_filepath: str, output_filepath: str, n: int, chunks_count: int):
+    """Calculates and saves predictions for the given model.
+
+    Args:
+        model_filepath (str): Path to a file containg model.
+        output_filepath (str): Output filepath.
+        n (int): Number of recommendations to return.
+        chunks_count (int): In how many chunks split the users set
+            during parallel processing.
+    """
     logger.info('Loading model...')
     model = read_object(model_filepath)
 
