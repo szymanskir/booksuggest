@@ -49,6 +49,16 @@ def evaluate_on_predictions(
 @click.argument('output_filepath', type=click.Path())
 def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
          threshold: float, output_filepath: str):
+    """Evaluates precision and recall metrics of predictions on given testsets.
+
+    Args:
+        predictions_dir (str): Directory with predictions files.
+        to_read_filepath (str): Path to a file with to_read data.
+        testset_filepath (str): Path to a file with testset data.
+        threshold (float): Threshold for considering specific
+        recommendation a good one.
+        output_filepath (str): Output filepath.
+    """
     logger = logging.getLogger(__name__)
 
     predictions_files = listdir(predictions_dir)
