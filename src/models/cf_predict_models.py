@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def predict_model(model: ICfRecommendationModel,
                   recommendation_count: int,
-                  chunk_count: int,
+                  chunks_count: int,
                   batch_size: int = 100000
                   ) -> pd.DataFrame:
     """Calculates top recommendations for every user in the trainset.
@@ -23,21 +23,24 @@ def predict_model(model: ICfRecommendationModel,
     Args:
         model (ICfRecommendationModel): Already trained model.
         recommendation_count (int): Specifies how many recommendations to save.
-        chunk_count (int): Number of chunks.
+        chunks_count (int): Number of chunks.
         batch_size (int, optional): Defaults to 100000. Size of single batch.
 
     Returns:
         pd.DataFrame: Data frame with predictions.
     """
     main_df = pd.DataFrame(columns=['user_id', 'book_id', 'est'])
-    users = list(model.users)
-    users_chunked = [users[start::chunk_count] for start in range(chunk_count)]
+    users_chunked = _chunk_users(list(model.users), chunks_count)
     args = (users_chunked, repeat(model), repeat(recommendation_count),
             repeat(batch_size))
-    with cf.ProcessPoolExecutor(max_workers=chunk_count) as executor:
+    with cf.ProcessPoolExecutor(max_workers=chunks_count) as executor:
         for df in executor.map(_process_chunk, *args):
             main_df = main_df.append(df)
     return main_df.sort_values('user_id')
+
+
+def _chunk_users(users, chunks_count):
+    return [users[start::chunks_count] for start in range(chunks_count)]
 
 
 def _process_chunk(users, model, recommendation_count, batch_size):
@@ -82,13 +85,13 @@ def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
 @click.argument('output_filepath', type=click.Path())
 @click.option('--n', default=10,
               help='How many recommendations should be returned by the model')
-@click.option('--chunk-count', type=int, help='Numbers of chunks')
+@click.option('--chunks-count', type=int, help='Numbers of chunks')
 def main(model_filepath: str, output_filepath: str, n: int, chunk_count: int):
     logger.info('Loading model...')
     model = read_object(model_filepath)
 
     logger.info('Calculating predictions...')
-    predictions = predict_model(model, n, chunk_count)
+    predictions = predict_model(model, n, chunks_count)
 
     logger.info('Appending results to %s...', output_filepath)
     with open(output_filepath, 'a') as f:

@@ -1,6 +1,6 @@
 import pytest
 from src.models.cf_recommend_models import SlopeOneRecommendationModel
-from src.models.cf_predict_models import predict_model
+from src.models.cf_predict_models import _chunk_users, predict_model
 from os.path import dirname, join, realpath
 import pandas as pd
 
@@ -22,9 +22,7 @@ def test_generate_antitest(ratings_filepath, expected):
 ])
 def test_users_chunking(ratings_filepath, chunks_count, expected):
     users = list(SlopeOneRecommendationModel(ratings_filepath).users)
-    users_chunked = [users[start::chunks_count]
-                     for start in range(chunks_count)]
-    assert users_chunked == expected
+    assert _chunk_users(users, chunks_count) == expected
 
 
 @pytest.mark.parametrize("ratings_filepath, expected", [
