@@ -4,26 +4,10 @@ src.models package
 Submodules
 ----------
 
-src.models.cb\_dummy\_model module
-----------------------------------
-
-.. automodule:: src.models.cb_dummy_model
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 src.models.cb\_recommend\_models module
 ---------------------------------------
 
 .. automodule:: src.models.cb_recommend_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-src.models.cf\_dummy\_model module
-----------------------------------
-
-.. automodule:: src.models.cf_dummy_model
     :members:
     :undoc-members:
     :show-inheritance:
@@ -59,6 +43,16 @@ src.models.load\_models module
     :members:
     :undoc-members:
     :show-inheritance:
+
+src.models.cf\_predict\_models module
+-------------------------------------
+
+.. automodule:: src.models.cf_predict_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+    .. autofunction:: main(model_filepath: str, output_filepath: str, n: int, chunks_count: int)
 
 src.models.predict\_models module
 ---------------------------------
