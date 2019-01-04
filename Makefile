@@ -43,6 +43,8 @@ requirements:
 	$(PYTHON_INTERPRETER) setup.py install
 	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
 	pip install -r requirements.txt
+	ipython kernel install --user --name=$(VENV_NAME)
+	nbstripout --install
 
 ## Download Dataset
 data: $(RAW_DATA_FILES)
