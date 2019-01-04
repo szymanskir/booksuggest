@@ -119,13 +119,14 @@ def main(ratings_filepath: str, params_output_filepath: str,
         ratings_minified_df[['user_id', 'book_id', 'rating']], reader)
 
     logger.info('Searching parameters values for %s model...', model)
-    if model == 'knn':
-        algo, parameters_df = knn_grid_search(search_dataset)
-    elif model == 'svd':
-        algo, parameters_df = svd_grid_search(
-            search_dataset, random_state=random_state)
-    else:
-        raise ValueError
+    model_func = {
+        'knn': lambda x: knn_grid_search(x),
+        'svd': lambda x: svd_grid_search(x, random_state=random_state)}
+
+    try:
+        algo, parameters_df = model_func[model](search_dataset)
+    except KeyError:
+        raise KeyError("Model shortname not predefined!")
 
     logger.info('Saving parameters values to %s...', params_output_filepath)
     parameters_df.to_csv(params_output_filepath, index=False)
