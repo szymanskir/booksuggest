@@ -1,5 +1,5 @@
 
-.PHONY: clean data lint requirements app tests docs
+.PHONY: clean data lint common_requirements requirements app_requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
