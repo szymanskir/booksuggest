@@ -1,36 +1,52 @@
 ![Travis](https://travis-ci.com/szymanskir/Recommendation-system.svg?token=vMgapB9HzV6RFvox4Fiq&branch=master)
 
-Recommendation-system
-==============================
+# Recommendation System for Books
 
-Recommendation system for books. Bachelor thesis.
+Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
 
-# Instruction for reproducing the analysis (current state of the project)
+## Prerequisites
 
-Start by creating a new conda environment:
-```bash
-make create_environment
-```
+- UNIX based system
+- GNU Make
+- Python 3.7
 
-Now just activate the environment and add the conda forge channel:
-```bash
-source activate recommendation-system
-conda config --add channels conda-forge
-```
+## Viewing results
 
-Next download the dataset using the following command:
-```bash
-make data
-```
+1. Create and activate virtual environment:
+    ```bash
+    make create_environment; source source rs-venv/bin/activate
+    ```
+2. Install packages:
+    ```bash
+    make app_requirements
+    ```
+3. Run the app:
+    ```bash
+    make app
+    ```
 
-This command will install all required packages and download the raw data.
+## Reproducing the analysis
 
+1. Create and activate virtual environment:
+    ```bash
+    make create_environment
+    source source rs-venv/bin/activate
+    ```
+2. Install packages required for development:
+    ```bash
+    make requirements
+    ```
+3. Run the whole pipeline:
+    ```bash
+    make scores
+    ```
+    - To check pipeline on small subset of data use `TEST_RUN=1` parameter.
+    - To utilize make's parallel option using `-j <number_of_parallel_jobs>`, where `<number_of_parallel_jobs>` can be equal to number of processors cores.
 
-Project Organization
-------------
+## Project structure
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
+    ├── Makefile           <- Makefile with commands like `make data`, `make models`, `make scores`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
@@ -38,9 +54,9 @@ Project Organization
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── docs               <- Codebase documentation.
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
+    ├── models             <- Trained and serialized models, model predictions.
     │
     ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
     │                         the creator's initials, and a short `-` delimited description, e.g.
@@ -51,29 +67,20 @@ Project Organization
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
     │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
+    ├── requirements.txt        <- The requirements file for results presentation.
+    ├── requirements-dev.txt    <- The requirements file for reproducing the analysis environment.
     │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org
-
+    ├── setup.py           <- Project's main module. Can be installed with pip command.
+    └── src                <- Source code for use in this project.
+        │
+        ├── data           <- Scripts to download or generate data.
+        │
+        ├── features       <- Scripts to turn raw data into features for modeling.
+        │
+        ├── models         <- Scripts to train models and then use trained models to make
+        │                   predictions.
+        │
+        └── validation     <- Scripts to validate results against ground-truth data.
 
 --------
 
