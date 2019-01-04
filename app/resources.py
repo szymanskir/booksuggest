@@ -12,7 +12,7 @@ CURRENT_DIR = dirname(realpath(__file__))
 BOOK_DATA = pd.read_csv(
     join(CURRENT_DIR, 'assets/book.csv'), index_col='book_id'
 )
-USER_DATA = pd.read_csv(join(CURRENT_DIR, 'assets/ratings.csv')).dropna()
+USER_DATA = pd.read_csv(join(CURRENT_DIR, 'assets/ratings-train.csv')).dropna()
 
 
 # Model sources
