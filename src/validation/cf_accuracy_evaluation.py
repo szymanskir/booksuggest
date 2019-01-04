@@ -39,6 +39,13 @@ def test_accuracy(
 @click.argument('testset_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(models_dir: str, testset_filepath: str, output_filepath: str):
+    """Evaluates RMSE, MAE and FCP metrics of models on the given testset.
+
+    Args:
+        models_dir (str): Directory with models to test.
+        testset_filepath (str): Path to a file with test data.
+        output_filepath (str): Output filepath.
+    """
     logger = logging.getLogger(__name__)
 
     models_files = listdir(models_dir)

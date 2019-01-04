@@ -19,9 +19,9 @@ SVD_PREDICTION = $(CF_PREDICTIONS_DIR)/svd-predictions.csv
 
 CF_PREDICTIONS = $(SLOPEONE_PREDICTION) $(KNN_PREDICTION) $(SVD_PREDICTION)
 
-CF_TEST_SCORES = results/cf-test-results.csv
-CF_TO_READ_SCORES = results/cf-to_read-results.csv
-CF_SCORES = $(CF_TEST_SCORES) $(CF_TO_READ_SCORES)
+CF_ACCURACY_SCORES = results/cf-accuracy-results.csv
+CF_EFFECTIVENESS_SCORES = results/cf-effectiveness-results.csv
+CF_SCORES = $(CF_ACCURACY_SCORES) $(CF_EFFECTIVENESS_SCORES)
 
 ################################################################################
 #
@@ -82,8 +82,8 @@ cf_pred_task%: $(CF_MODELS)
 #
 ################################################################################
 
-$(CF_TEST_SCORES): data/processed/ratings-test.csv  src/validation/cf_testset_evaluation.py $(CF_MODELS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_testset_evaluation $(CF_MODELS_DIR) $< $@
+$(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  src/validation/cf_accuracy_evaluation.py $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
 
-$(CF_TO_READ_SCORES): data/processed/to_read.csv src/validation/cf_to_read_evaluation.py  $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_to_read_evaluation $(CF_PREDICTIONS_DIR) $< $@
+$(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv src/validation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.validation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
