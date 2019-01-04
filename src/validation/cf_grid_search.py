@@ -36,7 +36,8 @@ def knn_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
     return (algo, _perform_grid_search(algo, params, dataset))
 
 
-def svd_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
+def svd_grid_search(dataset: Dataset, random_state: int
+                    ) -> Tuple[AlgoBase, pd.DataFrame]:
     """Performs a grid searcg procedure for SVD model.
 
     Args:
@@ -48,7 +49,7 @@ def svd_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
     params = {'n_epochs': [20, 25],
               'lr_all': [0.002, 0.010],
               'reg_all': [0.01, 0.4],
-              'random_state': [44]}
+              'random_state': [random_state]}
     algo = SVD
     return (algo, _perform_grid_search(algo, params, dataset))
 
@@ -98,8 +99,9 @@ def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
 @click.argument('params_output_filepath', type=click.Path())
 @click.argument('metrics_output_filepath', type=click.Path())
 @click.option('--model', type=click.Choice(['knn', 'svd']))
+@click.option('--random-state', type=int)
 def main(ratings_filepath: str, params_output_filepath: str,
-         metrics_output_filepath: str, model: str):
+         metrics_output_filepath: str, model: str, random_state: int = None):
     """Searchs over model parameters values to find best combination.
 
     Args:
@@ -118,12 +120,12 @@ def main(ratings_filepath: str, params_output_filepath: str,
 
     logger.info('Searching parameters values for %s model...', model)
     if model == 'knn':
-        gs_func = knn_grid_search
+        algo, parameters_df = knn_grid_search(search_dataset)
     elif model == 'svd':
-        gs_func = svd_grid_search
+        algo, parameters_df = svd_grid_search(
+            search_dataset, random_state=random_state)
     else:
         raise ValueError
-    algo, parameters_df = gs_func(search_dataset)
 
     logger.info('Saving parameters values to %s...', params_output_filepath)
     parameters_df.to_csv(params_output_filepath, index=False)
