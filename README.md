@@ -10,7 +10,11 @@ Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
 - GNU Make
 - Python 3.7
 
-## Viewing results
+## Setup instructions
+
+Use `make help` to display help information about available commands.
+
+### Viewing results
 
 1. Create and activate virtual environment:
     ```bash
@@ -25,7 +29,7 @@ Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
     make app
     ```
 
-## Reproducing the analysis
+### Reproducing the analysis
 
 1. Create and activate virtual environment:
     ```bash
