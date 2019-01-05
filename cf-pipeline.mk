@@ -54,19 +54,15 @@ $(SVD_MODEL): data/processed/ratings-train.csv
 	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models $< $@ --random-state $(SEED)
 
 KNN_PARAMS_SEARCH=results/knn-parameters-search.csv
-KNN_PARAMS_METRICS=results/knn-parameters-metrics.csv 
 SVD_PARAMS_SEARCH=results/svd-parameters-search.csv
-SVD_PARAMS_METRICS=results/svd-parameters-metrics.csv
 
-grid_search: $(KNN_PARAMS_METRICS) $(KNN_PARAMS_SEARCH) $(SVD_PARAMS_METRICS) $(SVD_PARAMS_SEARCH)
+grid_search: $(KNN_PARAMS_SEARCH) $(SVD_PARAMS_SEARCH)
 
-$(KNN_PARAMS_METRICS): $(KNN_PARAMS_SEARCH)
 $(KNN_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) $(KNN_PARAMS_METRICS)--model knn --random-state $(SEED) --validate-results
+	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) --model knn --random-state $(SEED)
 
-$(SVD_PARAMS_METRICS): $(SVD_PARAMS_SEARCH)
 $(SVD_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) $(SVD_PARAMS_METRICS) --model svd --random-state $(SEED) --validate-results
+	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) --model svd --random-state $(SEED)
 
 ################################################################################
 #
