@@ -106,8 +106,10 @@ def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
 @click.argument('metrics_output_filepath', type=click.Path())
 @click.option('--model', type=click.Choice(['knn', 'svd']))
 @click.option('--random-state', type=int, default=None)
+@click.option('--validate-results', is_flag=True)
 def main(ratings_filepath: str, params_output_filepath: str,
-         metrics_output_filepath: str, model: str, random_state: int):
+         metrics_output_filepath: str, model: str, random_state: int,
+         validate_results: bool):
     """Searchs over model parameters values to find best combination.
 
     Args:
@@ -140,6 +142,9 @@ def main(ratings_filepath: str, params_output_filepath: str,
 
     logger.info('Saving parameters values to %s...', params_output_filepath)
     parameters_df.to_csv(params_output_filepath, index=False)
+
+    if not validate_results:
+        return
 
     logger.info('Evaluating best parameters on full dataset...')
     full_dataset = Dataset.load_from_df(
