@@ -62,7 +62,7 @@ def svd_grid_search(dataset: Dataset, random_state: int
 def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
                          dataset: Dataset) -> pd.DataFrame:
     gs = GridSearchCV(algo_class, param_grid, measures=['rmse', 'mae', 'fcp'],
-                      cv=5, n_jobs=4, joblib_verbose=10)
+                      cv=5, n_jobs=-1, joblib_verbose=10)
     gs.fit(dataset)
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
@@ -87,7 +87,7 @@ def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
         cv_iter = KFold(n_splits=5, random_state=random_state)
         result = cross_validate(algo_func(**row.params), full_dataset,
                                 measures=['rmse', 'mae', 'fcp'], cv=cv_iter,
-                                verbose=True)
+                                n_jobs=-1, verbose=True)
         results.append((row.rank_test_rmse,
                         np.mean(result['test_rmse']),
                         np.mean(result['test_mae']),
