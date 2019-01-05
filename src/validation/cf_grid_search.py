@@ -25,13 +25,14 @@ def knn_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
     """
     params = {'bsl_options': {'method': ['als'],
-                              'reg_i': [10, 5],
-                              'reg_u': [15, 10],
+                              'reg_i': [10, 5, 15],
+                              'reg_u': [15, 10, 20],
                               'n_epochs': [10, 15]},
               'k': [20, 40, 60],
               'sim_options': {'name': ['msd', 'cosine', 'pearson_baseline'],
                               'min_support': [1, 5],
-                              'user_based': [False]},
+                              'user_based': [True, False],
+                              'shrinkage': [100, 10, 200]},
               'verbose': [False]}
     algo = KNNBaseline
     return (algo, _perform_grid_search(algo, params, dataset))
@@ -47,9 +48,12 @@ def svd_grid_search(dataset: Dataset, random_state: int
     Returns:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
     """
-    params = {'n_epochs': [20, 25],
-              'lr_all': [0.002, 0.010],
-              'reg_all': [0.01, 0.4],
+    params = {'n_factors': [50, 100, 200, 500],
+              'biased': [False, True],
+              'init_std_dev': [0.1, 0.05, 0.2],
+              'n_epochs': [20, 25, 30],
+              'lr_all': [0.002, 0.001, 0.010, 0.050],
+              'reg_all': [0.01, 0.1, 0.4],
               'random_state': [random_state]}
     algo = SVD
     return (algo, _perform_grid_search(algo, params, dataset))
@@ -58,7 +62,7 @@ def svd_grid_search(dataset: Dataset, random_state: int
 def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
                          dataset: Dataset) -> pd.DataFrame:
     gs = GridSearchCV(algo_class, param_grid, measures=['rmse', 'mae', 'fcp'],
-                      cv=5)
+                      cv=5, n_jobs=4, joblib_verbose=10)
     gs.fit(dataset)
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
