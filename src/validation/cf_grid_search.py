@@ -15,11 +15,13 @@ from sklearn.utils.random import sample_without_replacement
 logger = logging.getLogger(__name__)
 
 
-def knn_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
+def knn_grid_search(dataset: Dataset, random_state: int
+                    ) -> Tuple[AlgoBase, pd.DataFrame]:
     """Performs a grid searcg procedure for KNN model.
 
     Args:
         dataset (Dataset): Dataset to run tests on.
+        random_state (int): Value for random seed.
 
     Returns:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
@@ -35,7 +37,7 @@ def knn_grid_search(dataset: Dataset) -> Tuple[AlgoBase, pd.DataFrame]:
                               'shrinkage': [100, 10, 200]},
               'verbose': [False]}
     algo = KNNBaseline
-    return (algo, _perform_grid_search(algo, params, dataset))
+    return (algo, _perform_grid_search(algo, params, dataset, random_state))
 
 
 def svd_grid_search(dataset: Dataset, random_state: int
@@ -44,6 +46,7 @@ def svd_grid_search(dataset: Dataset, random_state: int
 
     Args:
         dataset (Dataset): Dataset to run tests on.
+        random_state (int): Value for random seed.
 
     Returns:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
@@ -56,13 +59,14 @@ def svd_grid_search(dataset: Dataset, random_state: int
               'reg_all': [0.01, 0.1, 0.4],
               'random_state': [random_state]}
     algo = SVD
-    return (algo, _perform_grid_search(algo, params, dataset))
+    return (algo, _perform_grid_search(algo, params, dataset, random_state))
 
 
 def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
-                         dataset: Dataset) -> pd.DataFrame:
+                         dataset: Dataset, random_state: int) -> pd.DataFrame:
     gs = GridSearchCV(algo_class, param_grid, measures=['rmse', 'mae', 'fcp'],
-                      cv=5, n_jobs=-1, joblib_verbose=10)
+                      cv=KFold(5, random_state=random_state),
+                      n_jobs=-1, joblib_verbose=10)
     gs.fit(dataset)
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
@@ -107,7 +111,7 @@ def main(ratings_filepath: str, output_filepath: str,
 
     logger.info('Searching parameters values for %s model...', model)
     model_func = {
-        'knn': lambda x: knn_grid_search(x),
+        'knn': lambda x: knn_grid_search(x, random_state=random_state),
         'svd': lambda x: svd_grid_search(x, random_state=random_state)}
 
     try:
