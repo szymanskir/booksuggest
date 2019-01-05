@@ -44,6 +44,14 @@ src.models.cf\_svd\_models module
     :undoc-members:
     :show-inheritance:
 
+src.models.content\_analyzer module
+-----------------------------------
+
+.. automodule:: src.models.content_analyzer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.models.load\_models module
 ------------------------------
 

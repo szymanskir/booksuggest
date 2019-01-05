@@ -1,83 +1,171 @@
-import pandas as pd
-from abc import ABCMeta, abstractmethod
-from typing import Dict
+from abc import ABCMeta, abstractmethod, abstractproperty
+from typing import Dict, Iterable, List, Tuple
 
-from surprise import SVD
-from surprise import Reader
-from surprise import Dataset
+import pandas as pd
+
+from surprise import Dataset, Prediction, Reader
+from surprise import KNNBaseline, SlopeOne, SVD
+
+from .model_exceptions import UntrainedModelError
 
 
 class ICfRecommendationModel(metaclass=ABCMeta):
+    @abstractproperty
+    def users(self) -> Iterable[int]:
+        """Returns iterator over users in training set.
+
+        Yields:
+            Iterable[int]: Users iterator.
+        """
+
     @abstractmethod
-    def recommend(self, user_id: int) -> Dict[int, float]:
-        """Recommends books for given user present in the training dataset.
+    def recommend(
+            self,
+            user_id: int,
+            recommendations_count: int = 10
+    ) -> Dict[int, float]:
+        """Returns a top `recommendation_count` recommendations for specific user.
 
         Args:
-            user_id (int): Id of the user for who recommendations would be given.
+            user_id (int): Id of the user.
+            recommendations_count (int, optional):
+                Defaults to 10. Specifies how many recommendations to return.
+
+        Raises:
+            UntrainedModelError:
+                Raised when method is used before model is trained.
 
         Returns:
-            Dict[int, float]: Dictionary of ``book_id: predicted_rating`` key-value pairs.
+            Dict[int, float]: `book_id: estimated_rating` pairs
         """
-        pass
 
-
-class DummyModel(ICfRecommendationModel):
-    """Dummy recommendation model used for web app integration purposes.
-    """
-
-    def recommend(self, user_id: int) -> Dict[int, float]:
-        return {book_id: 5.00 for book_id in range(1, 5)}
-
-
-class SvdRecommendationModel(ICfRecommendationModel):
-    """Recommendation model using the Singular Value Decomposition operation.
-
-    Attributes:
-        recommendation_count: How many recommendations should be returned for a single user.
-        trainset: Dataset containing (user_id, book_id, rating) tuples.
-    """
-
-    def __init__(self, input_filepath: str, recommendation_count: int):
-        """Initializes an instance of the SvdRecommendationModel class.
+    @abstractmethod
+    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        """Tests the model on the given ground-truth dataset.
 
         Args:
-            input_filepath: Filepath containing ratings data.
-            recommendation_count: How many recommendations should be returned for a single user.
-        """
-        self.recommendation_count = recommendation_count
+            ratings (List[Tuple[int, int, float]]):
+                `(user_id, book_id, true_rating)` tuples
 
+        Raises:
+            UntrainedModelError:
+                Raised when method is used before model is trained.
+
+        Returns:
+            List[Prediction]:
+                List of predictions with true and estimated ratings.
+        """
+
+    def generate_antitest_set(self) -> Iterable[Tuple[int, int, float]]:
+        """Yields a list of ratings which are not already present in the trainset.
+
+        All the ratings where user is known and item is know, but rating for
+        (user, item) is not present in the trainset.
+
+        Yields:
+            Iterable[Tuple[int, int, float]]:
+                A list of tuples (uid, iid, global_mean)
+        """
+
+
+class SurpriseBasedModel(ICfRecommendationModel):
+    """Base class for models, which use algorithms from Surprise package.
+
+    Args:
+        input_filepath: Filepath containing ratings data.
+
+    Attributes:
+        _trainset (Trainset): Dataset used for model training.
+        _algorithm (AlgoBase):
+            Algorithm(defined in Surprise package) used by model.
+    """
+
+    def __init__(self, input_filepath: str):
+        self._trainset = self._read_trainset(input_filepath)
+        self._algorithm = None
+
+    @staticmethod
+    def _read_trainset(input_filepath: str):
         ratings_df = pd.read_csv(input_filepath)
         reader = Reader(rating_scale=(1, 5))
         dataset = Dataset.load_from_df(
             ratings_df[['user_id', 'book_id', 'rating']], reader)
-        self.trainset = dataset.build_full_trainset()
+        return dataset.build_full_trainset()
+
+    def test(self, ratings: List[Tuple[int, int, float]]) -> List[Prediction]:
+        if not self._algorithm:
+            raise UntrainedModelError
+
+        return self._algorithm.test(ratings)
+
+    def recommend(
+            self,
+            user_id: int,
+            recommendations_count: int = 10
+    ) -> Dict[int, float]:
+        if not self._algorithm:
+            raise UntrainedModelError
+
+        to_predict = [x for x in self._generate_antitest(user_id)]
+        predictions = self._algorithm.test(to_predict)
+
+        top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
+            :recommendations_count]
+        rec_books = {iid: est for _, iid, _, est, _ in top_n}
+
+        return rec_books
+
+    @property
+    def users(self) -> Iterable[int]:
+        yield from [self._trainset.to_raw_uid(x)
+                    for x in self._trainset.all_users()]
+
+    def generate_antitest_set(self, users_ids: List[int]) -> Iterable[Tuple[int, int, float]]:
+        for uid in users_ids:
+            yield from self._generate_antitest(uid)
+
+    def _generate_antitest(self, user_id: int):
+        fill = self._trainset.global_mean
+        user_inner_id = self._trainset.to_inner_uid(user_id)
+        user_items = set([j for (j, _) in self._trainset.ur[user_inner_id]])
+        yield from [(user_id, self._trainset.to_raw_iid(i), fill)
+                    for i in self._trainset.all_items() if i not in user_items]
+
+
+class SlopeOneRecommendationModel(SurpriseBasedModel):
+    """Recommendation algorithm using the SlopeOne algorithm.
+    """
+
+    def train(self):
+        """Computes users average ratings based on common items.
+        """
+        self._algorithm = SlopeOne().fit(self._trainset)
+
+
+class SvdRecommendationModel(SurpriseBasedModel):
+    """Recommendation algorithm using the Singular Value Decomposition operation.
+    """
 
     def train(self):
         """Prepares user and items vectors.
         """
-        algo = SVD()
-        algo.fit(self.trainset)
-        self.model = algo
+        self._algorithm = SVD().fit(self._trainset)
 
-    def recommend(self, user_id: int) -> Dict[int, float]:
-        """Recommends top n books for the given user.
+
+class KNNRecommendationModel(SurpriseBasedModel):
+    """Recommendation algorithm using the neighbor similarity.
+    """
+
+    def train(self):
+        """Computes user and items similarities.
         """
-        try:
-            user_inner_id = self.trainset.to_inner_uid(user_id)
-        except ValueError:
-            return dict()
-
-        read_book_ids = set(iid for iid, _ in self.trainset.ur[user_inner_id])
-        unread_books_ids = set(self.trainset.all_items()) - read_book_ids
-
-        to_predict = [(user_inner_id, item_inner_id, 0)
-                      for item_inner_id in unread_books_ids]
-
-        predictions = self.model.test(to_predict)
-        top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
-            :self.recommendation_count]
-
-        rec_books = {self.trainset.to_raw_iid(
-            iid): est for _, iid, _, est, _ in top_n}
-
-        return rec_books
+        bsl_options = {'method': 'als',
+                       'n_epochs': 10,
+                       'reg_u': 15,
+                       'reg_i': 10}
+        sim_options = {'name': 'pearson_baseline',
+                       'user_based': False,
+                       'min_support': 1}
+        algo = KNNBaseline(bsl_options=bsl_options,
+                           sim_options=sim_options, verbose=False)
+        self._algorithm = algo.fit(self._trainset)

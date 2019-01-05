@@ -1,17 +1,18 @@
-import pandas as pd
-import click
 import logging
+
+from typing import List, Tuple
+
+import click
+import pandas as pd
+
+from lxml import etree
 
 from .xml_parser import extract_all_book_xml_roots
 
-from typing import List, Tuple
-from lxml import etree
-
-logger = logging.getLogger(__name__)
-
 
 def extract_similar_books(xmls_dir: str) -> List[Tuple[int, int]]:
-    """Extracts ``similar_books`` element children for each book xml file in ``xmls_dir`` directory.
+    """Extracts ``similar_books`` element children for each
+    book xml file in ``xmls_dir`` directory.
 
     Args:
         xmls_dir (str): Directory with xml files.
@@ -38,7 +39,9 @@ def _extract_similar_books(book: etree.Element) -> List[Tuple[int, int]]:
     return similar_books_rows
 
 
-def process_similar_books(similar_books_rows: List[Tuple[int, int]]) -> pd.DataFrame:
+def process_similar_books(
+        similar_books_rows: List[Tuple[int, int]]
+) -> pd.DataFrame:
     """Converts list of `(work_id, similar_book_work_id)` to a data frame.
 
     Args:
@@ -53,7 +56,10 @@ def process_similar_books(similar_books_rows: List[Tuple[int, int]]) -> pd.DataF
     return similar_book_df
 
 
-def switch_to_book_id(similar_books_df: pd.DataFrame, book_df: pd.DataFrame) -> pd.DataFrame:
+def switch_to_book_id(
+        similar_books_df: pd.DataFrame,
+        book_df: pd.DataFrame
+) -> pd.DataFrame:
     """Change ids of books from ``work id`` to abstract ``book_id``
 
     Args:
@@ -100,9 +106,9 @@ def main(books_xml_dir: str, books_filepath: str, output_filepath: str):
         similar_books_df, book_df)
 
     similar_books_switched_ids_df.to_csv(output_filepath, index=False)
-    logger.info(f"Created: {output_filepath}")
+    logging.info("Created: %s", output_filepath)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    main()
+    main()  # pylint: disable=no-value-for-parameter

@@ -1,3 +1,4 @@
+
 .PHONY: clean data lint requirements app tests docs
 
 #################################################################################
@@ -13,94 +14,18 @@ TEST_RUN=0
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
-
-# Content Based Pipeline
-CLEAN_DESCRIPTION_WITH_NOUNS = data/interim/cb-tf-idf/book_with_nouns.csv
-CLEAN_DESCRIPTION_WITHOUT_NOUNS = data/interim/cb-tf-idf/book_without_nouns.csv
-CB_SCORES = results/cb-results.csv
-
-## CB models
-CB_MODELS_DIR = models/content-based-models
-
-### TF-IDF models
-TF_IDF_WITH_NOUNS = $(CB_MODELS_DIR)/tf-idf-nouns-model.pkl
-TF_IDF_WITHOUT_NOUNS = $(CB_MODELS_DIR)/tf-idf-no-nouns-model.pkl
-TF_IDF_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-2grams-model.pkl
-TF_IDF_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-nouns-3grams-model.pkl
-TF_IDF_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-2grams-model.pkl
-TF_IDF_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/tf-idf-no-nouns-3grams-model.pkl
-
-### Count based models
-COUNT_WITH_NOUNS = $(CB_MODELS_DIR)/count-nouns-model.pkl
-COUNT_WITHOUT_NOUNS = $(CB_MODELS_DIR)/count-no-nouns-model.pkl
-COUNT_WITH_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-nouns-2grams-model.pkl
-COUNT_WITH_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-nouns-3grams-model.pkl
-COUNT_WITHOUT_NOUNS_2GRAMS = $(CB_MODELS_DIR)/count-no-nouns-2grams-model.pkl
-COUNT_WITHOUT_NOUNS_3GRAMS = $(CB_MODELS_DIR)/count-no-nouns-3grams-model.pkl
-
-CB_MODELS = models/cb_dummy_model.pkl \
-		$(TF_IDF_WITH_NOUNS) \
-	    $(TF_IDF_WITH_NOUNS_2GRAMS) \
-	    $(TF_IDF_WITH_NOUNS_3GRAMS) \
-	    $(TF_IDF_WITHOUT_NOUNS) \
-	    $(TF_IDF_WITHOUT_NOUNS_2GRAMS) \
-	    $(TF_IDF_WITHOUT_NOUNS_3GRAMS) \
-	    $(COUNT_WITH_NOUNS) \
-	    $(COUNT_WITHOUT_NOUNS) \
-	    $(COUNT_WITH_NOUNS_2GRAMS) \
-	    $(COUNT_WITH_NOUNS_3GRAMS) \
-	    $(COUNT_WITHOUT_NOUNS_2GRAMS) \
-	    $(COUNT_WITHOUT_NOUNS_3GRAMS)
-
-
-## CB predictions
-CB_RESULTS_DIR = models/predictions/cb-results
-
-### Tf-idf predictions
-TF_IDF_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-predictions.csv
-TF_IDF_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-predictions.csv
-TF_IDF_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-2grams-predictions.csv
-TF_IDF_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-2grams-predictions.csv
-TF_IDF_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-nouns-3grams-predictions.csv
-TF_IDF_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/tf-idf-no-nouns-3grams-predictions.csv
-
-### Count based predictions
-COUNT_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-predictions.csv
-COUNT_NO_NOUNS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-predictions.csv
-COUNT_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-2grams-predictions.csv
-COUNT_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-nouns-3grams-predictions.csv
-COUNT_NO_NOUNS_2GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-2grams-predictions.csv
-COUNT_NO_NOUNS_3GRAMS_PREDICTION = $(CB_RESULTS_DIR)/count-no-nouns-3grams-predictions.csv
-
-CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
-		$(TF_IDF_NO_NOUNS_PREDICTION) \
-		$(TF_IDF_NOUNS_2GRAMS_PREDICTION) \
-		$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION) \
-		$(TF_IDF_NOUNS_3GRAMS_PREDICTION) \
-		$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION) \
-		$(COUNT_NOUNS_PREDICTION) \
-		$(COUNT_NO_NOUNS_PREDICTION) \
-		$(COUNT_NOUNS_2GRAMS_PREDICTION) \
-		$(COUNT_NOUNS_3GRAMS_PREDICTION) \
-		$(COUNT_NO_NOUNS_2GRAMS_PREDICTION) \
-		$(COUNT_NO_NOUNS_3GRAMS_PREDICTION)
-
-## SVD pipeline
-### Basic model
-BASIC_SVD_MODEL = models/collaborative-filtering-models/basic-svd-model.pkl
-
-CF_MODELS = models/cf_dummy_model.pkl $(BASIC_SVD_MODEL)
+include cb-pipeline.mk cf-pipeline.mk
 
 # Unified parts of the pipeline
-RESULT_FILES = $(CB_SCORES)
 MODELS = $(CB_MODELS) $(CF_MODELS)
 APP_CB_MODELS = $(CB_MODELS)
 APP_CF_MODELS = $(CF_MODELS)
-PREDICTIONS = $(CB_PREDICTIONS)
+PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
+SCORES = $(CB_SCORES) $(CF_SCORES)
 
 #################################################################################
 # COMMANDS                                                                      #
-#################################################################################
+################################################################################
 
 ## Install Python Dependencies
 requirements:
@@ -110,6 +35,9 @@ requirements:
 
 ## Download Dataset
 data: $(RAW_DATA_FILES)
+
+## Build features
+features: $(TAG_FEATURES)
 
 ## Train models
 models: $(MODELS)
@@ -122,7 +50,7 @@ tests:
 predictions: $(PREDICTIONS)
 
 ## Evaluate models
-scores: $(RESULT_FILES) 
+scores: $(SCORES) 
 
 ## Delete all compiled Python files
 clean:
@@ -134,6 +62,7 @@ clean:
 hard_clean: clean
 	rm -rf data/raw/books_xml
 	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
+	find features -type f -name '*.csv' -delete
 	find models -type f -name '*.pkl' -delete
 	find models -type f -name '*.csv' -delete
 	find results -type f -name '*.csv' -delete
@@ -149,7 +78,7 @@ lint:
 create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-# Start web application
+## Start web application
 app: models
 	cp --update $(APP_CB_MODELS) app/assets/models/cb
 	cp --update $(APP_CF_MODELS) app/assets/models/cf
@@ -177,8 +106,8 @@ data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
 data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
 	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
-data/processed/book_tags.csv: $(RAW_DATA_FILES)
-	$(PYTHON_INTERPRETER)-m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
+data/processed/book_tags.csv: $(RAW_DATA_FILES) data/processed/book.csv
+	$(PYTHON_INTERPRETER) -m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -202,13 +131,13 @@ data/raw/book_tags.csv: src/data/download_dataset.py
 data/raw/book.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 100
 endif
 
 data/raw/ratings.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 10000
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 1000
 endif
 
 data/raw/tags.csv: src/data/download_dataset.py
@@ -216,136 +145,12 @@ data/raw/tags.csv: src/data/download_dataset.py
 
 data/raw/to_read.csv: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 100
+endif
 
 data/raw/books_xml.zip: src/data/download_dataset.py
 	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_xml_zip) $@
-
-################################################################################
-#
-# Data preparation rules
-#
-################################################################################
-
-$(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv src/data/prepare_description.py 
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
-
-$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_description.py 
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
-
-data/processed/ratings-train.csv data/processed/ratings-test.csv: 
-	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split data/raw/ratings.csv data/processed/ratings-train.csv data/processed/ratings-test.csv
-
-################################################################################
-#
-# Model training rules
-#
-################################################################################
-
-
-models/cb_dummy_model.pkl: src/models/cb_dummy_model.py
-	$(PYTHON_INTERPRETER) -m src.models.cb_dummy_model $@
-
-COMMON_CB_DEPS = src/models/tf_idf_models.py src/models/cb_recommend_models.py
-
-
-TF_IDF_NOUNS_MODELS = $(TF_IDF_WITH_NOUNS) \
-		      $(TF_IDF_WITH_NOUNS_2GRAMS) \
-		      $(TF_IDF_WITH_NOUNS_3GRAMS)
-
-TF_IDF_WITHOUT_NOUNS_MODELS = $(TF_IDF_WITHOUT_NOUNS) \
-			      $(TF_IDF_WITHOUT_NOUNS_2GRAMS) \
-			      $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
-
-TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
-TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
-
-
-COUNT_NOUNS_MODELS = $(COUNT_WITH_NOUNS) \
-		     $(COUNT_WITH_NOUNS_2GRAMS) \
-		     $(COUNT_WITH_NOUNS_3GRAMS)
-
-COUNT_WITHOUT_NOUNS_MODELS = $(COUNT_WITHOUT_NOUNS) \
-			     $(COUNT_WITHOUT_NOUNS_2GRAMS) \
-			     $(COUNT_WITHOUT_NOUNS_3GRAMS)
-
-TF_IDF_1GRAM_MODELS = $(TF_IDF_WITH_NOUNS) $(TF_IDF_WITHOUT_NOUNS)
-TF_IDF_2GRAM_MODELS = $(TF_IDF_WITH_NOUNS_2GRAMS) $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-TF_IDF_3GRAM_MODELS = $(TF_IDF_WITH_NOUNS_3GRAMS) $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
-
-COUNT_1GRAM_MODELS = $(COUNT_WITH_NOUNS) $(COUNT_WITHOUT_NOUNS)
-COUNT_2GRAM_MODELS = $(COUNT_WITH_NOUNS_2GRAMS) $(COUNT_WITHOUT_NOUNS_2GRAMS)
-COUNT_3GRAM_MODELS = $(COUNT_WITH_NOUNS_3GRAMS) $(COUNT_WITHOUT_NOUNS_3GRAMS)
-
-$(TF_IDF_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
-$(TF_IDF_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
-
-$(COUNT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITH_NOUNS) $(COMMON_CB_DEPS)
-$(COUNT_WITHOUT_NOUNS_MODELS): $(CLEAN_DESCRIPTION_WITHOUT_NOUNS) $(COMMON_CB_DEPS)
-REC_COUNT = 10
-
-# Tf-idf models
-$(TF_IDF_1GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) 
-
-$(TF_IDF_2GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2
-
-$(TF_IDF_3GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3
-
-# Count based models
-$(COUNT_1GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --count
-
-$(COUNT_2GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 2 --count
-
-$(COUNT_3GRAM_MODELS):
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $< $@ --n $(REC_COUNT) --ngrams 3 --count
-
-# Collaborative-Filtering Models
-
-models/cf_dummy_model.pkl: src/models/cf_dummy_model.py
-	$(PYTHON_INTERPRETER) -m src.models.cf_dummy_model $@
-
-$(BASIC_SVD_MODEL): src/models/cf_svd_models.py src/models/cf_recommend_models.py data/processed/ratings-train.csv data/processed/ratings-test.csv
-	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models data/processed/ratings-train.csv $@ --n 10 
-
-################################################################################
-#
-# Model predictions rules
-#
-################################################################################
-CB_TEST_CASES = data/processed/similar_books.csv
-
-$(TF_IDF_NOUNS_PREDICTION): $(TF_IDF_WITH_NOUNS)
-$(TF_IDF_NO_NOUNS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS)
-$(TF_IDF_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_2GRAMS)
-$(TF_IDF_NO_NOUNS_2GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_2GRAMS)
-$(TF_IDF_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITH_NOUNS_3GRAMS)
-$(TF_IDF_NO_NOUNS_3GRAMS_PREDICTION): $(TF_IDF_WITHOUT_NOUNS_3GRAMS)
-
-$(COUNT_NOUNS_PREDICTION): $(COUNT_WITH_NOUNS)
-$(COUNT_NO_NOUNS_PREDICTION): $(COUNT_WITHOUT_NOUNS)
-$(COUNT_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_2GRAMS)
-$(COUNT_NO_NOUNS_2GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_2GRAMS)
-$(COUNT_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITH_NOUNS_3GRAMS)
-$(COUNT_NO_NOUNS_3GRAMS_PREDICTION): $(COUNT_WITHOUT_NOUNS_3GRAMS)
-
-$(CB_PREDICTIONS): 
-	$(PYTHON_INTERPRETER) -m src.models.predict_models $< $(CB_TEST_CASES) $@
-
-################################################################################
-#
-# Model evaluation rules
-#
-################################################################################
-
-SIMILAR_BOOKS = data/processed/similar_books.csv
-
-$(CB_SCORES): src/validation/evaluation.py data/processed/similar_books.csv $(PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
