@@ -10,6 +10,7 @@ from surprise.model_selection import GridSearchCV
 from surprise.model_selection.validation import cross_validate
 from surprise.model_selection.split import KFold
 import numpy as np
+from sklearn.utils.random import sample_without_replacement
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,8 @@ def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
 
 
 def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
-                         algo_func: Callable[..., AlgoBase]) -> pd.DataFrame:
+                         algo_func: Callable[..., AlgoBase], random_state: int
+                         ) -> pd.DataFrame:
     """Performs a 5-fold cross validation for best 5 parameters combinations.
 
     Args:
@@ -78,7 +80,7 @@ def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
     results = list()
     for row in best_performers.itertuples():
         logger.info("[%s]: %s",  row.rank_test_rmse, row.params)
-        cv_iter = KFold(n_splits=5, random_state=44)
+        cv_iter = KFold(n_splits=5, random_state=random_state)
         result = cross_validate(algo_func(**row.params), full_dataset,
                                 measures=['rmse', 'mae', 'fcp'], cv=cv_iter,
                                 verbose=True)
@@ -99,9 +101,9 @@ def test_best_parameters(parameters_df: pd.DataFrame, full_dataset: Dataset,
 @click.argument('params_output_filepath', type=click.Path())
 @click.argument('metrics_output_filepath', type=click.Path())
 @click.option('--model', type=click.Choice(['knn', 'svd']))
-@click.option('--random-state', type=int)
+@click.option('--random-state', type=int, default=None)
 def main(ratings_filepath: str, params_output_filepath: str,
-         metrics_output_filepath: str, model: str, random_state: int = None):
+         metrics_output_filepath: str, model: str, random_state: int):
     """Searchs over model parameters values to find best combination.
 
     Args:
@@ -113,7 +115,11 @@ def main(ratings_filepath: str, params_output_filepath: str,
         ValueError: When `model` is out of the specified range.
     """
     ratings_df = pd.read_csv(ratings_filepath)
-    ratings_minified_df = ratings_df[ratings_df['user_id'] <= 100]
+    users_count = len(ratings_df['user_id'].unique())
+    samples = 200 if 200 < users_count else users_count / 2
+    users_subset = set(sample_without_replacement(
+        users_count, samples, random_state=random_state))
+    ratings_minified_df = ratings_df[ratings_df['user_id'].isin(users_subset)]
     reader = Reader(rating_scale=(1, 5))
     search_dataset = Dataset.load_from_df(
         ratings_minified_df[['user_id', 'book_id', 'rating']], reader)
@@ -135,7 +141,7 @@ def main(ratings_filepath: str, params_output_filepath: str,
     full_dataset = Dataset.load_from_df(
         ratings_df[['user_id', 'book_id', 'rating']], reader)
     full_dataset_metrics_df = test_best_parameters(
-        parameters_df, full_dataset, algo)
+        parameters_df, full_dataset, algo, random_state)
 
     logger.info('Saving metrics for best parameters on full dataset to %s...',
                 metrics_output_filepath)
