@@ -51,7 +51,7 @@ COUNT_NO_NOUNS_3GRAMS_TAGS = $(CB_MODELS_DIR)/count-no-nouns-3grams-tags-model.p
 TAG_MODEL = $(CB_MODELS_DIR)/tags-model.pkl
 
 
-## CB models groups
+### CB models groups
 1GRAMS_MODELS_TAGS = $(TF_IDF_NOUNS_TAGS) \
 		     $(TF_IDF_NO_NOUNS_TAGS) \
 		     $(COUNT_NOUNS_TAGS) \

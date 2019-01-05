@@ -1,5 +1,5 @@
 
-.PHONY: clean data lint requirements app tests docs
+.PHONY: clean data lint common_requirements requirements app_requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -18,22 +18,40 @@ include cb-pipeline.mk cf-pipeline.mk
 
 # Unified parts of the pipeline
 MODELS = $(CB_MODELS) $(CF_MODELS)
-APP_CB_MODELS = $(CB_MODELS)
-APP_CF_MODELS = $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
+
+# Requirements
+common_requirements:
+	$(PYTHON_INTERPRETER) setup.py install
+	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
+
+# Notebooks
+PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx
+nbs = $(wildcard notebooks/*.ipynb)
+pdfs = $(subst notebooks,reports, $(nbs:%.ipynb=%.pdf))
+
+reports/%.pdf: notebooks/%.ipynb $(PDF_TEMPLATE)
+	jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=$(VENV_NAME) --template better-article $<
+
+$(PDF_TEMPLATE):
+	cp reports/better-article.tplx $(PDF_TEMPLATE)
 
 #################################################################################
 # COMMANDS                                                                      #
 ################################################################################
 
-## Install Python Dependencies
-requirements:
-	$(PYTHON_INTERPRETER) setup.py install
-	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
+## Install all Python dependencies
+requirements: common_requirements
 	pip install -r requirements.txt
+	ipython kernel install --user --name=$(VENV_NAME)
+	nbstripout --install
 
-## Download Dataset
+## Install only web application Python dependencies
+app_requirements: common_requirements
+	pip install -r app/requirements.txt
+
+## Download dataset
 data: $(RAW_DATA_FILES)
 
 ## Build features
@@ -44,7 +62,7 @@ models: $(MODELS)
 
 ## Run all tests
 tests: 
-	pytest
+	pytest tests
 
 ## Predict models
 predictions: $(PREDICTIONS)
@@ -79,15 +97,20 @@ create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
 ## Start web application
-app: models
-	cp --update $(APP_CB_MODELS) app/assets/models/cb
-	cp --update $(APP_CF_MODELS) app/assets/models/cf
+app:
+	$(foreach file,$(MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
+	$(if $(err),$(error Aborting),)
+	cp --update $(CB_MODELS) app/assets/models/cb
+	cp --update $(CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation
 docs: 
 	$(PYTHON_INTERPRETER) setup.py install
 	make -C docs/ html
+
+## Convert all notebooks to PDF
+notebooks: $(pdfs)
 
 ################################################################################
 #
