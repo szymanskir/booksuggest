@@ -11,6 +11,7 @@ PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
 PYTHON_INTERPRETER = python3.7
 TEST_RUN=0
+SEED = 44
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 

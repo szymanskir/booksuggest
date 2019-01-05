@@ -146,10 +146,11 @@ class SvdRecommendationModel(SurpriseBasedModel):
     """Recommendation algorithm using the Singular Value Decomposition operation.
     """
 
-    def train(self):
+    def train(self, random_state: int):
         """Prepares user and items vectors.
         """
-        self._algorithm = SVD().fit(self._trainset)
+        algo = SVD(random_state=random_state)
+        self._algorithm = algo.fit(self._trainset)
 
 
 class KNNRecommendationModel(SurpriseBasedModel):
