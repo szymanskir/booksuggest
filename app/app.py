@@ -14,7 +14,7 @@ def serve_layout():
         children=[
             components.PAGE_HEADER,
             html.Div(
-                className='col-10 mt-5 pb-3',
+                className='col-10',
                 children=[
                     html.Div(
                         className='d-flex flex-row align-items-center',
@@ -56,7 +56,7 @@ def serve_layout():
                 ]
             ),
             html.Div(
-                className='col-10 mt-5 pb-3',
+                className='col-10',
                 children=[
                     html.Div(
                         className='d-flex flex-row align-items-center',
@@ -94,7 +94,7 @@ def serve_layout():
                 ]
             ),
             html.Div(
-                className='col-10 mt-5 pb-3',
+                className='col-10',
                 children=[
                     html.Div(
                         className='d-flex flex-row align-items-center',
@@ -237,4 +237,4 @@ def display_cb_recommendation(model, selected_book_id):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
