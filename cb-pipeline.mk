@@ -363,7 +363,7 @@ $(TAG_PREDICTION): MODEL := $(TAG_MODEL)
 $(TAG_PREDICTION): $(TAG_MODEL)
 
 $(CB_PREDICTIONS): $(CB_TEST_CASES)
-	$(PYTHON_INTERPRETER) -m src.models.predict_models $(MODEL) $(CB_TEST_CASES) $@
+	$(PYTHON_INTERPRETER) -m src.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@
 
 ################################################################################
 #

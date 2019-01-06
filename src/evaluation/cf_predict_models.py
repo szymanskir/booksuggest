@@ -6,7 +6,7 @@ import concurrent.futures as cf
 from itertools import chain, islice, repeat
 from typing import Any, Iterable, List, Tuple
 
-from .cf_recommend_models import ICfRecommendationModel
+from ..models.cf_recommend_models import ICfRecommendationModel
 from ..utils.serialization import read_object
 
 logger = logging.getLogger(__name__)

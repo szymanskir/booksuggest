@@ -44,24 +44,6 @@ src.models.load\_models module
     :undoc-members:
     :show-inheritance:
 
-src.models.cf\_predict\_models module
--------------------------------------
-
-.. automodule:: src.models.cf_predict_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-    .. autofunction:: main(model_filepath: str, output_filepath: str, n: int, chunks_count: int)
-
-src.models.predict\_models module
----------------------------------
-
-.. automodule:: src.models.predict_models
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 src.models.tf\_idf\_models module
 ---------------------------------
 

@@ -8,7 +8,7 @@ from typing import List
 import click
 import pandas as pd
 
-from .cb_recommend_models import ICbRecommendationModel
+from ..models.cb_recommend_models import ICbRecommendationModel
 
 from ..utils.serialization import read_object
 from ..utils.csv_utils import save_csv

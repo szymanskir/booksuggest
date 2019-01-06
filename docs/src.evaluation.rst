@@ -32,6 +32,24 @@ src.evaluation.cf\_effectiveness\_evaluation module
 
     .. autofunction:: main(predictions_dir: str, to_read_filepath: str, testset_filepath: str, threshold: float, output_filepath: str)
 
+src.evaluation.cf\_predict\_models module
+-----------------------------------------
+
+.. automodule:: src.evaluation.cf_predict_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+    .. autofunction:: main(model_filepath: str, output_filepath: str, n: int, chunks_count: int)
+
+src.evaluation.cb\_predict\_models module
+-----------------------------------------
+
+.. automodule:: src.evaluation.cb_predict_models
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 src.evaluation.metrics module
 -----------------------------
 
