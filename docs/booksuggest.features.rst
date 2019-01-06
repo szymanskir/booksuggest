@@ -1,7 +1,7 @@
 Feature engineering package
 ============================
 
-build\_tag\_features module
+build\_tag\_features script
 ------------------------------------------------
 
 .. automodule:: booksuggest.features.build_tag_features
