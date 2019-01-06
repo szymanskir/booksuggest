@@ -71,7 +71,8 @@ def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
 
-def _minify_dataset():
+def _minify_dataset(ratings_df: pd.DataFrame, random_state: int
+                    ) -> pd.DataFrame:
     users_count = len(ratings_df['user_id'].unique())
     samples = 200 if 200 < users_count else users_count / 2
     users_subset = set(sample_without_replacement(
@@ -103,7 +104,7 @@ def main(ratings_filepath: str, output_filepath: str,
     ratings_df = pd.read_csv(ratings_filepath)
 
     if use_subset:
-        ratings_df = _minify_dataset(ratings_df)
+        ratings_df = _minify_dataset(ratings_df, random_state)
 
     reader = Reader(rating_scale=(1, 5))
     dataset = Dataset.load_from_df(
