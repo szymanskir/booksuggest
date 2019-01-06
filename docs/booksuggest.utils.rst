@@ -1,10 +1,7 @@
-booksuggest.utils package
+Utilities package
 =========================
 
-Submodules
-----------
-
-booksuggest.utils.csv\_utils module
+csv\_utils module
 -----------------------------------
 
 .. automodule:: booksuggest.utils.csv_utils
@@ -12,7 +9,7 @@ booksuggest.utils.csv\_utils module
     :undoc-members:
     :show-inheritance:
 
-booksuggest.utils.logging module
+logging module
 --------------------------------
 
 .. automodule:: booksuggest.utils.logging
@@ -20,19 +17,10 @@ booksuggest.utils.logging module
     :undoc-members:
     :show-inheritance:
 
-booksuggest.utils.serialization module
+serialization module
 --------------------------------------
 
 .. automodule:: booksuggest.utils.serialization
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: booksuggest.utils
     :members:
     :undoc-members:
     :show-inheritance:

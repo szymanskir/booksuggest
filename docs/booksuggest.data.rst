@@ -1,10 +1,7 @@
-booksuggest.data package
-================================
+Data preparation package
+========================
 
-Submodules
-----------
-
-booksuggest.data.clean\_book module
+clean\_book module
 -----------------------------------
 
 .. automodule:: booksuggest.data.clean_book
@@ -14,7 +11,7 @@ booksuggest.data.clean\_book module
 
     .. autofunction:: main(book_filepath: str, books_xml_dir: str, output_filepath: str)
 
-booksuggest.data.clean\_book\_tags module
+clean\_book\_tags module
 -----------------------------------------
 
 .. automodule:: booksuggest.data.clean_book_tags
@@ -24,7 +21,7 @@ booksuggest.data.clean\_book\_tags module
 
     .. autofunction:: main(book_filepath: str, book_tags_filepath: str, tags_filepath: str, genres_filepath: str, output_filepath: str)
 
-booksuggest.data.download\_dataset module
+download\_dataset module
 -----------------------------------------
 
 .. automodule:: booksuggest.data.download_dataset
@@ -34,7 +31,7 @@ booksuggest.data.download\_dataset module
 
     .. autofunction:: main(download_url: str, output_filepath: str)
 
-booksuggest.data.extract\_xml\_files module
+extract\_xml\_files module
 -------------------------------------------
 
 .. automodule:: booksuggest.data.extract_xml_files
@@ -44,7 +41,7 @@ booksuggest.data.extract\_xml\_files module
 
     .. autofunction:: main(xml_archive_path: str, output_dir: str)
 
-booksuggest.data.prepare\_description module
+prepare\_description module
 --------------------------------------------
 
 .. automodule:: booksuggest.data.prepare_description
@@ -54,7 +51,7 @@ booksuggest.data.prepare\_description module
 
     .. autofunction:: main(input_filepath: str, output_filepath: str, remove_nouns: bool)
 
-booksuggest.data.prepare\_similar\_books module
+prepare\_similar\_books module
 -----------------------------------------------
 
 .. automodule:: booksuggest.data.prepare_similar_books
@@ -64,7 +61,7 @@ booksuggest.data.prepare\_similar\_books module
 
     .. autofunction:: main(books_xml_dir: str, books_filepath: str, output_filepath: str)
 
-booksuggest.data.ratings\_train\_test\_split module
+ratings\_train\_test\_split module
 ---------------------------------------------------
 
 .. automodule:: booksuggest.data.ratings_train_test_split
@@ -74,19 +71,10 @@ booksuggest.data.ratings\_train\_test\_split module
 
     .. autofunction:: main(ratings_filepath: str, trainset_filepath: str, testset_filepath: str)
 
-booksuggest.data.xml\_parser module
+xml\_parser module
 -----------------------------------
 
 .. automodule:: booksuggest.data.xml_parser
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: booksuggest.data
     :members:
     :undoc-members:
     :show-inheritance:
