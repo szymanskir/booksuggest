@@ -29,11 +29,11 @@ def knn_grid_search(dataset: Dataset, random_state: int
                               'reg_i': [10, 5, 15],
                               'reg_u': [15, 10, 20],
                               'n_epochs': [10, 15]},
-              'k': [20, 40, 60],
-              'sim_options': {'name': ['msd', 'cosine', 'pearson_baseline'],
+              'k': [40, 20, 60],
+              'sim_options': {'name': ['pearson_baseline', 'cosine', 'msd'],
                               'min_support': [1, 5],
-                              'user_based': [True, False],
-                              'shrinkage': [100, 10, 200]},
+                              'user_based': [False],
+                              'shrinkage': [100]},
               'verbose': [False]}
     algo = KNNBaseline
     return (algo, _perform_grid_search(algo, params, dataset, random_state))
