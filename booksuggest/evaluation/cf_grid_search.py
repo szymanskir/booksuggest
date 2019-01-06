@@ -50,12 +50,12 @@ def svd_grid_search(dataset: Dataset, random_state: int
     Returns:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
     """
-    params = {'n_factors': [50, 100, 200, 500],
-              'biased': [False, True],
+    params = {'n_factors': [100, 50, 200, 500],
+              'biased': [True, False],
               'init_std_dev': [0.1, 0.05, 0.2],
               'n_epochs': [20, 25, 30],
-              'lr_all': [0.002, 0.001, 0.010, 0.050],
-              'reg_all': [0.01, 0.1, 0.4],
+              'lr_all': [0.005, 0.001, 0.010, 0.050],
+              'reg_all': [0.02, 0.005, 0.1, 0.4],
               'random_state': [random_state]}
     algo = SVD
     return (algo, _perform_grid_search(algo, params, dataset, random_state))
