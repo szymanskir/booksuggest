@@ -1,7 +1,7 @@
 import pandas as pd
 
 from os.path import dirname, join, realpath, splitext, basename
-from src.models.load_models import load_model
+from booksuggest.models.load_models import load_model
 from glob import glob
 
 _MINI_LOGO = 'http://sfinks.fizyka.pw.edu.pl/img/logo_mini.png'

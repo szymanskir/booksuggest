@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 from os.path import dirname, join, realpath
 from unittest.mock import MagicMock, Mock
-from src.models.content_analyzer import (
+from booksuggest.models.content_analyzer import (
     ContentAnalyzerBuilder,
     EnsembledContentAnalyzer,
     InvalidBuilderConfigError,

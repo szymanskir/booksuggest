@@ -5,7 +5,7 @@ Welcome to Recommendation System for Books's documentation!
    :maxdepth: 4
    :caption: Contents:
 
-   src
+   booksuggest
 
 
 Indices and tables

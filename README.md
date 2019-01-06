@@ -75,7 +75,7 @@ Use `make help` to display help information about available commands.
     ├── requirements-dev.txt    <- The requirements file for reproducing the analysis environment.
     │
     ├── setup.py           <- Project's main module. Can be installed with pip command.
-    └── src                <- Source code for use in this project.
+    └── booksuggest                <- Source code for use in this project.
         │
         ├── data           <- Scripts to download or generate data.
         │

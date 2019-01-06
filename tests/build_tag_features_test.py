@@ -3,7 +3,7 @@ import pytest
 
 from os.path import dirname, join, realpath
 
-import src.features.build_tag_features as btf
+import booksuggest.features.build_tag_features as btf
 
 test_case_dir = join(dirname(realpath(__file__)), 'data', 'build_tag_features')
 

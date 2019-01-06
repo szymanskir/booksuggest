@@ -2,7 +2,7 @@ import pytest
 
 from os.path import dirname, join, realpath
 
-from src.evaluation.cb_evaluation import (
+from booksuggest.evaluation.cb_evaluation import (
     calculate_single_score,
     read_similar_books
 )

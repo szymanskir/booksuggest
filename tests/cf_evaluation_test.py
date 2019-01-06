@@ -2,7 +2,7 @@ import pytest
 from os.path import dirname, join, realpath
 import pandas as pd
 
-from src.evaluation.cf_effectiveness_evaluation import evaluate_on_predictions
+from booksuggest.evaluation.cf_effectiveness_evaluation import evaluate_on_predictions
 
 test_case_dir = join(dirname(realpath(__file__)), 'data')
 

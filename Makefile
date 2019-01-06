@@ -74,7 +74,7 @@ scores: $(SCORES)
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
+	# find . -type d -name "__pycache__" -delete
 	rm -rf .mypy_cache
 
 ## Delete all downloaded and calculated files
@@ -89,9 +89,9 @@ hard_clean: clean
 
 ## Lint using flake8 and check types with mypy
 lint:
-	flake8 src
-	pylint src
-	mypy src --ignore-missing-imports
+	flake8 booksuggest
+	pylint booksuggest
+	mypy booksuggest --ignore-missing-imports
 
 ## Set up python interpreter environment
 create_environment:
@@ -122,16 +122,16 @@ notebooks: $(pdfs)
 BOOKS_XML_DIR = data/raw/books_xml
 
 $(BOOKS_XML_DIR): data/raw/books_xml.zip
-	$(PYTHON_INTERPRETER) -m src.data.extract_xml_files data/raw/books_xml.zip data/raw
+	$(PYTHON_INTERPRETER) -m booksuggest.data.extract_xml_files data/raw/books_xml.zip data/raw
 
 data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
-	$(PYTHON_INTERPRETER) -m src.data.clean_book data/raw/book.csv $(BOOKS_XML_DIR) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.data.clean_book data/raw/book.csv $(BOOKS_XML_DIR) $@
 
 data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
-	$(PYTHON_INTERPRETER) -m src.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
+	$(PYTHON_INTERPRETER) -m booksuggest.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
 
 data/processed/book_tags.csv: $(RAW_DATA_FILES) data/processed/book.csv
-	$(PYTHON_INTERPRETER) -m  src.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
+	$(PYTHON_INTERPRETER) -m  booksuggest.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
@@ -149,32 +149,32 @@ to_read_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/to
 books_xml_zip = https://github.com/zygmuntz/goodbooks-10k/raw/master/books_xml/books_xml.zip
 
 
-data/raw/book_tags.csv: src/data/download_dataset.py 
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(book_tags_url) $@
+data/raw/book_tags.csv: booksuggest/data/download_dataset.py 
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(book_tags_url) $@
 
-data/raw/book.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_url) $@
+data/raw/book.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(books_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 100
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 100
 endif
 
-data/raw/ratings.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(ratings_url) $@
+data/raw/ratings.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(ratings_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 1000
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 1000
 endif
 
-data/raw/tags.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(tags_url) $@
+data/raw/tags.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(tags_url) $@
 
-data/raw/to_read.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(to_read_url) $@
+data/raw/to_read.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(to_read_url) $@
 ifeq ($(TEST_RUN), 1)
-	$(PYTHON_INTERPRETER) -m src.data.minify_dataframe $@ --n 100
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 100
 endif
 
-data/raw/books_xml.zip: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) -m src.data.download_dataset $(books_xml_zip) $@
+data/raw/books_xml.zip: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(books_xml_zip) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #

@@ -30,12 +30,12 @@ CF_SCORES = $(CF_ACCURACY_SCORES) $(CF_EFFECTIVENESS_SCORES)
 ################################################################################
 
 data/processed/ratings-train.csv: data/raw/ratings.csv
-	$(PYTHON_INTERPRETER) -m src.data.ratings_train_test_split $< data/processed/ratings-train.csv data/processed/ratings-test.csv
+	$(PYTHON_INTERPRETER) -m booksuggest.data.ratings_train_test_split $< data/processed/ratings-train.csv data/processed/ratings-test.csv
 
 data/processed/ratings-test.csv: data/processed/ratings-train.csv
 
 data/processed/to_read.csv: data/raw/to_read.csv data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.data.clean_to_read $< data/processed/ratings-train.csv $@
+	$(PYTHON_INTERPRETER) -m booksuggest.data.clean_to_read $< data/processed/ratings-train.csv $@
 
 ################################################################################
 #
@@ -45,13 +45,13 @@ data/processed/to_read.csv: data/raw/to_read.csv data/processed/ratings-train.cs
 
 
 $(SLOPEONE_MODEL): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.models.cf_slopeone_models $< $@
+	$(PYTHON_INTERPRETER) -m booksuggest.models.cf_slopeone_models $< $@
 
 $(KNN_MODEL): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.models.cf_knn_models $< $@
+	$(PYTHON_INTERPRETER) -m booksuggest.models.cf_knn_models $< $@
 
 $(SVD_MODEL): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.models.cf_svd_models $< $@ --random-state $(SEED)
+	$(PYTHON_INTERPRETER) -m booksuggest.models.cf_svd_models $< $@ --random-state $(SEED)
 
 KNN_PARAMS_SEARCH=results/knn-parameters-search.csv
 SVD_PARAMS_SEARCH=results/svd-parameters-search.csv
@@ -59,10 +59,10 @@ SVD_PARAMS_SEARCH=results/svd-parameters-search.csv
 grid_search: $(KNN_PARAMS_SEARCH) $(SVD_PARAMS_SEARCH)
 
 $(KNN_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.evaluation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) --model knn --random-state $(SEED)
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) --model knn --random-state $(SEED)
 
 $(SVD_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.evaluation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) --model svd --random-state $(SEED)
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) --model svd --random-state $(SEED)
 
 ################################################################################
 #
@@ -80,7 +80,7 @@ $(SVD_PREDICTION): MODEL := $(SVD_MODEL)
 $(SVD_PREDICTION): $(SVD_MODEL)
 
 $(CF_PREDICTIONS):
-	$(PYTHON_INTERPRETER) -m src.evaluation.cf_predict_models $(MODEL) $@ --n 10 --chunks-count 4
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_predict_models $(MODEL) $@ --n 10 --chunks-count 4
 
 ################################################################################
 #
@@ -88,8 +88,8 @@ $(CF_PREDICTIONS):
 #
 ################################################################################
 
-$(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  src/evaluation/cf_accuracy_evaluation.py $(CF_MODELS)
-	$(PYTHON_INTERPRETER) -m src.evaluation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
+$(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  booksuggest/evaluation/cf_accuracy_evaluation.py $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
 
-$(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv src/evaluation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.evaluation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
+$(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv booksuggest/evaluation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
