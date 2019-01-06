@@ -25,6 +25,8 @@ tf\_idf\_models script
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(input_filepath: str, output_filepath: str, rec_count: int, ngrams: int, name: str, tag_features_filepath: str)
+
 cf\_recommend\_models module
 -----------------------------------------------
 
@@ -41,6 +43,8 @@ cf\_slopeone\_models script
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(input_filepath: str, output_filepath: str) 
+
 cf\_knn\_models script
 -----------------------------------------
 
@@ -49,6 +53,8 @@ cf\_knn\_models script
     :undoc-members:
     :show-inheritance:
 
+    .. autofunction:: main(input_filepath: str, output_filepath: str)
+
 cf\_svd\_models script
 -----------------------------------------
 
@@ -56,6 +62,8 @@ cf\_svd\_models script
     :members:
     :undoc-members:
     :show-inheritance:
+
+    .. autofunction:: main(input_filepath: str, random_state: int, output_filepath: str)
 
 
 load\_models module

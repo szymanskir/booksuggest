@@ -83,8 +83,9 @@ def merge_book_data(
 @click.argument('books_xml_dir', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(book_filepath: str, books_xml_dir: str, output_filepath: str):
-    """Extracts additional data about books from .xml files
-       and joins it with previous data.
+    """
+    Extracts additional data about books from .xml files
+    and joins it with previous data.
 
     Args:
         book_filepath (str): Book data frame.
