@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, Tuple
 from surprise import AlgoBase, KNNBaseline, SVD
 from surprise import Dataset, Reader
 from surprise.model_selection import GridSearchCV
-from surprise.model_selection.validation import cross_validate
+from surprise.model_selection.evaluation import cross_validate
 from surprise.model_selection.split import KFold
 import numpy as np
 from sklearn.utils.random import sample_without_replacement

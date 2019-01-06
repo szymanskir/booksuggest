@@ -84,7 +84,7 @@ Use `make help` to display help information about available commands.
         ├── models         <- Scripts to train models and then use trained models to make
         │                   predictions.
         │
-        └── validation     <- Scripts to validate results against ground-truth data.
+        └── evaluation     <- Scripts to evaluate scores and validate results against ground-truth data.
 
 --------
 

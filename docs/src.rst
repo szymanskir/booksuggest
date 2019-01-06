@@ -11,7 +11,7 @@ Subpackages
     src.models
     src.utils
     src.features
-    src.validation
+    src.evaluation
 
 Module contents
 ---------------

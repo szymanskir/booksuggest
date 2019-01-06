@@ -59,10 +59,10 @@ SVD_PARAMS_SEARCH=results/svd-parameters-search.csv
 grid_search: $(KNN_PARAMS_SEARCH) $(SVD_PARAMS_SEARCH)
 
 $(KNN_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) --model knn --random-state $(SEED)
+	$(PYTHON_INTERPRETER) -m src.evaluation.cf_grid_search data/processed/ratings-train.csv $(KNN_PARAMS_SEARCH) --model knn --random-state $(SEED)
 
 $(SVD_PARAMS_SEARCH): data/processed/ratings-train.csv
-	$(PYTHON_INTERPRETER) -m src.validation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) --model svd --random-state $(SEED)
+	$(PYTHON_INTERPRETER) -m src.evaluation.cf_grid_search data/processed/ratings-train.csv $(SVD_PARAMS_SEARCH) --model svd --random-state $(SEED)
 
 ################################################################################
 #
@@ -88,8 +88,8 @@ $(CF_PREDICTIONS):
 #
 ################################################################################
 
-$(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  src/validation/cf_accuracy_evaluation.py $(CF_MODELS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
+$(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  src/evaluation/cf_accuracy_evaluation.py $(CF_MODELS)
+	$(PYTHON_INTERPRETER) -m src.evaluation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
 
-$(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv src/validation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
+$(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv src/evaluation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.evaluation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@

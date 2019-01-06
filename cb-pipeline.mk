@@ -373,5 +373,5 @@ $(CB_PREDICTIONS): $(CB_TEST_CASES)
 
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
-$(CB_SCORES): src/validation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+$(CB_SCORES): src/evaluation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m src.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
