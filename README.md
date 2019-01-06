@@ -9,6 +9,7 @@ Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
 - UNIX based system
 - GNU Make
 - Python 3.7
+- pip
 
 ## Setup instructions
 
@@ -18,7 +19,7 @@ Use `make help` to display help information about available commands.
 
 1. Create and activate virtual environment:
     ```bash
-    make create_environment; source source rs-venv/bin/activate
+    make create_environment; source rs-venv/bin/activate
     ```
 2. Install packages:
     ```bash
@@ -33,8 +34,7 @@ Use `make help` to display help information about available commands.
 
 1. Create and activate virtual environment:
     ```bash
-    make create_environment
-    source source rs-venv/bin/activate
+    make create_environment; source rs-venv/bin/activate
     ```
 2. Install packages required for development:
     ```bash
@@ -49,7 +49,6 @@ Use `make help` to display help information about available commands.
 
 ## Project structure
 
-    ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data`, `make models`, `make scores`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
