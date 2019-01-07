@@ -26,12 +26,12 @@ def knn_grid_search(dataset: Dataset, random_state: int
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
     """
     params = {'bsl_options': {'method': ['als'],
-                              'reg_i': [10, 5, 15],
-                              'reg_u': [15, 10, 20],
-                              'n_epochs': [10, 15]},
-              'k': [40, 20, 60],
-              'sim_options': {'name': ['pearson_baseline', 'cosine', 'msd'],
-                              'min_support': [1, 5],
+                              'reg_i': [10],
+                              'reg_u': [15],
+                              'n_epochs': [10]},
+              'k': [30],
+              'sim_options': {'name': ['pearson_baseline'],
+                              'min_support': [1],
                               'user_based': [False],
                               'shrinkage': [100]},
               'verbose': [False]}
@@ -50,12 +50,13 @@ def svd_grid_search(dataset: Dataset, random_state: int
     Returns:
         Tuple[AlgoBase, pd.DataFrame]: `(model_constructor, best_parameters)`
     """
-    params = {'n_factors': [100, 50, 200, 500],
-              'biased': [True, False],
-              'init_std_dev': [0.1, 0.05, 0.2],
-              'n_epochs': [20, 25, 30],
-              'lr_all': [0.005, 0.001, 0.010, 0.050],
-              'reg_all': [0.02, 0.005, 0.1, 0.4],
+    params = {'n_factors': [100],
+              'biased': [True],
+              'init_mean': [0.1],
+              'init_std_dev': [0.05],
+              'n_epochs': [25],
+              'lr_all': [0.005],
+              'reg_all': [0.02],
               'random_state': [random_state]}
     algo = SVD
     return (algo, _perform_grid_search(algo, params, dataset, random_state))
@@ -65,7 +66,7 @@ def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
                          dataset: Dataset, random_state: int) -> pd.DataFrame:
     gs = GridSearchCV(algo_class, param_grid, measures=['rmse', 'mae', 'fcp'],
                       cv=KFold(5, random_state=random_state),
-                      n_jobs=-1, joblib_verbose=10)
+                      n_jobs=-1, joblib_verbose=100, pre_dispatch=2)
     gs.fit(dataset)
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
