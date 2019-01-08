@@ -12,6 +12,7 @@ VENV_NAME = rs-venv
 PYTHON_INTERPRETER = python3.7
 TEST_RUN=0
 SEED = 44
+NLTK_ASSETS = stopwords wordnet averaged_perceptron_tagger
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
@@ -26,6 +27,8 @@ SCORES = $(CB_SCORES) $(CF_SCORES)
 common_requirements:
 	$(PYTHON_INTERPRETER) setup.py install
 	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
+
+
 
 # Notebooks
 PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx
@@ -47,6 +50,7 @@ requirements: common_requirements
 	pip install -r requirements.txt
 	ipython kernel install --user --name=$(VENV_NAME)
 	nbstripout --install
+	$(PYTHON_INTERPRETER) -m nltk.downloader $(NLTK_ASSETS)
 
 ## Install only web application Python dependencies
 app_requirements: common_requirements
