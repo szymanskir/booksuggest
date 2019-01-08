@@ -9,4 +9,4 @@ build\_tag\_features script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(book_tags_filepath: str, output_filepath: str)
+    .. autofunction:: main(book_tags_filepath, output_filepath)

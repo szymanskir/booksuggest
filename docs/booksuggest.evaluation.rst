@@ -9,7 +9,7 @@ cb\_predict\_models script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(model_filepath: str, test_cases_filepath: str, output_filepath: str)
+    .. autofunction:: main(model_filepath, test_cases_filepath, output_filepath)
 
 cb\_evaluation script
 --------------------------------------------
@@ -19,7 +19,7 @@ cb\_evaluation script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(input_directory: str, similar_books_input: str, output_filepath: str)
+    .. autofunction:: main(input_directory, similar_books_input, output_filepath)
 
 
 cf\_predict\_models script
@@ -30,7 +30,7 @@ cf\_predict\_models script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(model_filepath: str, output_filepath: str, n: int, chunks_count: int)
+    .. autofunction:: main(model_filepath, output_filepath, n, chunks_count)
 
 cf\_accuracy\_evaluation script
 ------------------------------------------------------
@@ -40,7 +40,7 @@ cf\_accuracy\_evaluation script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(models_dir: str, testset_filepath: str, output_filepath: str)
+    .. autofunction:: main(models_dir, testset_filepath, output_filepath)
 
 cf\_effectiveness\_evaluation script
 -----------------------------------------------------------
@@ -50,7 +50,7 @@ cf\_effectiveness\_evaluation script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(predictions_dir: str, to_read_filepath: str, testset_filepath: str, threshold: float, output_filepath: str)
+    .. autofunction:: main(predictions_dir, to_read_filepath, testset_filepath, threshold, output_filepath)
 
 metrics module
 -------------------------------------
