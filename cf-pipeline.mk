@@ -92,4 +92,4 @@ $(CF_ACCURACY_SCORES): data/processed/ratings-test.csv  booksuggest/evaluation/c
 	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_accuracy_evaluation $(CF_MODELS_DIR) $< $@
 
 $(CF_EFFECTIVENESS_SCORES): data/processed/to_read.csv data/processed/ratings-test.csv booksuggest/evaluation/cf_effectiveness_evaluation.py  $(CF_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_effectiveness_evaluation $(CF_PREDICTIONS_DIR) data/processed/to_read.csv data/processed/ratings-test.csv $@ --n-min 20 --n-max 20
