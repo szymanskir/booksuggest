@@ -21,11 +21,11 @@ def _read_test_cases(test_cases_filepath: str) -> List[int]:
     for which similar books are calculated.
 
     Args:
-        test_cases_filepath: file containing a data frame with
-        the 'book_id' column.
+        test_cases_filepath (str): File containing a data frame with
+            the 'book_id' column.
 
     Returns:
-        list of book ids used for similar books calculations.
+        List[int]: List of book ids used for similar books calculations.
     """
     test_cases_data = pd.read_csv(test_cases_filepath)
     test_cases = test_cases_data['book_id'].sort_values().unique()
@@ -41,14 +41,15 @@ def predict_model(model: ICbRecommendationModel,
     are calculated using the given model.
 
     Args:
-        model: model used for recommending similar books
-        test_cases: list of book ids for which similar books are
-        calculated.
+        model (ICbRecommendationModel): Model used for recommending
+            similar books.
+        test_cases (List[int]): List of book ids for which similar books
+            are calculated.
 
     Returns:
-    data frame containing the book_id and the similar_book_id columns,
-    grouping is needed in order to retrieve all similar books of a specific
-    book.
+        pd.DataFrame: Data frame containing the book_id and the
+            similar_book_id columns, grouping is needed in order to retrieve
+            all similar books of a specific book.
     """
     def recommend_helper(model, test_case_id):
         logging.debug('Computing %s', test_case_id)
@@ -71,10 +72,10 @@ def main(model_filepath: str, test_cases_filepath: str, output_filepath: str):
     """Script for calculating similar books recommendations of a given model.
 
     Args:
-        model_filepath: filepath to the model used for recommendations.
-        test_cases_filepath: filepath containing book ids for which similar
-        books will be calculated.
-        output_filepath: file where the result data frame should be saved.
+        model_filepath (str): filepath to the model used for recommendations.
+        test_cases_filepath (str): filepath containing book ids for which
+            similar are calculated.
+        output_filepath (str): File where the data frame should be saved.
     """
     logger = logging.getLogger(__name__)
 
