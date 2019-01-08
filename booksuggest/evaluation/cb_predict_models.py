@@ -47,9 +47,10 @@ def predict_model(model: ICbRecommendationModel,
             are calculated.
 
     Returns:
-        pd.DataFrame: Data frame containing the book_id and the
-            similar_book_id columns, grouping is needed in order to retrieve
-            all similar books of a specific book.
+        pd.DataFrame:
+            Data frame containing the book_id and the similar_book_id columns;
+            grouping is needed in order to retrieve all similar books of a
+            specific book.
     """
     def recommend_helper(model, test_case_id):
         logging.debug('Computing %s', test_case_id)

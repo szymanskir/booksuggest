@@ -56,7 +56,7 @@ def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
         to_read_filepath (str): Path to a file with to_read data.
         testset_filepath (str): Path to a file with testset data.
         threshold (float): Threshold for considering specific
-        recommendation a good one.
+            recommendation a good one.
         output_filepath (str): Output filepath.
     """
     logger = logging.getLogger(__name__)
