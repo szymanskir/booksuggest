@@ -52,9 +52,9 @@ def svd_grid_search(dataset: Dataset, random_state: int
     """
     params = {'n_factors': [100],
               'biased': [True],
-              'init_mean': [0.1],
-              'init_std_dev': [0.05],
-              'n_epochs': [25],
+              'init_mean': [0, 0.1, 0.3, 0.5],
+              'init_std_dev': [0.1, 0.05],
+              'n_epochs': [20],
               'lr_all': [0.005],
               'reg_all': [0.02],
               'random_state': [random_state]}
@@ -66,7 +66,7 @@ def _perform_grid_search(algo_class: AlgoBase, param_grid: Dict[str, Any],
                          dataset: Dataset, random_state: int) -> pd.DataFrame:
     gs = GridSearchCV(algo_class, param_grid, measures=['rmse', 'mae', 'fcp'],
                       cv=KFold(5, random_state=random_state),
-                      n_jobs=-1, joblib_verbose=100, pre_dispatch=2)
+                      n_jobs=2, joblib_verbose=100, pre_dispatch=2)
     gs.fit(dataset)
     return pd.DataFrame.from_dict(gs.cv_results).sort_values('rank_test_rmse')
 
