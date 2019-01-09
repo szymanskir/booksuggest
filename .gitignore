@@ -5,8 +5,8 @@ data/**/*.xml
 data/**/*.zip
 features/*.csv
 .vscode/*
-src/src.egg-info/*
-src.egg-info/*
+booksuggest/booksuggest.egg-info/*
+booksuggest.egg-info/*
 dist/*
 build/*
 __pycache__/

@@ -1,6 +1,6 @@
 import pytest
 
-from src.validation.metrics import (precision, precision_thresholded,
+from booksuggest.evaluation.metrics import (precision, precision_thresholded,
                                     recall, recall_thresholded)
 
 

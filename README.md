@@ -9,6 +9,7 @@ Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
 - UNIX based system
 - GNU Make
 - Python 3.7
+- pip
 
 ## Setup instructions
 
@@ -18,7 +19,7 @@ Use `make help` to display help information about available commands.
 
 1. Create and activate virtual environment:
     ```bash
-    make create_environment; source source rs-venv/bin/activate
+    make create_environment; source rs-venv/bin/activate
     ```
 2. Install packages:
     ```bash
@@ -33,8 +34,7 @@ Use `make help` to display help information about available commands.
 
 1. Create and activate virtual environment:
     ```bash
-    make create_environment
-    source source rs-venv/bin/activate
+    make create_environment; source rs-venv/bin/activate
     ```
 2. Install packages required for development:
     ```bash
@@ -49,7 +49,6 @@ Use `make help` to display help information about available commands.
 
 ## Project structure
 
-    ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data`, `make models`, `make scores`
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
@@ -75,7 +74,7 @@ Use `make help` to display help information about available commands.
     ├── requirements-dev.txt    <- The requirements file for reproducing the analysis environment.
     │
     ├── setup.py           <- Project's main module. Can be installed with pip command.
-    └── src                <- Source code for use in this project.
+    └── booksuggest                <- Source code for use in this project.
         │
         ├── data           <- Scripts to download or generate data.
         │
@@ -84,7 +83,7 @@ Use `make help` to display help information about available commands.
         ├── models         <- Scripts to train models and then use trained models to make
         │                   predictions.
         │
-        └── validation     <- Scripts to validate results against ground-truth data.
+        └── evaluation     <- Scripts to evaluate scores and validate results against ground-truth data.
 
 --------
 

@@ -1,6 +1,6 @@
 import pytest
-from src.models.cf_recommend_models import SlopeOneRecommendationModel
-from src.models.cf_predict_models import _chunk_users, predict_model
+from booksuggest.models.cf_recommend_models import SlopeOneRecommendationModel
+from booksuggest.evaluation.cf_predict_models import _chunk_users, predict_model
 from os.path import dirname, join, realpath
 import pandas as pd
 

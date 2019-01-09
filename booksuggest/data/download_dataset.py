@@ -8,8 +8,9 @@ import requests
 @click.argument('download_url')
 @click.argument('output_filepath', type=click.Path())
 def main(download_url: str, output_filepath: str):
-    """Downloads data from the ``download_url`` and saves
-       it in the ``output_filepath``.
+    """
+    Downloads data from the ``download_url`` and saves
+    it in the ``output_filepath``.
 
     Args:
         download_url (str): Url from which the data should be downloaded.

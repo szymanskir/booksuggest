@@ -158,11 +158,11 @@ CB_PREDICTIONS = $(TF_IDF_NOUNS_PREDICTION) \
 #
 ################################################################################
 
-$(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv src/data/prepare_description.py 
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@
+$(CLEAN_DESCRIPTION_WITH_NOUNS): data/processed/book.csv booksuggest/data/prepare_description.py 
+	$(PYTHON_INTERPRETER) -m booksuggest.data.prepare_description $< $@
 
-$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_description.py 
-	$(PYTHON_INTERPRETER) -m src.data.prepare_description $< $@ --remove_nouns
+$(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv booksuggest/data/prepare_description.py 
+	$(PYTHON_INTERPRETER) -m booksuggest.data.prepare_description $< $@ --remove_nouns
 
 ################################################################################
 #
@@ -170,8 +170,8 @@ $(CLEAN_DESCRIPTION_WITHOUT_NOUNS): data/processed/book.csv src/data/prepare_des
 #
 ################################################################################
 
-$(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
-	$(PYTHON_INTERPRETER) -m src.features.build_tag_features $< $@
+$(TAG_FEATURES): data/processed/book_tags.csv booksuggest/features/build_tag_features.py
+	$(PYTHON_INTERPRETER) -m booksuggest.features.build_tag_features $< $@
 
 ################################################################################
 #
@@ -179,7 +179,7 @@ $(TAG_FEATURES): data/processed/book_tags.csv src/features/build_tag_features.py
 #
 ################################################################################
 
-COMMON_CB_DEPS = src/models/tf_idf_models.py
+COMMON_CB_DEPS = booksuggest/models/tf_idf_models.py
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
 
@@ -273,7 +273,7 @@ $(TAG_BASED_MODELS): $(TAG_FEATURES)
 REC_COUNT = 20
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
-	$(PYTHON_INTERPRETER) -m src.models.tf_idf_models $(DESCR_FILE) \
+	$(PYTHON_INTERPRETER) -m booksuggest.models.tf_idf_models $(DESCR_FILE) \
 							  $@ \
 							  --name $(MODEL_NAME) \
 							  --rec_count $(REC_COUNT) \
@@ -363,7 +363,7 @@ $(TAG_PREDICTION): MODEL := $(TAG_MODEL)
 $(TAG_PREDICTION): $(TAG_MODEL)
 
 $(CB_PREDICTIONS): $(CB_TEST_CASES)
-	$(PYTHON_INTERPRETER) -m src.models.predict_models $(MODEL) $(CB_TEST_CASES) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@
 
 ################################################################################
 #
@@ -373,5 +373,5 @@ $(CB_PREDICTIONS): $(CB_TEST_CASES)
 
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
-$(CB_SCORES): src/validation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m src.validation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+$(CB_SCORES): booksuggest/evaluation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@

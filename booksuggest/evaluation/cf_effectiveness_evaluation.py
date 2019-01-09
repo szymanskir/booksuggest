@@ -11,7 +11,8 @@ from .metrics import precision_thresholded, recall_thresholded
 def evaluate_on_predictions(
         predictions_df: pd.DataFrame,
         test_df: pd.DataFrame,
-        threshold: float
+        threshold: float,
+        n: int
 ) -> Tuple[float, float]:
     """Calculates the precision and recall of predictions using to_read data.
 
@@ -26,7 +27,7 @@ def evaluate_on_predictions(
     """
     def evaluate(group):
         to_read_ids = group['book_id'].values
-        predictions = predictions_grouped_df.get_group(group.name)
+        predictions = predictions_grouped_df.get_group(group.name).head(n)
         pred_tuples = [(x.book_id, x.est)
                        for x in predictions.itertuples()]
         return (precision_thresholded(pred_tuples, to_read_ids, threshold),
@@ -46,9 +47,13 @@ def evaluate_on_predictions(
 @click.argument('testset_filepath', type=click.Path(exists=True))
 @click.option('--threshold', default=4.0,
               help='Treshold for rating to be valid recommendation.')
+@click.option('--n-min', default=10,
+              help='Lower bound of predictions number generated loop.')
+@click.option('--n-max', default=10,
+              help='Upper bound of predictions number generated loop.')
 @click.argument('output_filepath', type=click.Path())
 def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
-         threshold: float, output_filepath: str):
+         threshold: float, n_min: int, n_max: int, output_filepath: str):
     """Evaluates precision and recall metrics of predictions on given testsets.
 
     Args:
@@ -56,7 +61,9 @@ def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
         to_read_filepath (str): Path to a file with to_read data.
         testset_filepath (str): Path to a file with testset data.
         threshold (float): Threshold for considering specific
-        recommendation a good one.
+            recommendation a good one.
+        n_min (int): Lower bound of predictions number generated loop.
+        n_max (int): Upper bound of predictions number generated loop.
         output_filepath (str): Output filepath.
     """
     logger = logging.getLogger(__name__)
@@ -70,18 +77,20 @@ def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
     results = list()
     for prediction_file in predictions_files:
         prediction_df = pd.read_csv(join(predictions_dir, prediction_file))
-        p_to_read, r_to_read = evaluate_on_predictions(
-            prediction_df, to_read_df, threshold)
-        p_testset, r_testset = evaluate_on_predictions(
-            prediction_df, testset_df, threshold)
-        results.append((prediction_file, p_to_read, p_testset,
-                        r_to_read, r_testset))
+        for n in range(n_min, n_max + 1):
+            p_to_read, r_to_read = evaluate_on_predictions(
+                prediction_df, to_read_df, threshold, n)
+            p_testset, r_testset = evaluate_on_predictions(
+                prediction_df, testset_df, threshold, n)
+            results.append((prediction_file, n, p_to_read, p_testset,
+                            r_to_read, r_testset))
 
     logger.info('Saving results to %s...', output_filepath)
-    labels = ['model', 'precision-to_read', 'precision-testset',
+    labels = ['model', 'n', 'precision-to_read', 'precision-testset',
               'recall-to_read', 'recall-testset']
     results_df = pd.DataFrame.from_records(results, columns=labels)
-    results_df.to_csv(output_filepath, index=False)
+    with open(output_filepath, 'a') as f:
+        results_df.to_csv(f, header=f.tell() == 0, index=False)
 
 
 if __name__ == '__main__':
