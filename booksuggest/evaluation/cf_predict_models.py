@@ -84,7 +84,7 @@ def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
 @click.command()
 @click.argument('model_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
-@click.option('--n', default=10,
+@click.option('--n', default=20,
               help='How many recommendations should be returned by the model')
 @click.option('--chunks-count', type=int, help='Numbers of chunks')
 def main(model_filepath: str, output_filepath: str, n: int, chunks_count: int):

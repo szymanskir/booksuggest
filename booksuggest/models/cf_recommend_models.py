@@ -22,7 +22,7 @@ class ICfRecommendationModel(metaclass=ABCMeta):
     def recommend(
             self,
             user_id: int,
-            recommendations_count: int = 10
+            recommendations_count: int = 20
     ) -> Dict[int, float]:
         """Returns a top `recommendation_count` recommendations for specific user.
 
@@ -148,8 +148,13 @@ class SvdRecommendationModel(SurpriseBasedModel):
 
     def train(self, random_state: int):
         """Prepares user and items vectors.
+
+        Args:
+            random_state (int): Value for random seed.
         """
-        algo = SVD(random_state=random_state)
+        algo = SVD(n_factors=100, biased=True, init_mean=0.1,
+                   init_std_dev=0.05, n_epochs=25, lr_all=0.005,
+                   reg_all=0.02, random_state=random_state)
         self._algorithm = algo.fit(self._trainset)
 
 
@@ -166,7 +171,8 @@ class KNNRecommendationModel(SurpriseBasedModel):
                        'reg_i': 10}
         sim_options = {'name': 'pearson_baseline',
                        'user_based': False,
-                       'min_support': 1}
-        algo = KNNBaseline(bsl_options=bsl_options,
+                       'min_support': 1,
+                       'shrinkage': 100}
+        algo = KNNBaseline(k=30, bsl_options=bsl_options,
                            sim_options=sim_options, verbose=False)
         self._algorithm = algo.fit(self._trainset)

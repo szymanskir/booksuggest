@@ -200,7 +200,7 @@ def display_cf_recommendations(model, selected_user_id):
                     for _, row in user_ratings.iterrows()}
 
     recommended_books = resources.CF_MODELS[model].recommend(
-        selected_user_id
+        selected_user_id, 20
     ) if book_ratings and model else list()
 
     return components.create_books_layout(
