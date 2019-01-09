@@ -19,6 +19,7 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 include cb-pipeline.mk cf-pipeline.mk
 
 # Unified parts of the pipeline
+APP_MODELS = $(CF_MODELS) $(APP_CB_MODELS)
 MODELS = $(CB_MODELS) $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
@@ -102,10 +103,10 @@ create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
 ## Start web application
-app:
-	$(foreach file,$(MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
+app: 
+	$(foreach file,$(APP_MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
 	$(if $(err),$(error Aborting),)
-	cp --update $(CB_MODELS) app/assets/models/cb
+	cp --update $(APP_CB_MODELS) app/assets/models/cb
 	cp --update $(CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
