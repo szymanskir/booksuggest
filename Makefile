@@ -78,7 +78,7 @@ scores: $(SCORES)
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
+	find . -type d -name "__pycache__" -exec rm -r {} +
 	rm -rf .mypy_cache
 
 ## Delete all downloaded and calculated files
