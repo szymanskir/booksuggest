@@ -80,7 +80,7 @@ $(SVD_PREDICTION): MODEL := $(SVD_MODEL)
 $(SVD_PREDICTION): $(SVD_MODEL)
 
 $(CF_PREDICTIONS):
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_predict_models $(MODEL) $@ --n 10 --chunks-count 4
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cf_predict_models $(MODEL) $@ --n 20 --chunks-count 2
 
 ################################################################################
 #
