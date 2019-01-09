@@ -22,7 +22,7 @@ class ICfRecommendationModel(metaclass=ABCMeta):
     def recommend(
             self,
             user_id: int,
-            recommendations_count: int = 10
+            recommendations_count: int = 20
     ) -> Dict[int, float]:
         """Returns a top `recommendation_count` recommendations for specific user.
 
