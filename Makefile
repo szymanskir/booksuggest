@@ -9,6 +9,8 @@ PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
 PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
+
+
 PYTHON_INTERPRETER = python3.7
 TEST_RUN=0
 SEED = 44
@@ -19,7 +21,7 @@ RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv d
 include cb-pipeline.mk cf-pipeline.mk
 
 # Unified parts of the pipeline
-APP_MODELS = $(CF_MODELS) $(APP_CB_MODELS)
+APP_MODELS = $(APP_CF_MODELS) $(APP_CB_MODELS)
 MODELS = $(CB_MODELS) $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
@@ -107,7 +109,7 @@ app:
 	$(foreach file,$(APP_MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
 	$(if $(err),$(error Aborting),)
 	cp --update $(APP_CB_MODELS) app/assets/models/cb
-	cp --update $(CF_MODELS) app/assets/models/cf
+	cp --update $(APP_CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation
