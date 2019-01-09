@@ -90,6 +90,11 @@ CB_MODELS = $(1GRAMS_MODELS) \
 	    $(3GRAMS_MODELS) \
 	    $(TAG_MODEL)
 
+APP_CB_MODELS = $(TAG_MODEL) \
+		$(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
+		$(TF_IDF_NOUNS) \
+		$(COUNT_NOUNS_3GRAMS)
+
 # PREDICTIONS
 CB_RESULTS_DIR = models/predictions/cb-results
 

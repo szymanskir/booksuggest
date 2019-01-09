@@ -10,6 +10,7 @@ KNN_MODEL = $(CF_MODELS_DIR)/knn-model.pkl
 SVD_MODEL = $(CF_MODELS_DIR)/svd-model.pkl
 
 CF_MODELS = $(SLOPEONE_MODEL) $(KNN_MODEL) $(SVD_MODEL)
+APP_CF_MODELS = $(CF_MODELS)
 
 # PREDICTIONS
 CF_PREDICTIONS_DIR = models/predictions/cf-results
