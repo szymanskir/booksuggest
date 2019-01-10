@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.models.content_analyzer &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.models.content_analyzer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.models.content_analyzer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Content analyzers used by content based recommendation models.</span>
+
+<span class="sd">Content analyzers are objects that extract features from the items</span>
+<span class="sd">of interest. They play a main part in content based recommendation</span>
+<span class="sd">systems.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">CountVectorizer</span><span class="p">,</span>
+    <span class="n">TfidfVectorizer</span><span class="p">,</span>
+    <span class="n">VectorizerMixin</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="k">import</span> <span class="n">hstack</span>
+
+<span class="kn">from</span> <span class="nn">.model_exceptions</span> <span class="k">import</span> <span class="n">UnbuiltFeaturesError</span>
+
+
+<div class="viewcode-block" id="IContentAnalyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.IContentAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">IContentAnalyzer</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Interface for content analyzers responsible</span>
+<span class="sd">    for creating feature vectors for books.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_has_built_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnbuiltFeaturesError</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IContentAnalyzer.build_features"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.IContentAnalyzer.build_features">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">build_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Builds feature matrix for the book_data data frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="IContentAnalyzer.get_feature_vector"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.IContentAnalyzer.get_feature_vector">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns the feature vector of a specific book.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            book_id:</span>
+<span class="sd">                Specifies the book for which the feature vector</span>
+<span class="sd">                will be returned.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Feature vector of the given book.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="TextBasedContentAnalyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TextBasedContentAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">TextBasedContentAnalyzer</span><span class="p">(</span><span class="n">IContentAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Content analyzer that extracts tf idf text features</span>
+<span class="sd">    from book descriptions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _text_feature_extractor:</span>
+<span class="sd">            Object responsible for extracting text based features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">text_feature_extractor</span><span class="p">:</span> <span class="n">VectorizerMixin</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_text_feature_extractor</span> <span class="o">=</span> <span class="n">text_feature_extractor</span>
+
+<div class="viewcode-block" id="TextBasedContentAnalyzer.build_features"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TextBasedContentAnalyzer.build_features">[docs]</a>    <span class="k">def</span> <span class="nf">build_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span> <span class="o">=</span> <span class="n">book_data</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">book_data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_feature_extractor</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">descriptions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">features</span></div>
+
+<div class="viewcode-block" id="TextBasedContentAnalyzer.get_feature_vector"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TextBasedContentAnalyzer.get_feature_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_built_features</span><span class="p">()</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+        <span class="n">book_description</span> <span class="o">=</span> <span class="n">descriptions</span><span class="p">[</span><span class="n">book_id</span><span class="p">]</span>
+        <span class="n">feature_vector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_text_feature_extractor</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">book_description</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">feature_vector</span></div></div>
+
+
+<div class="viewcode-block" id="TagBasedContentAnalyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TagBasedContentAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">TagBasedContentAnalyzer</span><span class="p">(</span><span class="n">IContentAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Content analyzer that uses book tags to construct</span>
+<span class="sd">    feature vectors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">tag_features</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tag_features</span> <span class="o">=</span> <span class="n">tag_features</span>
+
+<div class="viewcode-block" id="TagBasedContentAnalyzer.build_features"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TagBasedContentAnalyzer.build_features">[docs]</a>    <span class="k">def</span> <span class="nf">build_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span> <span class="o">=</span> <span class="n">book_data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_features</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">book_data</span><span class="o">.</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
+
+<div class="viewcode-block" id="TagBasedContentAnalyzer.get_feature_vector"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TagBasedContentAnalyzer.get_feature_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_built_features</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag_features</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">book_id</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EnsembledContentAnalyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.EnsembledContentAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">EnsembledContentAnalyzer</span><span class="p">(</span><span class="n">IContentAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Content analyzer that creates feature vectors composed of</span>
+<span class="sd">    both text features and tag features.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        text_content_analyzer:</span>
+<span class="sd">            Content analyzer repsonsible for extracting text features.</span>
+<span class="sd">        tag_features: Path to tag based features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">content_analyzers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IContentAnalyzer</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_content_analyzers</span> <span class="o">=</span> <span class="n">content_analyzers</span>
+
+<div class="viewcode-block" id="EnsembledContentAnalyzer.build_features"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.build_features">[docs]</a>    <span class="k">def</span> <span class="nf">build_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">hstack</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">content_analyzer</span><span class="o">.</span><span class="n">build_features</span><span class="p">(</span><span class="n">book_data</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">content_analyzer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_analyzers</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnsembledContentAnalyzer.get_feature_vector"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.get_feature_vector">[docs]</a>    <span class="k">def</span> <span class="nf">get_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">hstack</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="n">content_analyzer</span><span class="o">.</span><span class="n">get_feature_vector</span><span class="p">(</span><span class="n">book_id</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">content_analyzer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_analyzers</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TextAndTagBasedContentAnalyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.TextAndTagBasedContentAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">TextAndTagBasedContentAnalyzer</span><span class="p">(</span><span class="n">EnsembledContentAnalyzer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Content analyzer combining text and tag based features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">text_feature_extractor</span><span class="p">:</span> <span class="n">VectorizerMixin</span><span class="p">,</span>
+            <span class="n">tag_features</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span>
+            <span class="n">TextBasedContentAnalyzer</span><span class="p">(</span><span class="n">text_feature_extractor</span><span class="p">),</span>
+            <span class="n">TagBasedContentAnalyzer</span><span class="p">(</span><span class="n">tag_features</span><span class="p">)</span>
+        <span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="InvalidBuilderConfigError"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.InvalidBuilderConfigError">[docs]</a><span class="k">class</span> <span class="nc">InvalidBuilderConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Content analyzer building configuration error.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ContentAnalyzerBuilder"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.ContentAnalyzerBuilder">[docs]</a><span class="k">class</span> <span class="nc">ContentAnalyzerBuilder</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Builder class used for creating content analyzers</span>
+<span class="sd">    based on the given configuration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name: Type of the content analyzer.</span>
+<span class="sd">        ngram: Maximal number of words in a single feature.</span>
+<span class="sd">        tag_features: Data frame containing calculated tag features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">ngrams</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">tag_features</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span> <span class="o">=</span> <span class="n">ngrams</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span> <span class="o">=</span> <span class="n">tag_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_config</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_validate_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">valid_ngram</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="n">validation_rules</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;tf-idf&#39;</span><span class="p">:</span> <span class="n">valid_ngram</span><span class="p">,</span>
+            <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">valid_ngram</span><span class="p">,</span>
+            <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;tf-idf-tag&#39;</span><span class="p">:</span> <span class="nb">all</span><span class="p">([</span>
+                <span class="n">valid_ngram</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">]),</span>
+            <span class="s1">&#39;count-tag&#39;</span><span class="p">:</span> <span class="nb">all</span><span class="p">([</span>
+                <span class="n">valid_ngram</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">])</span>
+        <span class="p">}</span>
+        <span class="n">valid_model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="ow">in</span> <span class="n">validation_rules</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_model_name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidBuilderConfigError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Invalid model name </span><span class="si">{self._name}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">validation_rules</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">InvalidBuilderConfigError</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ContentAnalyzerBuilder.build_content_analyzer"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.content_analyzer.ContentAnalyzerBuilder.build_content_analyzer">[docs]</a>    <span class="k">def</span> <span class="nf">build_content_analyzer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IContentAnalyzer</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Build a content analyzer based on the object</span>
+<span class="sd">        configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">building_rules</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;tf-idf&#39;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span>
+                <span class="n">TextBasedContentAnalyzer</span><span class="p">,</span>
+                <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span><span class="p">))</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span>
+                <span class="n">TextBasedContentAnalyzer</span><span class="p">,</span>
+                <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span><span class="p">))</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;tag&#39;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">TagBasedContentAnalyzer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span><span class="p">),</span>
+            <span class="s1">&#39;tf-idf-tag&#39;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span>
+                <span class="n">TextAndTagBasedContentAnalyzer</span><span class="p">,</span>
+                <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span><span class="p">)),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span>
+            <span class="p">),</span>
+            <span class="s1">&#39;count-tag&#39;</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span>
+                <span class="n">TextAndTagBasedContentAnalyzer</span><span class="p">,</span>
+                <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ngrams</span><span class="p">)),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tag_features</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">constructor</span> <span class="o">=</span> <span class="n">building_rules</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">constructor</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.evaluation.cf_predict_models &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.evaluation.cf_predict_models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.evaluation.cf_predict_models</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">concurrent.futures</span> <span class="k">as</span> <span class="nn">cf</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">islice</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">..models.cf_recommend_models</span> <span class="k">import</span> <span class="n">ICfRecommendationModel</span>
+<span class="kn">from</span> <span class="nn">..utils.serialization</span> <span class="k">import</span> <span class="n">read_object</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="predict_model"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cf_predict_models.predict_model">[docs]</a><span class="k">def</span> <span class="nf">predict_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">ICfRecommendationModel</span><span class="p">,</span>
+                  <span class="n">recommendation_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="n">chunks_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span>
+                  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculates top recommendations for every user in the trainset.</span>
+
+<span class="sd">    Calculations are done in batches to avoid huge memory consumption.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (ICfRecommendationModel): Already trained model.</span>
+<span class="sd">        recommendation_count (int): Specifies how many recommendations to save.</span>
+<span class="sd">        chunks_count (int): Number of chunks.</span>
+<span class="sd">        batch_size (int, optional): Defaults to 100000. Size of single batch.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Data frame with predictions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">main_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">])</span>
+    <span class="n">users_chunked</span> <span class="o">=</span> <span class="n">_chunk_users</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">users</span><span class="p">),</span> <span class="n">chunks_count</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">users_chunked</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">repeat</span><span class="p">(</span><span class="n">recommendation_count</span><span class="p">),</span>
+            <span class="n">repeat</span><span class="p">(</span><span class="n">batch_size</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">cf</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">chunks_count</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_process_chunk</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+            <span class="n">main_df</span> <span class="o">=</span> <span class="n">main_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">main_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_chunk_users</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="n">chunks_count</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">users</span><span class="p">[</span><span class="n">start</span><span class="p">::</span><span class="n">chunks_count</span><span class="p">]</span> <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">chunks_count</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">_process_chunk</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">recommendation_count</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="n">_batch</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">generate_antitest_set</span><span class="p">(</span><span class="n">users</span><span class="p">),</span> <span class="n">batch_size</span><span class="p">)</span>
+    <span class="n">batch_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">main_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batches</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Batch: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">batch_counter</span><span class="p">)</span>
+        <span class="n">batch_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">_predict_batch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">batch</span><span class="p">),</span> <span class="n">recommendation_count</span><span class="p">)</span>
+        <span class="n">main_df</span> <span class="o">=</span> <span class="n">main_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">main_df</span>
+
+
+<span class="k">def</span> <span class="nf">_predict_batch</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">ICfRecommendationModel</span><span class="p">,</span>
+        <span class="n">cases_batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">recommendation_count</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">cases_batch</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">]</span>
+    <span class="n">pred_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span>
+        <span class="n">predictions</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">pred_df</span> <span class="o">=</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)[</span><span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="n">recommendation_count</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;est&#39;</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_batch</span><span class="p">(</span><span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="n">islice</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">yield</span> <span class="n">chain</span><span class="p">((</span><span class="n">item</span><span class="p">,),</span> <span class="n">group</span><span class="p">)</span>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;model_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--n&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+              <span class="n">help</span><span class="o">=</span><span class="s1">&#39;How many recommendations should be returned by the model&#39;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--chunks-count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Numbers of chunks&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">model_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">chunks_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates and saves predictions for the given model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_filepath (str): Path to a file containg model.</span>
+<span class="sd">        output_filepath (str): Output filepath.</span>
+<span class="sd">        n (int): Number of recommendations to return.</span>
+<span class="sd">        chunks_count (int): In how many chunks split the users set</span>
+<span class="sd">            during parallel processing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading model...&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">read_object</span><span class="p">(</span><span class="n">model_filepath</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Calculating predictions...&#39;</span><span class="p">)</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">chunks_count</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Appending results to </span><span class="si">%s</span><span class="s1">...&#39;</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">predictions</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

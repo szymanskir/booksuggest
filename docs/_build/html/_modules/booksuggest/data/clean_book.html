@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.data.clean_book &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.data.clean_book</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.data.clean_book</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="k">import</span> <span class="n">etree</span>
+
+<span class="kn">from</span> <span class="nn">.xml_parser</span> <span class="k">import</span> <span class="n">extract_all_book_xml_roots</span>
+
+
+<div class="viewcode-block" id="extract_book_extra_info"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.extract_book_extra_info">[docs]</a><span class="k">def</span> <span class="nf">extract_book_extra_info</span><span class="p">(</span><span class="n">xmls_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Extracts extra information about books from .xml files in given directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        xmls_dir (str): Directory with .xml files.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[Tuple[int, str, str]]:</span>
+<span class="sd">            List of ``(work_id, isbn13, description)`` book data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_extract_book_info</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">extract_all_book_xml_roots</span><span class="p">(</span><span class="n">xmls_dir</span><span class="p">)]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_extract_book_info</span><span class="p">(</span><span class="n">book</span><span class="p">:</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="n">book_work_id</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;work&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="n">book_info</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">book_work_id</span><span class="p">),</span> <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span>
+        <span class="s2">&quot;isbn13&quot;</span><span class="p">),</span> <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">book_info</span>
+
+
+<div class="viewcode-block" id="process_book_extra_info"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.process_book_extra_info">[docs]</a><span class="k">def</span> <span class="nf">process_book_extra_info</span><span class="p">(</span>
+        <span class="n">book_extra_info_rows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Processes books extra data and transforms it to a data frame.</span>
+
+<span class="sd">    Apart from joining data it also removes HTML tags from</span>
+<span class="sd">    the ``description`` column.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_extra_info_rows (List[Tuple[int, str, str]]):</span>
+<span class="sd">            List of ``(work_id, isbn13, description)`` book data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Data frame with columns corresponding to input tuple.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_info_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;work_id&#39;</span><span class="p">,</span> <span class="s1">&#39;isbn13&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">]</span>
+    <span class="n">book_extra_info_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span>
+        <span class="n">book_extra_info_rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">book_info_labels</span><span class="p">)</span>
+
+    <span class="n">html_tag_regexp</span> <span class="o">=</span> <span class="s1">&#39;&lt;[^&lt;]+?&gt;&#39;</span>
+    <span class="n">multiple_whitespaces_regexp</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\s\s+&quot;</span>
+    <span class="n">book_extra_info_df</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">book_extra_info_df</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">html_tag_regexp</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">book_extra_info_df</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">book_extra_info_df</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+        <span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">multiple_whitespaces_regexp</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">book_extra_info_df</span></div>
+
+
+<div class="viewcode-block" id="merge_book_data"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.merge_book_data">[docs]</a><span class="k">def</span> <span class="nf">merge_book_data</span><span class="p">(</span>
+        <span class="n">book_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">book_extra_info_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Merges standard book data with new extra info.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_df (pd.DataFrame): Book data frame.</span>
+<span class="sd">        book_extra_info_df (pd.DataFrame): Book extra info data frame.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Book data frame with additional ``description`` column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_df</span> <span class="o">=</span> <span class="n">book_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;isbn13&#39;</span><span class="p">])</span>
+    <span class="n">book_merged_data_df</span> <span class="o">=</span> <span class="n">book_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">book_extra_info_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;work_id&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">book_merged_data_df</span></div>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;book_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;books_xml_dir&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">book_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">books_xml_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts additional data about books from .xml files</span>
+<span class="sd">    and joins it with previous data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_filepath (str): Book data frame.</span>
+<span class="sd">        books_xml_dir (str): Directory with books .xml files.</span>
+<span class="sd">        output_filepath (str): Output filepath.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_extra_info_rows</span> <span class="o">=</span> <span class="n">extract_book_extra_info</span><span class="p">(</span><span class="n">books_xml_dir</span><span class="p">)</span>
+    <span class="n">book_extra_info_df</span> <span class="o">=</span> <span class="n">process_book_extra_info</span><span class="p">(</span><span class="n">book_extra_info_rows</span><span class="p">)</span>
+
+    <span class="n">book_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">book_filepath</span><span class="p">)</span>
+    <span class="n">book_merged_data_df</span> <span class="o">=</span> <span class="n">merge_book_data</span><span class="p">(</span><span class="n">book_df</span><span class="p">,</span> <span class="n">book_extra_info_df</span><span class="p">)</span>
+
+    <span class="n">book_merged_data_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

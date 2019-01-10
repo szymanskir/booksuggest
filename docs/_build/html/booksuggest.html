@@ -1,0 +1,263 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest package &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data preparation package" href="booksuggest.data.html" />
+    <link rel="prev" title="Recommendation System for Books" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">booksuggest package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html">Data preparation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.features.html">Feature engineering package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html">Models training package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html">Models evaluation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>booksuggest package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/booksuggest.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="booksuggest-package">
+<h1>booksuggest package<a class="headerlink" href="#booksuggest-package" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="booksuggest.data.html">Data preparation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.download_dataset">download_dataset script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.extract_xml_files">extract_xml_files script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.xml_parser">xml_parser module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.clean_book">clean_book script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.clean_book_tags">clean_book_tags script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.prepare_description">prepare_description script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.prepare_similar_books">prepare_similar_books script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html#module-booksuggest.data.ratings_train_test_split">ratings_train_test_split script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="booksuggest.features.html">Feature engineering package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.features.html#module-booksuggest.features.build_tag_features">build_tag_features script</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="booksuggest.models.html">Models training package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.cb_recommend_models">cb_recommend_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.content_analyzer">content_analyzer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.tf_idf_models">tf_idf_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.cf_recommend_models">cf_recommend_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.cf_slopeone_models">cf_slopeone_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.cf_knn_models">cf_knn_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.cf_svd_models">cf_svd_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.load_models">load_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html#module-booksuggest.models.model_exceptions">model_exceptions module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="booksuggest.evaluation.html">Models evaluation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.cb_predict_models">cb_predict_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.cb_evaluation">cb_evaluation script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.cf_predict_models">cf_predict_models script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.cf_accuracy_evaluation">cf_accuracy_evaluation script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.cf_effectiveness_evaluation">cf_effectiveness_evaluation script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html#module-booksuggest.evaluation.metrics">metrics module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html#module-booksuggest.utils.csv_utils">csv_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html#module-booksuggest.utils.logging">logging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html#module-booksuggest.utils.serialization">serialization module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="booksuggest.data.html" class="btn btn-neutral float-right" title="Data preparation package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Recommendation System for Books" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

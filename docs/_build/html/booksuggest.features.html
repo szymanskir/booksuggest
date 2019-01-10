@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Feature engineering package &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Models training package" href="booksuggest.models.html" />
+    <link rel="prev" title="Data preparation package" href="booksuggest.data.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="booksuggest.html">booksuggest package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html">Data preparation package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Feature engineering package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.features.build_tag_features">build_tag_features script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html">Models training package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html">Models evaluation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="booksuggest.html">booksuggest package</a> &raquo;</li>
+        
+      <li>Feature engineering package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/booksuggest.features.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="feature-engineering-package">
+<h1>Feature engineering package<a class="headerlink" href="#feature-engineering-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-booksuggest.features.build_tag_features">
+<span id="build-tag-features-script"></span><h2>build_tag_features script<a class="headerlink" href="#module-booksuggest.features.build_tag_features" title="Permalink to this headline">¶</a></h2>
+<p>Functions used for building features compose of tags.</p>
+<p>The book data contains information about what tags were assigned
+to books by users. Those tags include genres which can be very helpful
+when creating book representations.</p>
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.main">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">main</code><span class="sig-paren">(</span><em>book_tags_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.features.build_tag_features.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates tag features for all books present in the book
+tags data frame and saves them to the specified output filepath.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>book_tags</strong> – Data frame containg information about tags
+assigned to books.</li>
+<li><strong>output_filepath</strong> – Speficies the files in which the results should
+be saved.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="exception">
+<dt id="booksuggest.features.build_tag_features.InvalidTagFeaturesError">
+<em class="property">exception </em><code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">InvalidTagFeaturesError</code><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#InvalidTagFeaturesError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.InvalidTagFeaturesError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception signifying that the passed
+tag data is invalid.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.build_all_tag_features">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">build_all_tag_features</code><span class="sig-paren">(</span><em>book_tags</em>, <em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#build_all_tag_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.build_all_tag_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates tag features for all books in the provided book_tags data frame.</p>
+<p>Each feature represents a single tag, the value if the
+feature is the count how many times this specific tag
+was assigned divided by the count of all assigned tags.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing book_id and tag_id columns.</li>
+<li><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing tag_id and tag_names columns.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.build_tag_features">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">build_tag_features</code><span class="sig-paren">(</span><em>book_tags</em>, <em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#build_tag_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.build_tag_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds tags based features for a single book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing book_id and tag_id columns.</li>
+<li><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing tag_id and tag_names columns.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.check_book_tags_and_tags_compatibility">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">check_book_tags_and_tags_compatibility</code><span class="sig-paren">(</span><em>book_tags</em>, <em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#check_book_tags_and_tags_compatibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.check_book_tags_and_tags_compatibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the book tags and tags data are compatible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing data about tags assigned to books.</li>
+<li><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containg information about tags.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if data frames are compatible.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.validate_book_tags_data">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">validate_book_tags_data</code><span class="sig-paren">(</span><em>book_tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#validate_book_tags_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.validate_book_tags_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the book tags data frame contains valid data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the data frame is a valid book_tags data frame.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.features.build_tag_features.validate_tags_data">
+<code class="descclassname">booksuggest.features.build_tag_features.</code><code class="descname">validate_tags_data</code><span class="sig-paren">(</span><em>tags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/features/build_tag_features.html#validate_tags_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.features.build_tag_features.validate_tags_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the tags data frame contains valid data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tags</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – data frame to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the data frame is a valid book_tags data frame</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)">bool</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="booksuggest.models.html" class="btn btn-neutral float-right" title="Models training package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="booksuggest.data.html" class="btn btn-neutral" title="Data preparation package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

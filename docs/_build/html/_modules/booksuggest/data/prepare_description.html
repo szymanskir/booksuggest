@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.data.prepare_description &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.data.prepare_description</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.data.prepare_description</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Description cleaning functions.</span>
+
+<span class="sd">This module contains functions used for cleaning book descriptions.</span>
+<span class="sd">The main script is responsible for preparing descriptions that will</span>
+<span class="sd">be later used for feature extraction.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="k">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">nltk.stem</span> <span class="k">import</span> <span class="n">WordNetLemmatizer</span>
+<span class="kn">from</span> <span class="nn">nltk.stem.snowball</span> <span class="k">import</span> <span class="n">SnowballStemmer</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">langdetect</span> <span class="k">import</span> <span class="n">detect</span>
+
+
+<div class="viewcode-block" id="clean_single_description"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_single_description">[docs]</a><span class="k">def</span> <span class="nf">clean_single_description</span><span class="p">(</span>
+        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Prepares the description for the tf-idf method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        description (str): Book description.</span>
+<span class="sd">        remove_proper_nouns (bool): Whether to remove proper nouns from text.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Description with removed punctuation, stopwords and stemmed,</span>
+<span class="sd">        lemmatized vocabulary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cleaning description...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">detect</span><span class="p">(</span><span class="n">description</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;en&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">word_list</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">remove_proper_nouns</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removing proper nouns...&#39;</span><span class="p">)</span>
+        <span class="n">tagged_words</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagged_words</span>
+                     <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;NNP&#39;</span><span class="p">,</span> <span class="s1">&#39;NNPS&#39;</span><span class="p">}]</span>
+
+    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span>
+                 <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)]</span>
+
+    <span class="n">stemmer</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
+    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">]</span>
+
+    <span class="n">lemmatizer</span> <span class="o">=</span> <span class="n">WordNetLemmatizer</span><span class="p">()</span>
+    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">lemmatizer</span><span class="o">.</span><span class="n">lemmatize</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="clean_descriptions"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_descriptions">[docs]</a><span class="k">def</span> <span class="nf">clean_descriptions</span><span class="p">(</span>
+        <span class="n">input_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Cleans all descriptions in the data from the input</span>
+<span class="sd">    file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_filepath (str):</span>
+<span class="sd">            Filepath to the data containing a ``description`` column that</span>
+<span class="sd">            will be cleaned.</span>
+<span class="sd">        remove_proper_nouns (bool): Whether to remove proper nouns from text.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame:</span>
+<span class="sd">            The original data frame but with the ``description``</span>
+<span class="sd">            column cleaned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span>
+    <span class="n">descriptions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptions</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">clean_single_description</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">remove_proper_nouns</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span></div>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;input_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--remove_nouns&#39;</span><span class="p">,</span> <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">remove_nouns</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cleans books descriptions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_filepath (str): Input file to clean descriptions in.</span>
+<span class="sd">        output_filepath (str): Filepath where the results should be saved.</span>
+<span class="sd">        remove_nouns (bool): Whether to remove proper nouns from text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Cleaning descriptions...&#39;</span><span class="p">)</span>
+    <span class="n">cleaned_descriptions</span> <span class="o">=</span> <span class="n">clean_descriptions</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">,</span> <span class="n">remove_nouns</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving results to </span><span class="si">%s</span><span class="s1">...&#39;</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span>
+    <span class="n">cleaned_descriptions</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

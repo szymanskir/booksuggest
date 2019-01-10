@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.evaluation.cb_predict_models &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.evaluation.cb_predict_models</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.evaluation.cb_predict_models</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions used for predicting similar books using content based</span>
+<span class="sd">recommendation models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">..models.cb_recommend_models</span> <span class="k">import</span> <span class="n">ICbRecommendationModel</span>
+
+<span class="kn">from</span> <span class="nn">..utils.serialization</span> <span class="k">import</span> <span class="n">read_object</span>
+<span class="kn">from</span> <span class="nn">..utils.csv_utils</span> <span class="k">import</span> <span class="n">save_csv</span>
+
+
+<span class="k">def</span> <span class="nf">_read_test_cases</span><span class="p">(</span><span class="n">test_cases_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Reads test_cases from the given file.</span>
+
+<span class="sd">    Similar books test cases are composed of book ids</span>
+<span class="sd">    for which similar books are calculated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        test_cases_filepath (str): File containing a data frame with</span>
+<span class="sd">            the &#39;book_id&#39; column.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[int]: List of book ids used for similar books calculations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">test_cases_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">test_cases_filepath</span><span class="p">)</span>
+    <span class="n">test_cases</span> <span class="o">=</span> <span class="n">test_cases_data</span><span class="p">[</span><span class="s1">&#39;book_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">test_cases</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="predict_model"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cb_predict_models.predict_model">[docs]</a><span class="k">def</span> <span class="nf">predict_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">ICbRecommendationModel</span><span class="p">,</span>
+                  <span class="n">test_cases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Uses the given model to calculate similar books.</span>
+
+<span class="sd">    Each test case is a book id for which similar books</span>
+<span class="sd">    are calculated using the given model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model (ICbRecommendationModel): Model used for recommending</span>
+<span class="sd">            similar books.</span>
+<span class="sd">        test_cases (List[int]): List of book ids for which similar books</span>
+<span class="sd">            are calculated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame:</span>
+<span class="sd">            Data frame containing the book_id and the similar_book_id columns;</span>
+<span class="sd">            grouping is needed in order to retrieve all similar books of a</span>
+<span class="sd">            specific book.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">recommend_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Computing </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">)</span>
+        <span class="n">recommendations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">test_case_id</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">[{</span><span class="s1">&#39;book_id&#39;</span><span class="p">:</span> <span class="n">test_case_id</span><span class="p">,</span>
+                 <span class="s1">&#39;similar_book_id&#39;</span><span class="p">:</span> <span class="n">recommended_book</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">recommended_book</span> <span class="ow">in</span> <span class="n">recommendations</span><span class="p">]</span>
+
+    <span class="n">predicted_similar_books</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">recommend_helper</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_case_id</span><span class="p">)</span>
+                                   <span class="k">for</span> <span class="n">test_case_id</span> <span class="ow">in</span> <span class="n">test_cases</span><span class="p">],</span> <span class="p">[])</span>
+
+    <span class="k">return</span> <span class="n">predicted_similar_books</span></div>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;model_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;test_cases_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">model_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">test_cases_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Script for calculating similar books recommendations of a given model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_filepath (str): filepath to the model used for recommendations.</span>
+<span class="sd">        test_cases_filepath (str): filepath containing book ids for which</span>
+<span class="sd">            similar are calculated.</span>
+<span class="sd">        output_filepath (str): File where the data frame should be saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading model and test cases...&#39;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">read_object</span><span class="p">(</span><span class="n">model_filepath</span><span class="p">)</span>
+    <span class="n">test_cases</span> <span class="o">=</span> <span class="n">_read_test_cases</span><span class="p">(</span><span class="n">test_cases_filepath</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Calculating predictions...&#39;</span><span class="p">)</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_cases</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving results to </span><span class="si">%s</span><span class="s1">...&#39;</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span>
+    <span class="n">save_csv</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;similar_book_id&#39;</span><span class="p">])</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

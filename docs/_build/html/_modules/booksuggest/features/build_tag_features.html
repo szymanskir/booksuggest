@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.features.build_tag_features &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.features.build_tag_features</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.features.build_tag_features</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions used for building features compose of tags.</span>
+
+<span class="sd">The book data contains information about what tags were assigned</span>
+<span class="sd">to books by users. Those tags include genres which can be very helpful</span>
+<span class="sd">when creating book representations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="InvalidTagFeaturesError"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.InvalidTagFeaturesError">[docs]</a><span class="k">class</span> <span class="nc">InvalidTagFeaturesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception signifying that the passed</span>
+<span class="sd">    tag data is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="build_all_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_all_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_all_tag_features</span><span class="p">(</span>
+        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Calculates tag features for all books in the provided book_tags data frame.</span>
+
+<span class="sd">    Each feature represents a single tag, the value if the</span>
+<span class="sd">    feature is the count how many times this specific tag</span>
+<span class="sd">    was assigned divided by the count of all assigned tags.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_tags: Data frame containing book_id and tag_id columns.</span>
+<span class="sd">        tags: Data frame containing tag_id and tag_names columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_tags_grouped</span> <span class="o">=</span> <span class="n">book_tags</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span>
+    <span class="n">tag_features</span> <span class="o">=</span> <span class="n">book_tags_grouped</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">single_book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+            <span class="n">build_tag_features</span><span class="p">(</span><span class="n">single_book_tags</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tag_features</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_tag_features</span><span class="p">(</span>
+        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Builds tags based features for a single book.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_tags: Data frame containing book_id and tag_id columns.</span>
+<span class="sd">        tags: Data frame containing tag_id and tag_names columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Building single feature...&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_book_tags_and_tags_compatibility</span><span class="p">(</span><span class="n">book_tags</span><span class="p">,</span> <span class="n">tags</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">InvalidTagFeaturesError</span>
+
+    <span class="n">tags_data</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">book_tags</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;tag_name&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+    <span class="n">tags_counts</span> <span class="o">=</span> <span class="n">tags_data</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">feature_vector</span> <span class="o">=</span> <span class="n">tags_counts</span><span class="o">/</span><span class="n">tags_counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">feature_vector</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="check_book_tags_and_tags_compatibility"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.check_book_tags_and_tags_compatibility">[docs]</a><span class="k">def</span> <span class="nf">check_book_tags_and_tags_compatibility</span><span class="p">(</span>
+        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Checks if the book tags and tags data are compatible.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_tags: Data frame containing data about tags assigned to books.</span>
+<span class="sd">        tags: Data frame containg information about tags.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if data frames are compatible.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_book_tags_data</span><span class="p">(</span><span class="n">book_tags</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_tags_data</span><span class="p">(</span><span class="n">tags</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">book_tags</span><span class="p">[</span><span class="s1">&#39;tag_name&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;tag_name&#39;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="validate_book_tags_data"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.validate_book_tags_data">[docs]</a><span class="k">def</span> <span class="nf">validate_book_tags_data</span><span class="p">(</span><span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Checks if the book tags data frame contains valid data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_tags: Data frame to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the data frame is a valid book_tags data frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">required_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;tag_name&#39;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">required_columns</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span><span class="n">book_tags</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">book_ids</span> <span class="o">=</span> <span class="n">book_tags</span><span class="p">[</span><span class="s1">&#39;book_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="n">concerns_single_book</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">book_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">is_book_relevant</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">book_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="nb">all</span><span class="p">([</span>
+        <span class="n">concerns_single_book</span><span class="p">,</span>
+        <span class="n">is_book_relevant</span>
+    <span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="validate_tags_data"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.validate_tags_data">[docs]</a><span class="k">def</span> <span class="nf">validate_tags_data</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Checks if the tags data frame contains valid data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tags: data frame to check</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the data frame is a valid book_tags data frame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">required_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;tag_name&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">required_columns</span> <span class="o">&lt;=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tags</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span></div>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;book_tags_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">book_tags_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates tag features for all books present in the book</span>
+<span class="sd">    tags data frame and saves them to the specified output filepath.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        book_tags: Data frame containg information about tags</span>
+<span class="sd">            assigned to books.</span>
+<span class="sd">        output_filepath: Speficies the files in which the results should</span>
+<span class="sd">            be saved.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">book_tags</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">book_tags_filepath</span><span class="p">)</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;tag_name&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">book_tags</span><span class="p">[</span><span class="s1">&#39;tag_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())})</span>
+
+    <span class="n">tag_features_df</span> <span class="o">=</span> <span class="n">build_all_tag_features</span><span class="p">(</span>
+        <span class="n">book_tags</span><span class="p">,</span> <span class="n">tags</span>
+    <span class="p">)</span>
+
+    <span class="n">tag_features_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
