@@ -1,5 +1,4 @@
-Welcome to Recommendation System for Books's documentation!
-===========================================================
+.. include:: README.rst
 
 .. toctree::
    :maxdepth: 4
