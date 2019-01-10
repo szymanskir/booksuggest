@@ -33,7 +33,7 @@ Use `make help` to display help information about available commands.
     ```bash
     make app
     ```
-5. Enter the web page address displayed in the console. It should be at <http://127.0.0.1:8050/>.
+5. Enter the web page address displayed in the console. Web application should be accessible at <http://127.0.0.1:8050/>.
 
 ### Reproducing the analysis
 
@@ -49,7 +49,7 @@ Use `make help` to display help information about available commands.
     ```bash
     make requirements
     ```
-4. Download the data:
+4. Download the raw data:
     ```bash
     make data
     ```
