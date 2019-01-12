@@ -1,7 +1,8 @@
 import pytest
 
 from booksuggest.evaluation.metrics import (precision, precision_thresholded,
-                                    recall, recall_thresholded)
+                                            recall, recall_thresholded,
+                                            _dcg, ndcg)
 
 
 @pytest.mark.parametrize("recommendations, ground_truth, expected", [
@@ -50,3 +51,23 @@ def test_recall__thresholded(recommendations, ground_truth,
                              threshold, expected):
     result = recall_thresholded(recommendations, ground_truth, threshold)
     assert result == expected
+
+
+@pytest.mark.parametrize("relevances, expected", [
+    ([3], 3),
+    ([3, 2], 4.2618595071429155),
+    ([3, 3, 3, 2, 2, 2], 8.740262365546284),
+    ([3, 2, 3, 0, 1, 2], 6.861126688593502),
+    ([3, 2, 3, 0, 0, 1, 2, 2, 3, 0], 8.318753101481006),
+])
+def test_dcg(relevances, expected):
+    assert _dcg(relevances) == expected
+
+
+@pytest.mark.parametrize("recommendations, ground_truth, expected", [
+    ([1, 0, 1], [1, 0, 1], 0.9197207891481876),
+    ([1, 0, 1], [1, 0, 1, 0], 0.9197207891481876),
+    ([1, 0, 1], [1, 0, 1, 1], 0.7039180890341347),
+])
+def test_ndcg(recommendations, ground_truth, expected):
+    assert ndcg(recommendations, ground_truth) == expected

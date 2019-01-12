@@ -2,6 +2,7 @@
 evaluation.
 """
 from typing import List, Tuple
+import numpy as np
 
 
 def precision(recommendations: List[int], ground_truth: List[int]) -> float:
@@ -64,3 +65,19 @@ def recall_thresholded(recommendations: List[Tuple[int, float]],
     valid_recommendations = [x[0] for x in recommendations
                              if x[1] >= threshold]
     return recall(valid_recommendations, ground_truth)
+
+
+denominator_table = np.log2(np.arange(2, 202))
+
+
+def _dcg(scores):
+    if not scores or len(scores) == 0:
+        return
+    r = np.asfarray(scores)
+    return np.sum(r / denominator_table[:r.shape[0]])
+
+
+def ndcg(predicted_scores, user_scores):
+    idcg = _dcg(sorted(user_scores, reverse=True)[:len(predicted_scores)])
+    dcg = _dcg(predicted_scores)
+    return (dcg / idcg) if idcg > 0.0 else 0.0
