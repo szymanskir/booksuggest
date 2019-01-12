@@ -52,9 +52,9 @@ def svd_grid_search(dataset: Dataset, random_state: int
     """
     params = {'n_factors': [100],
               'biased': [True],
-              'init_mean': [0, 0.1, 0.3, 0.5],
-              'init_std_dev': [0.1, 0.05],
-              'n_epochs': [20],
+              'init_mean': [0.1],
+              'init_std_dev': [0.05],
+              'n_epochs': [25],
               'lr_all': [0.005],
               'reg_all': [0.02],
               'random_state': [random_state]}
