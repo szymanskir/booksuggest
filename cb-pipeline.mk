@@ -368,7 +368,7 @@ $(TAG_PREDICTION): MODEL := $(TAG_MODEL)
 $(TAG_PREDICTION): $(TAG_MODEL)
 
 $(CB_PREDICTIONS): $(CB_TEST_CASES)
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@ --rec_count 50
 
 ################################################################################
 #
@@ -379,4 +379,4 @@ $(CB_PREDICTIONS): $(CB_TEST_CASES)
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
 $(CB_SCORES): booksuggest/evaluation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@ --rec_count 20
