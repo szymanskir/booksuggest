@@ -13,7 +13,7 @@ Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański.
 
 ## Setup instructions
 
-Use `make help` to display help information about available commands.
+All commands mentioned below should be run from the project's root folder. Use `make help` to display help information about available commands.
 
 ### Viewing results
 
@@ -99,7 +99,7 @@ Documentation of the recommendation module can be found in the `docs` folder. Ma
     ├── requirements-dev.txt    <- The requirements file for reproducing the analysis environment.
     │
     ├── setup.py           <- Project's main module. Can be installed with pip command.
-    └── booksuggest        <- Source code of the recommendatio module.
+    └── booksuggest        <- Source code of the recommendation module.
         │
         ├── data           <- Scripts to download or generate data.
         │
