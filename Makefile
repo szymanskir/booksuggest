@@ -34,12 +34,12 @@ common_requirements:
 
 
 # Notebooks
-PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx
+PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx 
 nbs = $(wildcard notebooks/*.ipynb)
 pdfs = $(subst notebooks,reports, $(nbs:%.ipynb=%.pdf))
 
 reports/%.pdf: notebooks/%.ipynb $(PDF_TEMPLATE)
-	jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=$(VENV_NAME) --template better-article $<
+	jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=$(VENV_NAME) --ExecutePreprocessor.timeout=-1 --template reports/better-article $<
 
 $(PDF_TEMPLATE):
 	cp reports/better-article.tplx $(PDF_TEMPLATE)
