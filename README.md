@@ -66,7 +66,7 @@ Comments:
 
 - When using the whole dataset the `make models` command takes about 20 minutes, `make scores` lasts more than 12h.
 - To check pipeline on the small subset of data use `TEST_RUN=1` parameter when running make commands. Then, the whole process should take about 5 minutes. Example: `make scores TEST_RUN=1`
-- To utilize make's palatalization use `-j <n_jobs>` parameter where `<n_jobs>` specifies the number of parallel jobs run. Most often, `n_jobs` should be equal to the number of cores in the processor, although there are also some RAM requirements when using whole dataset. Example: `make scores -j 2`
+- To utilize make's parallelization use `-j <n_jobs>` parameter where `<n_jobs>` specifies the number of parallel jobs run. Most often, `n_jobs` should be equal to the number of cores in the processor, although there are also some RAM requirements when using whole dataset. Example: `make scores -j 2`
 
 ## Documentation
 
