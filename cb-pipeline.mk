@@ -184,7 +184,7 @@ $(TAG_FEATURES): data/processed/book_tags.csv booksuggest/features/build_tag_fea
 #
 ################################################################################
 
-COMMON_CB_DEPS = booksuggest/models/tf_idf_models.py
+COMMON_CB_DEPS = booksuggest/models/train_cb_models.py
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
 
@@ -278,7 +278,7 @@ $(TAG_BASED_MODELS): $(TAG_FEATURES)
 REC_COUNT = 20
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
-	$(PYTHON_INTERPRETER) -m booksuggest.models.tf_idf_models $(DESCR_FILE) \
+	$(PYTHON_INTERPRETER) -m booksuggest.models.train_cb_models $(DESCR_FILE) \
 							  $@ \
 							  --name $(MODEL_NAME) \
 							  --rec_count $(REC_COUNT) \
