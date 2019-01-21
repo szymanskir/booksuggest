@@ -9,7 +9,7 @@ download\_dataset script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(download_url: str, output_filepath: str)
+    .. autofunction:: main(download_url, output_filepath)
 
 extract\_xml\_files script
 -------------------------------------------
@@ -19,7 +19,7 @@ extract\_xml\_files script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(xml_archive_path: str, output_dir: str)
+    .. autofunction:: main(xml_archive_path, output_dir)
 
 xml\_parser module
 -----------------------------------
@@ -37,7 +37,7 @@ clean\_book script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(book_filepath: str, books_xml_dir: str, output_filepath: str)
+    .. autofunction:: main(book_filepath, books_xml_dir, output_filepath)
 
 clean\_book\_tags script
 -----------------------------------------
@@ -47,7 +47,7 @@ clean\_book\_tags script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(book_filepath: str, book_tags_filepath: str, tags_filepath: str, genres_filepath: str, output_filepath: str)
+    .. autofunction:: main(book_filepath, book_tags_filepath, tags_filepath, genres_filepath, output_filepath)
 
 prepare\_description script
 --------------------------------------------
@@ -57,7 +57,7 @@ prepare\_description script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(input_filepath: str, output_filepath: str, remove_nouns: bool)
+    .. autofunction:: main(input_filepath, output_filepath, remove_nouns)
 
 prepare\_similar\_books script
 -----------------------------------------------
@@ -67,7 +67,7 @@ prepare\_similar\_books script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(books_xml_dir: str, books_filepath: str, output_filepath: str)
+    .. autofunction:: main(books_xml_dir, books_filepath, output_filepath)
 
 ratings\_train\_test\_split script
 ---------------------------------------------------
@@ -77,4 +77,4 @@ ratings\_train\_test\_split script
     :undoc-members:
     :show-inheritance:
 
-    .. autofunction:: main(ratings_filepath: str, trainset_filepath: str, testset_filepath: str)
+    .. autofunction:: main(ratings_filepath, trainset_filepath, testset_filepath)

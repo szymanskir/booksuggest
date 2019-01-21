@@ -48,9 +48,9 @@ def evaluate_on_predictions(
 @click.option('--threshold', default=4.0,
               help='Treshold for rating to be valid recommendation.')
 @click.option('--n-min', default=10,
-              help='Treshold for rating to be valid recommendation.')
+              help='Lower bound of predictions number generated loop.')
 @click.option('--n-max', default=10,
-              help='Treshold for rating to be valid recommendation.')
+              help='Upper bound of predictions number generated loop.')
 @click.argument('output_filepath', type=click.Path())
 def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
          threshold: float, n_min: int, n_max: int, output_filepath: str):

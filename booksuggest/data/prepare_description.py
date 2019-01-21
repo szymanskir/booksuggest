@@ -94,8 +94,6 @@ def main(input_filepath: str, output_filepath: str, remove_nouns: bool):
         output_filepath (str): Filepath where the results should be saved.
         remove_nouns (bool): Whether to remove proper nouns from text.
     """
-    logging.info('Downloading nltk resources...')
-    nltk.download(['stopwords', 'wordnet', 'averaged_perceptron_tagger'])
     logging.info('Cleaning descriptions...')
     cleaned_descriptions = clean_descriptions(input_filepath, remove_nouns)
 

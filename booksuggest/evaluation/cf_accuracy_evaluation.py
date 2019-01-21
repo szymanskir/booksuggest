@@ -14,14 +14,14 @@ def test_accuracy(
         model: ICfRecommendationModel,
         testset_filepath: str
 ) -> float:
-    """Calculates RMSE value for the given model and testset
+    """Calculates RMSE value for the given model and testset.
 
     Args:
-        model (ICfRecommendationModel): Model to test
-        testset_filepath (str): Path to a file containing testset
+        model (ICfRecommendationModel): Model to test.
+        testset_filepath (str): Path to a file containing testset.
 
     Returns:
-        float: Value of the Root Mean Squared Error metric
+        float: Value of the Root Mean Squared Error metric.
     """
     ratings_df = pd.read_csv(testset_filepath)
     reader = Reader(rating_scale=(1, 5))

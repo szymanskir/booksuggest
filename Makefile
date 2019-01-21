@@ -9,15 +9,19 @@ PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
 PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
+
+
 PYTHON_INTERPRETER = python3.7
 TEST_RUN=0
 SEED = 44
+NLTK_ASSETS = stopwords wordnet averaged_perceptron_tagger
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
 include cb-pipeline.mk cf-pipeline.mk
 
 # Unified parts of the pipeline
+APP_MODELS = $(APP_CF_MODELS) $(APP_CB_MODELS)
 MODELS = $(CB_MODELS) $(CF_MODELS)
 PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
 SCORES = $(CB_SCORES) $(CF_SCORES)
@@ -26,6 +30,8 @@ SCORES = $(CB_SCORES) $(CF_SCORES)
 common_requirements:
 	$(PYTHON_INTERPRETER) setup.py install
 	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
+
+
 
 # Notebooks
 PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx
@@ -47,6 +53,7 @@ requirements: common_requirements
 	pip install -r requirements.txt
 	ipython kernel install --user --name=$(VENV_NAME)
 	nbstripout --install
+	$(PYTHON_INTERPRETER) -m nltk.downloader $(NLTK_ASSETS)
 
 ## Install only web application Python dependencies
 app_requirements: common_requirements
@@ -74,7 +81,7 @@ scores: $(SCORES)
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
-	# find . -type d -name "__pycache__" -delete
+	find . -type d -name "__pycache__" -exec rm -r {} +
 	rm -rf .mypy_cache
 
 ## Delete all downloaded and calculated files
@@ -98,11 +105,11 @@ create_environment:
 	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
 ## Start web application
-app:
-	$(foreach file,$(MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
+app: 
+	$(foreach file,$(APP_MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
 	$(if $(err),$(error Aborting),)
-	cp --update $(CB_MODELS) app/assets/models/cb
-	cp --update $(CF_MODELS) app/assets/models/cf
+	cp --update $(APP_CB_MODELS) app/assets/models/cb
+	cp --update $(APP_CF_MODELS) app/assets/models/cf
 	$(PYTHON_INTERPRETER) app/app.py
 
 ## Generate documentation

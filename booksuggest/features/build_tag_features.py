@@ -24,14 +24,13 @@ def build_all_tag_features(
 ) -> pd.DataFrame:
     """Calculates tag features for all books in the provided book_tags data frame.
 
-        Each feature represents a single tag, the value if the
-        feature is the count how many times this specific tag
-        was assigned divided by the count of all assigned tags.
+    Each feature represents a single tag, the value if the
+    feature is the count how many times this specific tag
+    was assigned divided by the count of all assigned tags.
 
-        Args:
-            book_tags: Data frame containing book_id and tag_id columns.
-            tags: Data frame containing tag_id and tag_names columns.
-
+    Args:
+        book_tags: Data frame containing book_id and tag_id columns.
+        tags: Data frame containing tag_id and tag_names columns.
     """
     book_tags_grouped = book_tags.groupby(by='book_id')
     tag_features = book_tags_grouped.apply(
@@ -49,9 +48,9 @@ def build_tag_features(
 ) -> List[float]:
     """Builds tags based features for a single book.
 
-        Args:
-            book_tags: Data frame containing book_id and tag_id columns.
-            tags: Data frame containing tag_id and tag_names columns.
+    Args:
+        book_tags: Data frame containing book_id and tag_id columns.
+        tags: Data frame containing tag_id and tag_names columns.
     """
     logging.debug('Building single feature...')
     if not check_book_tags_and_tags_compatibility(book_tags, tags):
@@ -69,12 +68,12 @@ def check_book_tags_and_tags_compatibility(
 ) -> bool:
     """Checks if the book tags and tags data are compatible.
 
-        Args:
-            book_tags: Data frame containing data about tags assigned to books.
-            tags: Data frame containg information about tags.
+    Args:
+        book_tags: Data frame containing data about tags assigned to books.
+        tags: Data frame containg information about tags.
 
-        Returns:
-            bool: True if data frames are compatible.
+    Returns:
+        bool: True if data frames are compatible.
     """
     if not validate_book_tags_data(book_tags):
         return False
@@ -88,11 +87,11 @@ def check_book_tags_and_tags_compatibility(
 def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
     """Checks if the book tags data frame contains valid data.
 
-        Args:
-            book_tags: Data frame to check.
+    Args:
+        book_tags: Data frame to check.
 
-        Returns:
-            bool: True if the data frame is a valid book_tags data frame.
+    Returns:
+        bool: True if the data frame is a valid book_tags data frame.
     """
     required_columns = {'book_id', 'tag_name'}
 
@@ -112,11 +111,11 @@ def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
 def validate_tags_data(tags: pd.DataFrame) -> bool:
     """Checks if the tags data frame contains valid data.
 
-        Args:
-            tags: data frame to check
+    Args:
+        tags: data frame to check
 
-        Returns:
-            bool: True if the data frame is a valid book_tags data frame
+    Returns:
+        bool: True if the data frame is a valid book_tags data frame
     """
     required_columns = {'tag_name'}
     return required_columns <= set(tags.columns)
@@ -126,14 +125,15 @@ def validate_tags_data(tags: pd.DataFrame) -> bool:
 @click.argument('book_tags_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
 def main(book_tags_filepath: str, output_filepath: str):
-    """Calculates tag features for all books present in the book
+    """
+    Calculates tag features for all books present in the book
     tags data frame and saves them to the specified output filepath.
 
-        Args:
-            book_tags:
-                Data frame containg information about tags assigned to books.
-            output_filepath:
-                Speficies the files in which the results should be saved.
+    Args:
+        book_tags: Data frame containg information about tags
+            assigned to books.
+        output_filepath: Speficies the files in which the results should
+            be saved.
 
     """
     book_tags = pd.read_csv(book_tags_filepath)
