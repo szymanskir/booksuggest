@@ -93,6 +93,7 @@ CB_MODELS = $(1GRAMS_MODELS) \
 APP_CB_MODELS = $(TAG_MODEL) \
 		$(TF_IDF_NO_NOUNS_2GRAMS_TAGS) \
 		$(TF_IDF_NOUNS) \
+		$(TF_IDF_NO_NOUNS) \
 		$(COUNT_NOUNS_3GRAMS)
 
 # PREDICTIONS
@@ -184,7 +185,7 @@ $(TAG_FEATURES): data/processed/book_tags.csv booksuggest/features/build_tag_fea
 #
 ################################################################################
 
-COMMON_CB_DEPS = booksuggest/models/tf_idf_models.py
+COMMON_CB_DEPS = booksuggest/models/train_cb_models.py
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
 
@@ -278,7 +279,7 @@ $(TAG_BASED_MODELS): $(TAG_FEATURES)
 REC_COUNT = 20
 
 $(CB_MODELS): $(COMMON_CB_DEPS)
-	$(PYTHON_INTERPRETER) -m booksuggest.models.tf_idf_models $(DESCR_FILE) \
+	$(PYTHON_INTERPRETER) -m booksuggest.models.train_cb_models $(DESCR_FILE) \
 							  $@ \
 							  --name $(MODEL_NAME) \
 							  --rec_count $(REC_COUNT) \
@@ -368,7 +369,7 @@ $(TAG_PREDICTION): MODEL := $(TAG_MODEL)
 $(TAG_PREDICTION): $(TAG_MODEL)
 
 $(CB_PREDICTIONS): $(CB_TEST_CASES)
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_predict_models $(MODEL) $(CB_TEST_CASES) $@ --rec_count 50
 
 ################################################################################
 #
@@ -379,4 +380,4 @@ $(CB_PREDICTIONS): $(CB_TEST_CASES)
 SIMILAR_BOOKS = data/processed/similar_books.csv
 
 $(CB_SCORES): booksuggest/evaluation/cb_evaluation.py $(SIMILAR_BOOKS) $(CB_PREDICTIONS)
-	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@
+	$(PYTHON_INTERPRETER) -m booksuggest.evaluation.cb_evaluation $(CB_RESULTS_DIR) $(SIMILAR_BOOKS) $@ --rec_count 20

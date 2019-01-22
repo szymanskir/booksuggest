@@ -20,7 +20,7 @@ content\_analyzer module
 tf\_idf\_models script
 -----------------------------------------
 
-.. automodule:: booksuggest.models.tf_idf_models
+.. automodule:: booksuggest.models.train_cb_models
     :members:
     :undoc-members:
     :show-inheritance:
