@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>booksuggest.evaluation.cb_evaluation &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../booksuggest.html">booksuggest package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>booksuggest.evaluation.cb_evaluation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for booksuggest.evaluation.cb_evaluation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions used for calculating recommendation models scores.</span>
+<span class="sd">Main script is responsible for summarizing all created models.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">basename</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="k">import</span> <span class="n">mean</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+<span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">.metrics</span> <span class="k">import</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span>
+
+<span class="kn">from</span> <span class="nn">..utils.csv_utils</span> <span class="k">import</span> <span class="n">save_csv</span>
+
+
+<div class="viewcode-block" id="calculate_scores"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cb_evaluation.calculate_scores">[docs]</a><span class="k">def</span> <span class="nf">calculate_scores</span><span class="p">(</span>
+        <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">test_cases</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">rec_count</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Evaluates the precision and accuracy_score for all models</span>
+<span class="sd">    present in the input directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dir_path: Directory in which calculated similar books predictions</span>
+<span class="sd">        are saved for each model.</span>
+<span class="sd">        test_cases: Similar books ground truth.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Data frame containing presicion and recall scores for all models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prediction_files</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">join</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="s1">&#39;*.csv&#39;</span><span class="p">))</span>
+
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">calculate_single_score</span><span class="p">(</span><span class="n">prediction_file</span><span class="p">,</span> <span class="n">test_cases</span><span class="p">,</span> <span class="n">rec_count</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">prediction_file</span> <span class="ow">in</span> <span class="n">prediction_files</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">scores</span></div>
+
+
+<div class="viewcode-block" id="calculate_single_score"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cb_evaluation.calculate_single_score">[docs]</a><span class="k">def</span> <span class="nf">calculate_single_score</span><span class="p">(</span>
+        <span class="n">prediction_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">test_cases</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">rec_count</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Calculates precision, accuracy scores and the amount of correct hits</span>
+<span class="sd">    for a single prediction file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prediction_file: Path to a file containing similar books predictions.</span>
+<span class="sd">        test_cases: Similar books ground truth.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">read_similar_books</span><span class="p">(</span><span class="n">prediction_file</span><span class="p">)</span>
+    <span class="n">precision_score</span> <span class="o">=</span> <span class="n">mean</span><span class="p">([</span>
+        <span class="n">precision</span><span class="p">(</span><span class="n">similar_book_ids</span><span class="p">[:</span><span class="n">rec_count</span><span class="p">],</span> <span class="n">test_cases</span><span class="p">[</span><span class="n">book_id</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">similar_book_ids</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+
+    <span class="n">recall_score</span> <span class="o">=</span> <span class="n">mean</span><span class="p">([</span>
+        <span class="n">recall</span><span class="p">(</span><span class="n">similar_book_ids</span><span class="p">[:</span><span class="n">rec_count</span><span class="p">],</span> <span class="n">test_cases</span><span class="p">[</span><span class="n">book_id</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">similar_book_ids</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+
+    <span class="n">correct_hits_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
+        <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">similar_book_ids</span><span class="p">[:</span><span class="n">rec_count</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">test_cases</span><span class="p">[</span><span class="n">book_id</span><span class="p">]))</span>
+        <span class="k">for</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">similar_book_ids</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="n">basename</span><span class="p">(</span><span class="n">prediction_file</span><span class="p">),</span>
+        <span class="s1">&#39;precision&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">precision_score</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="s1">&#39;recall&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">recall_score</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="s1">&#39;correct_hits&#39;</span><span class="p">:</span> <span class="n">correct_hits_score</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="read_similar_books"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cb_evaluation.read_similar_books">[docs]</a><span class="k">def</span> <span class="nf">read_similar_books</span><span class="p">(</span><span class="n">similar_books_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Converts similar books data from data frame form to dictionary form.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            If books 2, 3 are similar to 1 then the result dictionary</span>
+<span class="sd">            will have a record in the following form: 1: [2, 3].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            similar_books_filepath:</span>
+<span class="sd">                Path to the file containing similar books data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary in which keys are book_ids and values</span>
+<span class="sd">            are lists of books that are similar to the book_id key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">similar_books</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">similar_books_filepath</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">book_id</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;similar_book_id&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">book_id</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">similar_books</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span>
+    <span class="p">}</span></div>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;input_directory&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;similar_books_input&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--rec_count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span>
+        <span class="n">input_directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">similar_books_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">rec_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main function used for summarizing prediction scores.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_directory:</span>
+<span class="sd">            Path to the directory containing similar books predictions.</span>
+<span class="sd">        similar_books_input:</span>
+<span class="sd">            Path to file containing similar books ground truth.</span>
+<span class="sd">        rec_count:</span>
+<span class="sd">            Top k recommendations to consider.</span>
+<span class="sd">        output_filepath:</span>
+<span class="sd">            Path to file in which results should be stored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Preparing test cases...&#39;</span><span class="p">)</span>
+    <span class="n">test_cases</span> <span class="o">=</span> <span class="n">read_similar_books</span><span class="p">(</span><span class="n">similar_books_input</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s1">&#39;Evaluating scores for predictions from </span><span class="si">%s</span><span class="s1">...&#39;</span><span class="p">,</span>
+        <span class="n">input_directory</span>
+    <span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">calculate_scores</span><span class="p">(</span><span class="n">input_directory</span><span class="p">,</span> <span class="n">test_cases</span><span class="p">,</span> <span class="n">rec_count</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving results to </span><span class="si">%s</span><span class="s1">...&#39;</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">)</span>
+    <span class="n">save_csv</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">,</span>
+             <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="s1">&#39;recall&#39;</span><span class="p">,</span> <span class="s1">&#39;correct_hits&#39;</span><span class="p">])</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>  <span class="c1"># pylint: disable=no-value-for-parameter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

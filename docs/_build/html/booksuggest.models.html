@@ -1,0 +1,925 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models training package &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Models evaluation package" href="booksuggest.evaluation.html" />
+    <link rel="prev" title="Feature engineering package" href="booksuggest.features.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="booksuggest.html">booksuggest package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html">Data preparation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.features.html">Feature engineering package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models training package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.cb_recommend_models">cb_recommend_models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.content_analyzer">content_analyzer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.train_cb_models">tf_idf_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.cf_recommend_models">cf_recommend_models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.cf_slopeone_models">cf_slopeone_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.cf_knn_models">cf_knn_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.cf_svd_models">cf_svd_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.load_models">load_models module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.models.model_exceptions">model_exceptions module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html">Models evaluation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="booksuggest.html">booksuggest package</a> &raquo;</li>
+        
+      <li>Models training package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/booksuggest.models.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models-training-package">
+<h1>Models training package<a class="headerlink" href="#models-training-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-booksuggest.models.cb_recommend_models">
+<span id="cb-recommend-models-module"></span><h2>cb_recommend_models module<a class="headerlink" href="#module-booksuggest.models.cb_recommend_models" title="Permalink to this headline">¶</a></h2>
+<p>Recommendation models using content based methods.</p>
+<dl class="class">
+<dt id="booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cb_recommend_models.</code><code class="descname">ContentBasedRecommendationModel</code><span class="sig-paren">(</span><em>content_analyzer</em>, <em>recommendation_count=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ContentBasedRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.cb_recommend_models.ICbRecommendationModel" title="booksuggest.models.cb_recommend_models.ICbRecommendationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.cb_recommend_models.ICbRecommendationModel</span></code></a></p>
+<p>Recommendation model using text features.
+Later uses the cosine similarity in order to select
+the most similar books.</p>
+<dl class="attribute">
+<dt id="booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.content_analyzer">
+<code class="descname">content_analyzer</code><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.content_analyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component used for feature extraction from the data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.filtering_component">
+<code class="descname">filtering_component</code><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.filtering_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Component used for calculating most similar books
+based on the features calculated by the content_analyzer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.recommend">
+<code class="descname">recommend</code><span class="sig-paren">(</span><em>book_id</em>, <em>rec_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ContentBasedRecommendationModel.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Based on the user input in form a dictionary containing</p>
+<p>The model makes use of tf-idf features calculated using book
+descriptions. The cosine metric is used in order to determine
+which books are similar.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ContentBasedRecommendationModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares feature vectors.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.cb_recommend_models.ICbRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cb_recommend_models.</code><code class="descname">ICbRecommendationModel</code><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ICbRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ICbRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Interface for content based recommendation models.</p>
+<dl class="method">
+<dt id="booksuggest.models.cb_recommend_models.ICbRecommendationModel.recommend">
+<code class="descname">recommend</code><span class="sig-paren">(</span><em>book_id</em>, <em>rec_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ICbRecommendationModel.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ICbRecommendationModel.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recommends books similar to the given book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Id of the book for which recommendations would be given.</li>
+<li><strong>rec_int</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – How many recomendations to return.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Dictionary composed of book ids and their distances
+from the original book key value pairs.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Dict[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cb_recommend_models.ICbRecommendationModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cb_recommend_models.html#ICbRecommendationModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cb_recommend_models.ICbRecommendationModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trains the content based recommendation model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>) – Data frame containing book data, composed of the following
+columns: book_id, authors, original_publication_year,
+original_title, title, isbn13, description.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.content_analyzer">
+<span id="content-analyzer-module"></span><h2>content_analyzer module<a class="headerlink" href="#module-booksuggest.models.content_analyzer" title="Permalink to this headline">¶</a></h2>
+<p>Content analyzers used by content based recommendation models.</p>
+<p>Content analyzers are objects that extract features from the items
+of interest. They play a main part in content based recommendation
+systems.</p>
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.ContentAnalyzerBuilder">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">ContentAnalyzerBuilder</code><span class="sig-paren">(</span><em>name</em>, <em>ngrams=None</em>, <em>tag_features=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#ContentAnalyzerBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.ContentAnalyzerBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Builder class used for creating content analyzers
+based on the given configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Type of the content analyzer.</li>
+<li><strong>ngram</strong> – Maximal number of words in a single feature.</li>
+<li><strong>tag_features</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>]) – Data frame containing calculated tag features.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.ContentAnalyzerBuilder.build_content_analyzer">
+<code class="descname">build_content_analyzer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#ContentAnalyzerBuilder.build_content_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.ContentAnalyzerBuilder.build_content_analyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a content analyzer based on the object
+configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#booksuggest.models.content_analyzer.IContentAnalyzer" title="booksuggest.models.content_analyzer.IContentAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">IContentAnalyzer</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.EnsembledContentAnalyzer">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">EnsembledContentAnalyzer</code><span class="sig-paren">(</span><em>content_analyzers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#EnsembledContentAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.content_analyzer.IContentAnalyzer" title="booksuggest.models.content_analyzer.IContentAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.content_analyzer.IContentAnalyzer</span></code></a></p>
+<p>Content analyzer that creates feature vectors composed of
+both text features and tag features.</p>
+<dl class="attribute">
+<dt id="booksuggest.models.content_analyzer.EnsembledContentAnalyzer.text_content_analyzer">
+<code class="descname">text_content_analyzer</code><a class="headerlink" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.text_content_analyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Content analyzer repsonsible for extracting text features.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="booksuggest.models.content_analyzer.EnsembledContentAnalyzer.tag_features">
+<code class="descname">tag_features</code><a class="headerlink" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.tag_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to tag based features.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.EnsembledContentAnalyzer.build_features">
+<code class="descname">build_features</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#EnsembledContentAnalyzer.build_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.build_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds feature matrix for the book_data data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.EnsembledContentAnalyzer.get_feature_vector">
+<code class="descname">get_feature_vector</code><span class="sig-paren">(</span><em>book_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#EnsembledContentAnalyzer.get_feature_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer.get_feature_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the feature vector of a specific book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_id</strong> – Specifies the book for which the feature vector
+will be returned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Feature vector of the given book.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.IContentAnalyzer">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">IContentAnalyzer</code><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#IContentAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.IContentAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Interface for content analyzers responsible
+for creating feature vectors for books.</p>
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.IContentAnalyzer.build_features">
+<code class="descname">build_features</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#IContentAnalyzer.build_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.IContentAnalyzer.build_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds feature matrix for the book_data data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.IContentAnalyzer.get_feature_vector">
+<code class="descname">get_feature_vector</code><span class="sig-paren">(</span><em>book_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#IContentAnalyzer.get_feature_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.IContentAnalyzer.get_feature_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the feature vector of a specific book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Specifies the book for which the feature vector
+will be returned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Feature vector of the given book.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="booksuggest.models.content_analyzer.InvalidBuilderConfigError">
+<em class="property">exception </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">InvalidBuilderConfigError</code><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#InvalidBuilderConfigError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.InvalidBuilderConfigError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Content analyzer building configuration error.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.TagBasedContentAnalyzer">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">TagBasedContentAnalyzer</code><span class="sig-paren">(</span><em>tag_features</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TagBasedContentAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TagBasedContentAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.content_analyzer.IContentAnalyzer" title="booksuggest.models.content_analyzer.IContentAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.content_analyzer.IContentAnalyzer</span></code></a></p>
+<p>Content analyzer that uses book tags to construct
+feature vectors.</p>
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.TagBasedContentAnalyzer.build_features">
+<code class="descname">build_features</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TagBasedContentAnalyzer.build_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TagBasedContentAnalyzer.build_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds feature matrix for the book_data data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.TagBasedContentAnalyzer.get_feature_vector">
+<code class="descname">get_feature_vector</code><span class="sig-paren">(</span><em>book_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TagBasedContentAnalyzer.get_feature_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TagBasedContentAnalyzer.get_feature_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the feature vector of a specific book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_id</strong> – Specifies the book for which the feature vector
+will be returned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Feature vector of the given book.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.TextAndTagBasedContentAnalyzer">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">TextAndTagBasedContentAnalyzer</code><span class="sig-paren">(</span><em>text_feature_extractor</em>, <em>tag_features</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TextAndTagBasedContentAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TextAndTagBasedContentAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.content_analyzer.EnsembledContentAnalyzer" title="booksuggest.models.content_analyzer.EnsembledContentAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.content_analyzer.EnsembledContentAnalyzer</span></code></a></p>
+<p>Content analyzer combining text and tag based features.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.content_analyzer.TextBasedContentAnalyzer">
+<em class="property">class </em><code class="descclassname">booksuggest.models.content_analyzer.</code><code class="descname">TextBasedContentAnalyzer</code><span class="sig-paren">(</span><em>text_feature_extractor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TextBasedContentAnalyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TextBasedContentAnalyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.content_analyzer.IContentAnalyzer" title="booksuggest.models.content_analyzer.IContentAnalyzer"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.content_analyzer.IContentAnalyzer</span></code></a></p>
+<p>Content analyzer that extracts tf idf text features
+from book descriptions.</p>
+<dl class="attribute">
+<dt id="booksuggest.models.content_analyzer.TextBasedContentAnalyzer._text_feature_extractor">
+<code class="descname">_text_feature_extractor</code><a class="headerlink" href="#booksuggest.models.content_analyzer.TextBasedContentAnalyzer._text_feature_extractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object responsible for extracting text based features.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.TextBasedContentAnalyzer.build_features">
+<code class="descname">build_features</code><span class="sig-paren">(</span><em>book_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TextBasedContentAnalyzer.build_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TextBasedContentAnalyzer.build_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds feature matrix for the book_data data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.content_analyzer.TextBasedContentAnalyzer.get_feature_vector">
+<code class="descname">get_feature_vector</code><span class="sig-paren">(</span><em>book_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/content_analyzer.html#TextBasedContentAnalyzer.get_feature_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.content_analyzer.TextBasedContentAnalyzer.get_feature_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the feature vector of a specific book.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – Specifies the book for which the feature vector
+will be returned.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Feature vector of the given book.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.train_cb_models">
+<span id="tf-idf-models-script"></span><h2>tf_idf_models script<a class="headerlink" href="#module-booksuggest.models.train_cb_models" title="Permalink to this headline">¶</a></h2>
+<p>Command used for creating different types of content based recommendation
+models.</p>
+<dl class="function">
+<dt id="booksuggest.models.train_cb_models.main">
+<code class="descclassname">booksuggest.models.train_cb_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>output_filepath</em>, <em>rec_count</em>, <em>ngrams</em>, <em>name</em>, <em>tag_features_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.models.train_cb_models.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main script used for training content based recommendation models.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_filepath</strong> – Path to file containg training data.</li>
+<li><strong>output_filepath</strong> – Path to file in which the trained model should be saved.</li>
+<li><strong>rec_count</strong> – Specifies how many recommendations the model should return.</li>
+<li><strong>ngrams</strong> – Specifies the ngram range used when extracting text features.</li>
+<li><strong>name</strong> – Type of the model to train.</li>
+<li><strong>tag_features_filepath</strong> – </li>
+<li><strong>to file containing precalculated tag features.</strong> (<em>Path</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.cf_recommend_models">
+<span id="cf-recommend-models-module"></span><h2>cf_recommend_models module<a class="headerlink" href="#module-booksuggest.models.cf_recommend_models" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="booksuggest.models.cf_recommend_models.ICfRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cf_recommend_models.</code><code class="descname">ICfRecommendationModel</code><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#ICfRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.ICfRecommendationModel.generate_antitest_set">
+<code class="descname">generate_antitest_set</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#ICfRecommendationModel.generate_antitest_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel.generate_antitest_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields a list of ratings which are not already present in the trainset.</p>
+<p>All the ratings where user is known and item is know, but rating for
+(user, item) is not present in the trainset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body"><em>Iterable[Tuple[int, int, float]]</em> –     A list of tuples (uid, iid, global_mean)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.ICfRecommendationModel.recommend">
+<code class="descname">recommend</code><span class="sig-paren">(</span><em>user_id</em>, <em>recommendations_count=20</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#ICfRecommendationModel.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a top <cite>recommendation_count</cite> recommendations for specific user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Id of the user.</li>
+<li><strong>recommendations_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – Defaults to 10. Specifies how many recommendations to return.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UntrainedModelError</span></code> – Raised when method is used before model is trained.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>book_id: estimated_rating</cite> pairs</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Dict[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.ICfRecommendationModel.test">
+<code class="descname">test</code><span class="sig-paren">(</span><em>ratings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#ICfRecommendationModel.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests the model on the given ground-truth dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ratings</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>]</em><em>]</em>) – <cite>(user_id, book_id, true_rating)</cite> tuples</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UntrainedModelError</span></code> – Raised when method is used before model is trained.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of predictions with true and estimated ratings.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[Prediction]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="booksuggest.models.cf_recommend_models.ICfRecommendationModel.users">
+<code class="descname">users</code><a class="headerlink" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel.users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator over users in training set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body"><em>Iterable[int]</em> – Users iterator.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.cf_recommend_models.KNNRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cf_recommend_models.</code><code class="descname">KNNRecommendationModel</code><span class="sig-paren">(</span><em>input_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#KNNRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.KNNRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel" title="booksuggest.models.cf_recommend_models.SurpriseBasedModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.cf_recommend_models.SurpriseBasedModel</span></code></a></p>
+<p>Recommendation algorithm using the neighbor similarity.</p>
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.KNNRecommendationModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#KNNRecommendationModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.KNNRecommendationModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes user and items similarities.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.cf_recommend_models.SlopeOneRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cf_recommend_models.</code><code class="descname">SlopeOneRecommendationModel</code><span class="sig-paren">(</span><em>input_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SlopeOneRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SlopeOneRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel" title="booksuggest.models.cf_recommend_models.SurpriseBasedModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.cf_recommend_models.SurpriseBasedModel</span></code></a></p>
+<p>Recommendation algorithm using the SlopeOne algorithm.</p>
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.SlopeOneRecommendationModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SlopeOneRecommendationModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SlopeOneRecommendationModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes users average ratings based on common items.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cf_recommend_models.</code><code class="descname">SurpriseBasedModel</code><span class="sig-paren">(</span><em>input_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SurpriseBasedModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.cf_recommend_models.ICfRecommendationModel" title="booksuggest.models.cf_recommend_models.ICfRecommendationModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.cf_recommend_models.ICfRecommendationModel</span></code></a></p>
+<p>Base class for models, which use algorithms from Surprise package.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Filepath containing ratings data.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel._trainset">
+<code class="descname">_trainset</code><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel._trainset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dataset used for model training.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">Trainset</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel._algorithm">
+<code class="descname">_algorithm</code><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel._algorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Algorithm(defined in Surprise package) used by model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">AlgoBase</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel.generate_antitest_set">
+<code class="descname">generate_antitest_set</code><span class="sig-paren">(</span><em>users_ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SurpriseBasedModel.generate_antitest_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel.generate_antitest_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yields a list of ratings which are not already present in the trainset.</p>
+<p>All the ratings where user is known and item is know, but rating for
+(user, item) is not present in the trainset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body"><em>Iterable[Tuple[int, int, float]]</em> –     A list of tuples (uid, iid, global_mean)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel.recommend">
+<code class="descname">recommend</code><span class="sig-paren">(</span><em>user_id</em>, <em>recommendations_count=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SurpriseBasedModel.recommend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel.recommend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a top <cite>recommendation_count</cite> recommendations for specific user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Id of the user.</li>
+<li><strong>recommendations_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – Defaults to 10. Specifies how many recommendations to return.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UntrainedModelError</span></code> – Raised when method is used before model is trained.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><cite>book_id: estimated_rating</cite> pairs</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Dict[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel.test">
+<code class="descname">test</code><span class="sig-paren">(</span><em>ratings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SurpriseBasedModel.test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel.test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tests the model on the given ground-truth dataset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ratings</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>]</em><em>]</em>) – <cite>(user_id, book_id, true_rating)</cite> tuples</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">UntrainedModelError</span></code> – Raised when method is used before model is trained.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of predictions with true and estimated ratings.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">List[Prediction]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="booksuggest.models.cf_recommend_models.SurpriseBasedModel.users">
+<code class="descname">users</code><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel.users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns iterator over users in training set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Yields:</th><td class="field-body"><em>Iterable[int]</em> – Users iterator.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="booksuggest.models.cf_recommend_models.SvdRecommendationModel">
+<em class="property">class </em><code class="descclassname">booksuggest.models.cf_recommend_models.</code><code class="descname">SvdRecommendationModel</code><span class="sig-paren">(</span><em>input_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SvdRecommendationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SvdRecommendationModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#booksuggest.models.cf_recommend_models.SurpriseBasedModel" title="booksuggest.models.cf_recommend_models.SurpriseBasedModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">booksuggest.models.cf_recommend_models.SurpriseBasedModel</span></code></a></p>
+<p>Recommendation algorithm using the Singular Value Decomposition operation.</p>
+<dl class="method">
+<dt id="booksuggest.models.cf_recommend_models.SvdRecommendationModel.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>random_state</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/cf_recommend_models.html#SvdRecommendationModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.cf_recommend_models.SvdRecommendationModel.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares user and items vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Value for random seed.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.cf_slopeone_models">
+<span id="cf-slopeone-models-script"></span><h2>cf_slopeone_models script<a class="headerlink" href="#module-booksuggest.models.cf_slopeone_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.models.cf_slopeone_models.main">
+<code class="descclassname">booksuggest.models.cf_slopeone_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.models.cf_slopeone_models.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.cf_knn_models">
+<span id="cf-knn-models-script"></span><h2>cf_knn_models script<a class="headerlink" href="#module-booksuggest.models.cf_knn_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.models.cf_knn_models.main">
+<code class="descclassname">booksuggest.models.cf_knn_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.models.cf_knn_models.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.cf_svd_models">
+<span id="cf-svd-models-script"></span><h2>cf_svd_models script<a class="headerlink" href="#module-booksuggest.models.cf_svd_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.models.cf_svd_models.main">
+<code class="descclassname">booksuggest.models.cf_svd_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>random_state</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.models.cf_svd_models.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.load_models">
+<span id="load-models-module"></span><h2>load_models module<a class="headerlink" href="#module-booksuggest.models.load_models" title="Permalink to this headline">¶</a></h2>
+<p>Function used for loading recommendation models.</p>
+<dl class="exception">
+<dt id="booksuggest.models.load_models.InvalidModelException">
+<em class="property">exception </em><code class="descclassname">booksuggest.models.load_models.</code><code class="descname">InvalidModelException</code><a class="reference internal" href="_modules/booksuggest/models/load_models.html#InvalidModelException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.load_models.InvalidModelException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Custom exception for handling model retrieval errors.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.models.load_models.load_model">
+<code class="descclassname">booksuggest.models.load_models.</code><code class="descname">load_model</code><span class="sig-paren">(</span><em>model_file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/models/load_models.html#load_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.load_models.load_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the model specified stored in model_file_path</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>model_file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file containing recommendation model.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference internal" href="#booksuggest.models.load_models.InvalidModelException" title="booksuggest.models.load_models.InvalidModelException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">InvalidModelException</span></code></a> – Raised when object does not implement ICbRecommendationModel
+or ICfRecommendationModel interface.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Recommendation model object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">IRecommendationModel</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.models.model_exceptions">
+<span id="model-exceptions-module"></span><h2>model_exceptions module<a class="headerlink" href="#module-booksuggest.models.model_exceptions" title="Permalink to this headline">¶</a></h2>
+<p>Exceptions regarding recommendation models.</p>
+<dl class="exception">
+<dt id="booksuggest.models.model_exceptions.UnbuiltFeaturesError">
+<em class="property">exception </em><code class="descclassname">booksuggest.models.model_exceptions.</code><code class="descname">UnbuiltFeaturesError</code><a class="reference internal" href="_modules/booksuggest/models/model_exceptions.html#UnbuiltFeaturesError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.model_exceptions.UnbuiltFeaturesError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Error is thrown when the content analyzer
+are used before feature_building.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="booksuggest.models.model_exceptions.UntrainedModelError">
+<em class="property">exception </em><code class="descclassname">booksuggest.models.model_exceptions.</code><code class="descname">UntrainedModelError</code><a class="reference internal" href="_modules/booksuggest/models/model_exceptions.html#UntrainedModelError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.models.model_exceptions.UntrainedModelError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Error is raised when a method is used
+using an untrained model.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="booksuggest.evaluation.html" class="btn btn-neutral float-right" title="Models evaluation package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="booksuggest.features.html" class="btn btn-neutral" title="Feature engineering package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

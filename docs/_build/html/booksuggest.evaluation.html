@@ -1,0 +1,555 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Models evaluation package &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utilities package" href="booksuggest.utils.html" />
+    <link rel="prev" title="Models training package" href="booksuggest.models.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="booksuggest.html">booksuggest package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.data.html">Data preparation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.features.html">Feature engineering package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html">Models training package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Models evaluation package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cb_predict_models">cb_predict_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cb_evaluation">cb_evaluation script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cf_predict_models">cf_predict_models script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cf-accuracy-evaluation-script">cf_accuracy_evaluation script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cf_effectiveness_evaluation">cf_effectiveness_evaluation script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.metrics">metrics module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="booksuggest.html">booksuggest package</a> &raquo;</li>
+        
+      <li>Models evaluation package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/booksuggest.evaluation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="models-evaluation-package">
+<h1>Models evaluation package<a class="headerlink" href="#models-evaluation-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-booksuggest.evaluation.cb_predict_models">
+<span id="cb-predict-models-script"></span><h2>cb_predict_models script<a class="headerlink" href="#module-booksuggest.evaluation.cb_predict_models" title="Permalink to this headline">¶</a></h2>
+<p>Functions used for predicting similar books using content based
+recommendation models.</p>
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_predict_models.main">
+<code class="descclassname">booksuggest.evaluation.cb_predict_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>model_filepath</em>, <em>test_cases_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.evaluation.cb_predict_models.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Script for calculating similar books recommendations of a given model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filepath to the model used for recommendations.</li>
+<li><strong>test_cases_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – filepath containing book ids for which
+similar are calculated.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – File where the data frame should be saved.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_predict_models.predict_model">
+<code class="descclassname">booksuggest.evaluation.cb_predict_models.</code><code class="descname">predict_model</code><span class="sig-paren">(</span><em>model</em>, <em>test_cases</em>, <em>rec_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cb_predict_models.html#predict_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cb_predict_models.predict_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the given model to calculate similar books.</p>
+<p>Each test case is a book id for which similar books
+are calculated using the given model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<a class="reference internal" href="booksuggest.models.html#booksuggest.models.cb_recommend_models.ICbRecommendationModel" title="booksuggest.models.cb_recommend_models.ICbRecommendationModel"><em>ICbRecommendationModel</em></a>) – Model used for recommending
+similar books.</li>
+<li><strong>test_cases</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>]</em>) – List of book ids for which similar books
+are calculated.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Data frame containing the book_id and the similar_book_id columns;
+grouping is needed in order to retrieve all similar books of a
+specific book.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.evaluation.cb_evaluation">
+<span id="cb-evaluation-script"></span><h2>cb_evaluation script<a class="headerlink" href="#module-booksuggest.evaluation.cb_evaluation" title="Permalink to this headline">¶</a></h2>
+<p>Functions used for calculating recommendation models scores.
+Main script is responsible for summarizing all created models.</p>
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_evaluation.main">
+<code class="descclassname">booksuggest.evaluation.cb_evaluation.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_directory</em>, <em>similar_books_input</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.evaluation.cb_evaluation.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function used for summarizing prediction scores.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_directory</strong> – Path to the directory containing similar books predictions.</li>
+<li><strong>similar_books_input</strong> – Path to file containing similar books ground truth.</li>
+<li><strong>rec_count</strong> – Top k recommendations to consider.</li>
+<li><strong>output_filepath</strong> – Path to file in which results should be stored.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_evaluation.calculate_scores">
+<code class="descclassname">booksuggest.evaluation.cb_evaluation.</code><code class="descname">calculate_scores</code><span class="sig-paren">(</span><em>dir_path</em>, <em>test_cases</em>, <em>rec_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cb_evaluation.html#calculate_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cb_evaluation.calculate_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the precision and accuracy_score for all models
+present in the input directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dir_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Directory in which calculated similar books predictions</li>
+<li><strong>saved for each model.</strong> (<em>are</em>) – </li>
+<li><strong>test_cases</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]) – Similar books ground truth.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Data frame containing presicion and recall scores for all models.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_evaluation.calculate_single_score">
+<code class="descclassname">booksuggest.evaluation.cb_evaluation.</code><code class="descname">calculate_single_score</code><span class="sig-paren">(</span><em>prediction_file</em>, <em>test_cases</em>, <em>rec_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cb_evaluation.html#calculate_single_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cb_evaluation.calculate_single_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates precision, accuracy scores and the amount of correct hits
+for a single prediction file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prediction_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to a file containing similar books predictions.</li>
+<li><strong>test_cases</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]) – Similar books ground truth.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cb_evaluation.read_similar_books">
+<code class="descclassname">booksuggest.evaluation.cb_evaluation.</code><code class="descname">read_similar_books</code><span class="sig-paren">(</span><em>similar_books_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cb_evaluation.html#read_similar_books"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cb_evaluation.read_similar_books" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts similar books data from data frame form to dictionary form.</p>
+<p class="rubric">Example</p>
+<p>If books 2, 3 are similar to 1 then the result dictionary
+will have a record in the following form: 1: [2, 3].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>similar_books_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Path to the file containing similar books data.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary in which keys are book_ids and values
+are lists of books that are similar to the book_id key.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.evaluation.cf_predict_models">
+<span id="cf-predict-models-script"></span><h2>cf_predict_models script<a class="headerlink" href="#module-booksuggest.evaluation.cf_predict_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_predict_models.main">
+<code class="descclassname">booksuggest.evaluation.cf_predict_models.</code><code class="descname">main</code><span class="sig-paren">(</span><em>model_filepath</em>, <em>output_filepath</em>, <em>n</em>, <em>chunks_count</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.evaluation.cf_predict_models.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates and saves predictions for the given model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>model_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file containg model.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of recommendations to return.</li>
+<li><strong>chunks_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – In how many chunks split the users set
+during parallel processing.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_predict_models.predict_model">
+<code class="descclassname">booksuggest.evaluation.cf_predict_models.</code><code class="descname">predict_model</code><span class="sig-paren">(</span><em>model</em>, <em>recommendation_count</em>, <em>chunks_count</em>, <em>batch_size=100000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cf_predict_models.html#predict_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cf_predict_models.predict_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates top recommendations for every user in the trainset.</p>
+<p>Calculations are done in batches to avoid huge memory consumption.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<a class="reference internal" href="booksuggest.models.html#booksuggest.models.cf_recommend_models.ICfRecommendationModel" title="booksuggest.models.cf_recommend_models.ICfRecommendationModel"><em>ICfRecommendationModel</em></a>) – Already trained model.</li>
+<li><strong>recommendation_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Specifies how many recommendations to save.</li>
+<li><strong>chunks_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Number of chunks.</li>
+<li><strong>batch_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><em>optional</em>) – Defaults to 100000. Size of single batch.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Data frame with predictions.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="cf-accuracy-evaluation-script">
+<h2>cf_accuracy_evaluation script<a class="headerlink" href="#cf-accuracy-evaluation-script" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-booksuggest.evaluation.cf_effectiveness_evaluation">
+<span id="cf-effectiveness-evaluation-script"></span><h2>cf_effectiveness_evaluation script<a class="headerlink" href="#module-booksuggest.evaluation.cf_effectiveness_evaluation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_effectiveness_evaluation.main">
+<code class="descclassname">booksuggest.evaluation.cf_effectiveness_evaluation.</code><code class="descname">main</code><span class="sig-paren">(</span><em>predictions_dir</em>, <em>to_read_filepath</em>, <em>testset_filepath</em>, <em>threshold</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.evaluation.cf_effectiveness_evaluation.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates precision and recall metrics of predictions on given testsets.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>predictions_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with predictions files.</li>
+<li><strong>to_read_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file with to_read data.</li>
+<li><strong>testset_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file with testset data.</li>
+<li><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Threshold for considering specific
+recommendation a good one.</li>
+<li><strong>n_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Lower bound of predictions number generated loop.</li>
+<li><strong>n_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Upper bound of predictions number generated loop.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_effectiveness_evaluation.evaluate_on_predictions">
+<code class="descclassname">booksuggest.evaluation.cf_effectiveness_evaluation.</code><code class="descname">evaluate_on_predictions</code><span class="sig-paren">(</span><em>predictions_df</em>, <em>test_df</em>, <em>threshold</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cf_effectiveness_evaluation.html#evaluate_on_predictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cf_effectiveness_evaluation.evaluate_on_predictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the precision and recall of predictions using to_read data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>predictions_df</strong> (<em>pd.DataFrame</em>) – Data frame with predictions.</li>
+<li><strong>test_df</strong> (<em>pd.DataFrame</em>) – Data frame containg testing data.
+Should contain <cite>[‘user_id’, ‘book_id’]</cite> columns.</li>
+<li><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Treshold for rating to be valid recommendation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Average <cite>(precision, recall)</cite> for all users.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.evaluation.metrics">
+<span id="metrics-module"></span><h2>metrics module<a class="headerlink" href="#module-booksuggest.evaluation.metrics" title="Permalink to this headline">¶</a></h2>
+<p>Functions calculating metric scores used for recommendation models
+evaluation.</p>
+<dl class="function">
+<dt id="booksuggest.evaluation.metrics.precision">
+<code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">precision</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#precision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.precision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the precision of the recommendations based on
+the given sets of book ids.</p>
+<p>TODO add latex equation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.metrics.precision_thresholded">
+<code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">precision_thresholded</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em>, <em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#precision_thresholded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.precision_thresholded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the precision of the recommendations based on
+the given sets of book ids.
+Filters out recommendations with rating below threshold.</p>
+<p>TODO add latex equation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.metrics.recall">
+<code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">recall</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#recall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.recall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the recall of the recommendations based on
+the given sets of book ids.</p>
+<p>TODO add latex equation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.metrics.recall_thresholded">
+<code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">recall_thresholded</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em>, <em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#recall_thresholded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.recall_thresholded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the recall of the recommendations based on
+the given sets of book ids.
+Filters out recommendations with rating below threshold.</p>
+<p>TODO add latex equation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="booksuggest.utils.html" class="btn btn-neutral float-right" title="Utilities package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="booksuggest.models.html" class="btn btn-neutral" title="Models training package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

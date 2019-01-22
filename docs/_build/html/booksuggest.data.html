@@ -1,0 +1,651 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Data preparation package &mdash; Recommendation System for Books  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Feature engineering package" href="booksuggest.features.html" />
+    <link rel="prev" title="booksuggest package" href="booksuggest.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Recommendation System for Books
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="booksuggest.html">booksuggest package</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data preparation package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.download_dataset">download_dataset script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.extract_xml_files">extract_xml_files script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.xml_parser">xml_parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.clean_book">clean_book script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.clean_book_tags">clean_book_tags script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.prepare_description">prepare_description script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.prepare_similar_books">prepare_similar_books script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.data.ratings_train_test_split">ratings_train_test_split script</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.features.html">Feature engineering package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.models.html">Models training package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.evaluation.html">Models evaluation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booksuggest.utils.html">Utilities package</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Recommendation System for Books</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="booksuggest.html">booksuggest package</a> &raquo;</li>
+        
+      <li>Data preparation package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/booksuggest.data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="data-preparation-package">
+<h1>Data preparation package<a class="headerlink" href="#data-preparation-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-booksuggest.data.download_dataset">
+<span id="download-dataset-script"></span><h2>download_dataset script<a class="headerlink" href="#module-booksuggest.data.download_dataset" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.download_dataset.main">
+<code class="descclassname">booksuggest.data.download_dataset.</code><code class="descname">main</code><span class="sig-paren">(</span><em>download_url</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.download_dataset.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads data from the <code class="docutils literal notranslate"><span class="pre">download_url</span></code> and saves
+it in the <code class="docutils literal notranslate"><span class="pre">output_filepath</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>download_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Url from which the data should be downloaded.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filepath to which the results should be saved.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.extract_xml_files">
+<span id="extract-xml-files-script"></span><h2>extract_xml_files script<a class="headerlink" href="#module-booksuggest.data.extract_xml_files" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.extract_xml_files.main">
+<code class="descclassname">booksuggest.data.extract_xml_files.</code><code class="descname">main</code><span class="sig-paren">(</span><em>xml_archive_path</em>, <em>output_dir</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.extract_xml_files.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract .xml files from <code class="docutils literal notranslate"><span class="pre">archive</span> <span class="pre">xml_archive_path</span></code> to <code class="docutils literal notranslate"><span class="pre">output_dir</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.xml_parser">
+<span id="xml-parser-module"></span><h2>xml_parser module<a class="headerlink" href="#module-booksuggest.data.xml_parser" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.xml_parser.extract_all_book_xml_roots">
+<code class="descclassname">booksuggest.data.xml_parser.</code><code class="descname">extract_all_book_xml_roots</code><span class="sig-paren">(</span><em>xmls_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/xml_parser.html#extract_all_book_xml_roots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.xml_parser.extract_all_book_xml_roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts <code class="docutils literal notranslate"><span class="pre">book</span></code> element from .xml files located in given directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xmls_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with .xml files.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><em>Iterable[etree.Element]</em> – Iterable of <cite>book</cite> elements.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[&lt;cyfunction Element at 0x7efee19ee270&gt;]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.clean_book">
+<span id="clean-book-script"></span><h2>clean_book script<a class="headerlink" href="#module-booksuggest.data.clean_book" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.clean_book.main">
+<code class="descclassname">booksuggest.data.clean_book.</code><code class="descname">main</code><span class="sig-paren">(</span><em>book_filepath</em>, <em>books_xml_dir</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.clean_book.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts additional data about books from .xml files
+and joins it with previous data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>book_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Book data frame.</li>
+<li><strong>books_xml_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with books .xml files.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book.extract_book_extra_info">
+<code class="descclassname">booksuggest.data.clean_book.</code><code class="descname">extract_book_extra_info</code><span class="sig-paren">(</span><em>xmls_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book.html#extract_book_extra_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book.extract_book_extra_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts extra information about books from .xml files in given directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xmls_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with .xml files.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of <code class="docutils literal notranslate"><span class="pre">(work_id,</span> <span class="pre">isbn13,</span> <span class="pre">description)</span></code> book data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List[Tuple[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book.merge_book_data">
+<code class="descclassname">booksuggest.data.clean_book.</code><code class="descname">merge_book_data</code><span class="sig-paren">(</span><em>book_df</em>, <em>book_extra_info_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book.html#merge_book_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book.merge_book_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges standard book data with new extra info.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_df</strong> (<em>pd.DataFrame</em>) – Book data frame.</li>
+<li><strong>book_extra_info_df</strong> (<em>pd.DataFrame</em>) – Book extra info data frame.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Book data frame with additional <code class="docutils literal notranslate"><span class="pre">description</span></code> column.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book.process_book_extra_info">
+<code class="descclassname">booksuggest.data.clean_book.</code><code class="descname">process_book_extra_info</code><span class="sig-paren">(</span><em>book_extra_info_rows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book.html#process_book_extra_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book.process_book_extra_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes books extra data and transforms it to a data frame.</p>
+<p>Apart from joining data it also removes HTML tags from
+the <code class="docutils literal notranslate"><span class="pre">description</span></code> column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>book_extra_info_rows</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em><em>]</em>) – List of <code class="docutils literal notranslate"><span class="pre">(work_id,</span> <span class="pre">isbn13,</span> <span class="pre">description)</span></code> book data.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Data frame with columns corresponding to input tuple.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pd.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.clean_book_tags">
+<span id="clean-book-tags-script"></span><h2>clean_book_tags script<a class="headerlink" href="#module-booksuggest.data.clean_book_tags" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.clean_book_tags.main">
+<code class="descclassname">booksuggest.data.clean_book_tags.</code><code class="descname">main</code><span class="sig-paren">(</span><em>book_filepath</em>, <em>book_tags_filepath</em>, <em>tags_filepath</em>, <em>genres_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.clean_book_tags.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up the book tags data.</p>
+<p>Aggregates tags for all editions for specific book by switching
+to <code class="docutils literal notranslate"><span class="pre">book_id</span></code>, filters out tags which do not indicate book genre
+and replaces tags ids with names.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>book_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Book data frame filepath.</li>
+<li><strong>book_tags_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Book tags data frame filepath.</li>
+<li><strong>tags_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Tags data frame filepath.</li>
+<li><strong>genres_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file containing valid genre names.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book_tags.filter_non_genres_tags">
+<code class="descclassname">booksuggest.data.clean_book_tags.</code><code class="descname">filter_non_genres_tags</code><span class="sig-paren">(</span><em>tags_df</em>, <em>genres</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book_tags.html#filter_non_genres_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book_tags.filter_non_genres_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters out the non-genre tags.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tags_df</strong> (<em>pd.DataFrame</em>) – Tags data frame.</li>
+<li><strong>genres</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>]</em>) – List of genres.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Filtered tags data frame.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book_tags.join_tag_names">
+<code class="descclassname">booksuggest.data.clean_book_tags.</code><code class="descname">join_tag_names</code><span class="sig-paren">(</span><em>book_tags_df</em>, <em>tags_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book_tags.html#join_tag_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book_tags.join_tag_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces <code class="docutils literal notranslate"><span class="pre">tag_id</span></code> column with <code class="docutils literal notranslate"><span class="pre">tag_name</span></code> data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_tags_df</strong> (<em>pd.DataFrame</em>) – Book tags data frame.</li>
+<li><strong>tags_df</strong> (<em>pd.DataFrame</em>) – Tags data frame.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Book tags data frame with tag names and tag ids.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.clean_book_tags.switch_to_book_id">
+<code class="descclassname">booksuggest.data.clean_book_tags.</code><code class="descname">switch_to_book_id</code><span class="sig-paren">(</span><em>book_df</em>, <em>book_tags_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/clean_book_tags.html#switch_to_book_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.clean_book_tags.switch_to_book_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes ids from <code class="docutils literal notranslate"><span class="pre">goodreads_book_id</span></code> to abstract <code class="docutils literal notranslate"><span class="pre">book_id</span></code>,
+thus aggregating tags for all books editions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>book_df</strong> (<em>pd.DataFrame</em>) – Books data frame.</li>
+<li><strong>book_tags_df</strong> (<em>pd.DataFrame</em>) – Book tags data frame.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Books data frame with switched ids.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.prepare_description">
+<span id="prepare-description-script"></span><h2>prepare_description script<a class="headerlink" href="#module-booksuggest.data.prepare_description" title="Permalink to this headline">¶</a></h2>
+<p>Description cleaning functions.</p>
+<p>This module contains functions used for cleaning book descriptions.
+The main script is responsible for preparing descriptions that will
+be later used for feature extraction.</p>
+<dl class="function">
+<dt id="booksuggest.data.prepare_description.main">
+<code class="descclassname">booksuggest.data.prepare_description.</code><code class="descname">main</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>output_filepath</em>, <em>remove_nouns</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.prepare_description.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans books descriptions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Input file to clean descriptions in.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filepath where the results should be saved.</li>
+<li><strong>remove_nouns</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to remove proper nouns from text.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.prepare_description.clean_descriptions">
+<code class="descclassname">booksuggest.data.prepare_description.</code><code class="descname">clean_descriptions</code><span class="sig-paren">(</span><em>input_filepath</em>, <em>remove_proper_nouns</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/prepare_description.html#clean_descriptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.prepare_description.clean_descriptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans all descriptions in the data from the input
+file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Filepath to the data containing a <code class="docutils literal notranslate"><span class="pre">description</span></code> column that
+will be cleaned.</li>
+<li><strong>remove_proper_nouns</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to remove proper nouns from text.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The original data frame but with the <code class="docutils literal notranslate"><span class="pre">description</span></code>
+column cleaned.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.prepare_description.clean_single_description">
+<code class="descclassname">booksuggest.data.prepare_description.</code><code class="descname">clean_single_description</code><span class="sig-paren">(</span><em>description</em>, <em>remove_proper_nouns</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/prepare_description.html#clean_single_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.prepare_description.clean_single_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepares the description for the tf-idf method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Book description.</li>
+<li><strong>remove_proper_nouns</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – Whether to remove proper nouns from text.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Description with removed punctuation, stopwords and stemmed,
+lemmatized vocabulary.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)">str</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.prepare_similar_books">
+<span id="prepare-similar-books-script"></span><h2>prepare_similar_books script<a class="headerlink" href="#module-booksuggest.data.prepare_similar_books" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.prepare_similar_books.main">
+<code class="descclassname">booksuggest.data.prepare_similar_books.</code><code class="descname">main</code><span class="sig-paren">(</span><em>books_xml_dir</em>, <em>books_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.prepare_similar_books.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts information about similar books from .xml files in given directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>books_xml_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with books’ .xml files.</li>
+<li><strong>books_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Books data frame filepath.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.prepare_similar_books.extract_similar_books">
+<code class="descclassname">booksuggest.data.prepare_similar_books.</code><code class="descname">extract_similar_books</code><span class="sig-paren">(</span><em>xmls_dir</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/prepare_similar_books.html#extract_similar_books"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.prepare_similar_books.extract_similar_books" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extracts <code class="docutils literal notranslate"><span class="pre">similar_books</span></code> element children for each
+book xml file in <code class="docutils literal notranslate"><span class="pre">xmls_dir</span></code> directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>xmls_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with xml files.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of <cite>(work_id, similar_book_work_id)</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List[Tuple[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)">int</a>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.prepare_similar_books.process_similar_books">
+<code class="descclassname">booksuggest.data.prepare_similar_books.</code><code class="descname">process_similar_books</code><span class="sig-paren">(</span><em>similar_books_rows</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/prepare_similar_books.html#process_similar_books"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.prepare_similar_books.process_similar_books" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts list of <cite>(work_id, similar_book_work_id)</cite> to a data frame.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>similar_books_rows</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em>]</em><em>]</em>) – Similar books data.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Data frame with input data.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pd.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.data.prepare_similar_books.switch_to_book_id">
+<code class="descclassname">booksuggest.data.prepare_similar_books.</code><code class="descname">switch_to_book_id</code><span class="sig-paren">(</span><em>similar_books_df</em>, <em>book_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/data/prepare_similar_books.html#switch_to_book_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.data.prepare_similar_books.switch_to_book_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change ids of books from <code class="docutils literal notranslate"><span class="pre">work</span> <span class="pre">id</span></code> to abstract <code class="docutils literal notranslate"><span class="pre">book_id</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>similar_books_df</strong> (<em>pd.DataFrame</em>) – Similar books data.</li>
+<li><strong>book_df</strong> (<em>pd.DataFrame</em>) – Data about <cite>book_id: work_id</cite> association.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Data frame with only <code class="docutils literal notranslate"><span class="pre">book_id</span></code> used.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pd.DataFrame</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-booksuggest.data.ratings_train_test_split">
+<span id="ratings-train-test-split-script"></span><h2>ratings_train_test_split script<a class="headerlink" href="#module-booksuggest.data.ratings_train_test_split" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.data.ratings_train_test_split.main">
+<code class="descclassname">booksuggest.data.ratings_train_test_split.</code><code class="descname">main</code><span class="sig-paren">(</span><em>ratings_filepath</em>, <em>trainset_filepath</em>, <em>testset_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.data.ratings_train_test_split.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the data about ratings into traning and test datasets.</p>
+<p>Split function is randomized, but with predefined seed to
+allow for reproducible results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ratings_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Ratings data frame filepath.</li>
+<li><strong>trainset_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath for training dataset.</li>
+<li><strong>testset_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath for test dataset.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="booksuggest.features.html" class="btn btn-neutral float-right" title="Feature engineering package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="booksuggest.html" class="btn btn-neutral" title="booksuggest package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Paweł Rzepiński, Ryszard Szymański
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
