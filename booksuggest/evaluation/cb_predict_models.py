@@ -33,8 +33,7 @@ def _read_test_cases(test_cases_filepath: str) -> List[int]:
     return test_cases.tolist()
 
 
-def predict_model(model: ICbRecommendationModel,
-                  test_cases: List[int],
+def predict_model(model: ICbRecommendationModel, test_cases: List[int],
                   rec_count: int) -> pd.DataFrame:
     """Uses the given model to calculate similar books.
 
@@ -53,15 +52,19 @@ def predict_model(model: ICbRecommendationModel,
             grouping is needed in order to retrieve all similar books of a
             specific book.
     """
+
     def recommend_helper(model, test_case_id, rec_count):
         logging.debug('Computing %s', test_case_id)
         recommendations = list(model.recommend(test_case_id, rec_count).keys())
-        return [{'book_id': test_case_id,
-                 'similar_book_id': recommended_book}
-                for recommended_book in recommendations]
+        return [{
+            'book_id': test_case_id,
+            'similar_book_id': recommended_book
+        } for recommended_book in recommendations]
 
-    predicted_similar_books = sum([recommend_helper(model, test_case_id, rec_count)
-                                   for test_case_id in test_cases], [])
+    predicted_similar_books = sum([
+        recommend_helper(model, test_case_id, rec_count)
+        for test_case_id in test_cases
+    ], [])
 
     return predicted_similar_books
 
@@ -71,12 +74,8 @@ def predict_model(model: ICbRecommendationModel,
 @click.argument('test_cases_filepath', type=click.Path(exists=True))
 @click.option('--rec_count', default=1)
 @click.argument('output_filepath', type=click.Path())
-def main(
-        model_filepath: str,
-        test_cases_filepath: str,
-        rec_count: int,
-        output_filepath: str
-):
+def main(model_filepath: str, test_cases_filepath: str, rec_count: int,
+         output_filepath: str):
     """Script for calculating similar books recommendations of a given model.
 
     Args:

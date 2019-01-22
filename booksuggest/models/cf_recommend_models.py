@@ -19,17 +19,14 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def recommend(
-            self,
-            user_id: int,
-            recommendations_count: int = 20
-    ) -> Dict[int, float]:
+    def recommend(self, user_id: int,
+                  recommendations_count: int = 20) -> Dict[int, float]:
         """Returns a top `recommendation_count` recommendations for specific user.
 
         Args:
             user_id (int): Id of the user.
             recommendations_count (int, optional):
-                Defaults to 10. Specifies how many recommendations to return.
+                Defaults to 20. Specifies how many recommendations to return.
 
         Raises:
             UntrainedModelError:
@@ -98,29 +95,29 @@ class SurpriseBasedModel(ICfRecommendationModel):
 
         return self._algorithm.test(ratings)
 
-    def recommend(
-            self,
-            user_id: int,
-            recommendations_count: int = 10
-    ) -> Dict[int, float]:
+    def recommend(self, user_id: int,
+                  recommendations_count: int = 20) -> Dict[int, float]:
         if not self._algorithm:
             raise UntrainedModelError
 
         to_predict = [x for x in self._generate_antitest(user_id)]
         predictions = self._algorithm.test(to_predict)
 
-        top_n = sorted(predictions, key=lambda x: x.est, reverse=True)[
-            :recommendations_count]
+        top_n = sorted(
+            predictions, key=lambda x: x.est,
+            reverse=True)[:recommendations_count]
         rec_books = {iid: est for _, iid, _, est, _ in top_n}
 
         return rec_books
 
     @property
     def users(self) -> Iterable[int]:
-        yield from [self._trainset.to_raw_uid(x)
-                    for x in self._trainset.all_users()]
+        yield from [
+            self._trainset.to_raw_uid(x) for x in self._trainset.all_users()
+        ]
 
-    def generate_antitest_set(self, users_ids: List[int]) -> Iterable[Tuple[int, int, float]]:
+    def generate_antitest_set(
+            self, users_ids: List[int]) -> Iterable[Tuple[int, int, float]]:
         for uid in users_ids:
             yield from self._generate_antitest(uid)
 
@@ -152,9 +149,15 @@ class SvdRecommendationModel(SurpriseBasedModel):
         Args:
             random_state (int): Value for random seed.
         """
-        algo = SVD(n_factors=100, biased=True, init_mean=0.1,
-                   init_std_dev=0.05, n_epochs=25, lr_all=0.005,
-                   reg_all=0.02, random_state=random_state)
+        algo = SVD(
+            n_factors=100,
+            biased=True,
+            init_mean=0.1,
+            init_std_dev=0.05,
+            n_epochs=25,
+            lr_all=0.005,
+            reg_all=0.02,
+            random_state=random_state)
         self._algorithm = algo.fit(self._trainset)
 
 
@@ -165,14 +168,21 @@ class KNNRecommendationModel(SurpriseBasedModel):
     def train(self):
         """Computes user and items similarities.
         """
-        bsl_options = {'method': 'als',
-                       'n_epochs': 10,
-                       'reg_u': 15,
-                       'reg_i': 10}
-        sim_options = {'name': 'pearson_baseline',
-                       'user_based': False,
-                       'min_support': 1,
-                       'shrinkage': 100}
-        algo = KNNBaseline(k=30, bsl_options=bsl_options,
-                           sim_options=sim_options, verbose=False)
+        bsl_options = {
+            'method': 'als',
+            'n_epochs': 10,
+            'reg_u': 15,
+            'reg_i': 10
+        }
+        sim_options = {
+            'name': 'pearson_baseline',
+            'user_based': False,
+            'min_support': 1,
+            'shrinkage': 100
+        }
+        algo = KNNBaseline(
+            k=30,
+            bsl_options=bsl_options,
+            sim_options=sim_options,
+            verbose=False)
         self._algorithm = algo.fit(self._trainset)

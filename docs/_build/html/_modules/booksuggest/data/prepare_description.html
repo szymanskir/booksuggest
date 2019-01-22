@@ -161,10 +161,8 @@
 <span class="kn">from</span> <span class="nn">langdetect</span> <span class="k">import</span> <span class="n">detect</span>
 
 
-<div class="viewcode-block" id="clean_single_description"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_single_description">[docs]</a><span class="k">def</span> <span class="nf">clean_single_description</span><span class="p">(</span>
-        <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="clean_single_description"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_single_description">[docs]</a><span class="k">def</span> <span class="nf">clean_single_description</span><span class="p">(</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Prepares the description for the tf-idf method.</span>
 
 <span class="sd">    Args:</span>
@@ -184,11 +182,14 @@
     <span class="k">if</span> <span class="n">remove_proper_nouns</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removing proper nouns...&#39;</span><span class="p">)</span>
         <span class="n">tagged_words</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">pos_tag</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span>
-        <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagged_words</span>
-                     <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;NNP&#39;</span><span class="p">,</span> <span class="s1">&#39;NNPS&#39;</span><span class="p">}]</span>
+        <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">tagged_words</span> <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;NNP&#39;</span><span class="p">,</span> <span class="s1">&#39;NNPS&#39;</span><span class="p">}</span>
+        <span class="p">]</span>
 
-    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span>
-                 <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)]</span>
+    <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span>
+        <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">and</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="n">stemmer</span> <span class="o">=</span> <span class="n">SnowballStemmer</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
     <span class="n">word_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_list</span><span class="p">]</span>
@@ -199,10 +200,8 @@
     <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">word_list</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="clean_descriptions"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_descriptions">[docs]</a><span class="k">def</span> <span class="nf">clean_descriptions</span><span class="p">(</span>
-        <span class="n">input_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="clean_descriptions"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.prepare_description.clean_descriptions">[docs]</a><span class="k">def</span> <span class="nf">clean_descriptions</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">remove_proper_nouns</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Cleans all descriptions in the data from the input</span>
 <span class="sd">    file.</span>
 
@@ -220,8 +219,7 @@
     <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_filepath</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span>
     <span class="n">descriptions</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
     <span class="n">data</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">descriptions</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
-        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">clean_single_description</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">remove_proper_nouns</span><span class="p">)</span>
-    <span class="p">)</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">clean_single_description</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">remove_proper_nouns</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span></div>
 

@@ -34,14 +34,13 @@ def _extract_similar_books(book: etree.Element) -> List[Tuple[int, int]]:
     if similar_books is not None:
         for similar_book in similar_books.findall("book"):
             similar_book_id = similar_book.find("work").findtext("id")
-            similar_books_rows.append(
-                (int(book_work_id), int(similar_book_id)))
+            similar_books_rows.append((int(book_work_id),
+                                       int(similar_book_id)))
     return similar_books_rows
 
 
 def process_similar_books(
-        similar_books_rows: List[Tuple[int, int]]
-) -> pd.DataFrame:
+        similar_books_rows: List[Tuple[int, int]]) -> pd.DataFrame:
     """Converts list of `(work_id, similar_book_work_id)` to a data frame.
 
     Args:
@@ -56,10 +55,8 @@ def process_similar_books(
     return similar_book_df
 
 
-def switch_to_book_id(
-        similar_books_df: pd.DataFrame,
-        book_df: pd.DataFrame
-) -> pd.DataFrame:
+def switch_to_book_id(similar_books_df: pd.DataFrame,
+                      book_df: pd.DataFrame) -> pd.DataFrame:
     """Change ids of books from ``work id`` to abstract ``book_id``
 
     Args:
@@ -70,8 +67,10 @@ def switch_to_book_id(
         pd.DataFrame: Data frame with only ``book_id`` used.
     """
     book_ids_df = book_df[['book_id', 'work_id']]
-    book_ids_df = book_ids_df.rename(
-        columns={'book_id': 'tmp_book_id', 'work_id': 'tmp_work_id'})
+    book_ids_df = book_ids_df.rename(columns={
+        'book_id': 'tmp_book_id',
+        'work_id': 'tmp_work_id'
+    })
     merged_book_df = similar_books_df.merge(
         book_ids_df, left_on='work_id', right_on='tmp_work_id')
     merged_book_df = merged_book_df[['tmp_book_id', 'similar_book_work_id']]
@@ -102,8 +101,8 @@ def main(books_xml_dir: str, books_filepath: str, output_filepath: str):
     similar_books_df = process_similar_books(similar_books_rows)
 
     book_df = pd.read_csv(books_filepath)
-    similar_books_switched_ids_df = switch_to_book_id(
-        similar_books_df, book_df)
+    similar_books_switched_ids_df = switch_to_book_id(similar_books_df,
+                                                      book_df)
 
     similar_books_switched_ids_df.to_csv(output_filepath, index=False)
     logging.info("Created: %s", output_filepath)

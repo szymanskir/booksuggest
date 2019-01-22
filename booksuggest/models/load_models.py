@@ -1,7 +1,6 @@
 """Function used for loading recommendation models.
 """
 
-
 import os
 import errno
 from typing import TypeVar
@@ -11,8 +10,7 @@ from .cb_recommend_models import ICbRecommendationModel
 from .cf_recommend_models import ICfRecommendationModel
 
 IRecommendationModel = TypeVar(
-    'IRecommendationModel', 'ICbRecommendationModel', 'ICfRecommendationModel'
-)
+    'IRecommendationModel', 'ICbRecommendationModel', 'ICfRecommendationModel')
 
 
 class InvalidModelException(Exception):
@@ -35,8 +33,8 @@ def load_model(model_file_path: str) -> IRecommendationModel:
         IRecommendationModel: Recommendation model object.
     """
     if not os.path.isfile(model_file_path):
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), model_file_path)
+        raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT),
+                                model_file_path)
 
     model = read_object(model_file_path)
     if isinstance(model, (ICbRecommendationModel, ICfRecommendationModel)):

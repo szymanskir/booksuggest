@@ -5,15 +5,14 @@ from os.path import join
 import click
 import pandas as pd
 from surprise import Reader, Dataset, accuracy
+from typing import Tuple
 
 from ..utils.serialization import read_object
 from ..models.cf_recommend_models import ICfRecommendationModel
 
 
-def test_accuracy(
-        model: ICfRecommendationModel,
-        testset_filepath: str
-) -> float:
+def test_accuracy(model: ICfRecommendationModel,
+                  testset_filepath: str) -> Tuple[float, float, float]:
     """Calculates RMSE value for the given model and testset.
 
     Args:
@@ -49,8 +48,9 @@ def main(models_dir: str, testset_filepath: str, output_filepath: str):
     logger = logging.getLogger(__name__)
 
     models_files = listdir(models_dir)
-    models_files = [filename for filename in models_files
-                    if filename.endswith('.pkl')]
+    models_files = [
+        filename for filename in models_files if filename.endswith('.pkl')
+    ]
 
     logger.info('Evaluating models from %s...', models_dir)
     results = list()

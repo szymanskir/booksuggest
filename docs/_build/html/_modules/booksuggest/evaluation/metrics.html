@@ -151,8 +151,6 @@
 <div class="viewcode-block" id="precision"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.metrics.precision">[docs]</a><span class="k">def</span> <span class="nf">precision</span><span class="p">(</span><span class="n">recommendations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">ground_truth</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates the precision of the recommendations based on</span>
 <span class="sd">    the given sets of book ids.</span>
-
-<span class="sd">    TODO add latex equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">relevant_retrieved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">recommendations</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">))</span>
     <span class="n">retrieved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">recommendations</span><span class="p">)</span>
@@ -166,8 +164,6 @@
 <div class="viewcode-block" id="recall"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.metrics.recall">[docs]</a><span class="k">def</span> <span class="nf">recall</span><span class="p">(</span><span class="n">recommendations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">ground_truth</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates the recall of the recommendations based on</span>
 <span class="sd">    the given sets of book ids.</span>
-
-<span class="sd">    TODO add latex equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">relevant_retrieved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">recommendations</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">))</span>
     <span class="n">relevant</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">)</span>
@@ -183,16 +179,14 @@
     <span class="sd">&quot;&quot;&quot;Calculates the precision of the recommendations based on</span>
 <span class="sd">    the given sets of book ids.</span>
 <span class="sd">    Filters out recommendations with rating below threshold.</span>
-
-<span class="sd">    TODO add latex equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">valid_recommendations</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recommendations</span>
-                             <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">]</span>
+    <span class="n">valid_recommendations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recommendations</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+    <span class="p">]</span>
     <span class="n">relevant_retrieved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">valid_recommendations</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">))</span>
     <span class="n">retrieved</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">recommendations</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">retrieved</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
-
     <span class="n">precision_score</span> <span class="o">=</span> <span class="n">relevant_retrieved</span> <span class="o">/</span> <span class="n">retrieved</span>
     <span class="k">return</span> <span class="n">precision_score</span></div>
 
@@ -202,11 +196,10 @@
     <span class="sd">&quot;&quot;&quot;Calculates the recall of the recommendations based on</span>
 <span class="sd">    the given sets of book ids.</span>
 <span class="sd">    Filters out recommendations with rating below threshold.</span>
-
-<span class="sd">    TODO add latex equation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">valid_recommendations</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recommendations</span>
-                             <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">]</span>
+    <span class="n">valid_recommendations</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recommendations</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+    <span class="p">]</span>
     <span class="k">return</span> <span class="n">recall</span><span class="p">(</span><span class="n">valid_recommendations</span><span class="p">,</span> <span class="n">ground_truth</span><span class="p">)</span></div>
 </pre></div>
 

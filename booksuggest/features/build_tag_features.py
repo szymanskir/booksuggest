@@ -18,10 +18,8 @@ class InvalidTagFeaturesError(Exception):
     """
 
 
-def build_all_tag_features(
-        book_tags: pd.DataFrame,
-        tags: pd.DataFrame
-) -> pd.DataFrame:
+def build_all_tag_features(book_tags: pd.DataFrame,
+                           tags: pd.DataFrame) -> pd.DataFrame:
     """Calculates tag features for all books in the provided book_tags data frame.
 
     Each feature represents a single tag, the value if the
@@ -42,10 +40,8 @@ def build_all_tag_features(
     return tag_features.reset_index().set_index('book_id')
 
 
-def build_tag_features(
-        book_tags: pd.DataFrame,
-        tags: pd.DataFrame
-) -> List[float]:
+def build_tag_features(book_tags: pd.DataFrame,
+                       tags: pd.DataFrame) -> List[float]:
     """Builds tags based features for a single book.
 
     Args:
@@ -58,14 +54,12 @@ def build_tag_features(
 
     tags_data = tags.merge(book_tags, on='tag_name', how='left')
     tags_counts = tags_data['count'].fillna(0)
-    feature_vector = tags_counts/tags_counts.sum()
+    feature_vector = tags_counts / tags_counts.sum()
     return feature_vector.tolist()
 
 
-def check_book_tags_and_tags_compatibility(
-        book_tags: pd.DataFrame,
-        tags: pd.DataFrame
-) -> bool:
+def check_book_tags_and_tags_compatibility(book_tags: pd.DataFrame,
+                                           tags: pd.DataFrame) -> bool:
     """Checks if the book tags and tags data are compatible.
 
     Args:
@@ -102,10 +96,7 @@ def validate_book_tags_data(book_tags: pd.DataFrame) -> bool:
     concerns_single_book = len(book_ids) == 1
     is_book_relevant = not np.isnan(book_ids[0])
 
-    return all([
-        concerns_single_book,
-        is_book_relevant
-    ])
+    return all([concerns_single_book, is_book_relevant])
 
 
 def validate_tags_data(tags: pd.DataFrame) -> bool:
@@ -139,9 +130,7 @@ def main(book_tags_filepath: str, output_filepath: str):
     book_tags = pd.read_csv(book_tags_filepath)
     tags = pd.DataFrame({'tag_name': list(book_tags['tag_name'].unique())})
 
-    tag_features_df = build_all_tag_features(
-        book_tags, tags
-    )
+    tag_features_df = build_all_tag_features(book_tags, tags)
 
     tag_features_df.to_csv(output_filepath)
 

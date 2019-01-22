@@ -222,9 +222,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">content_analyzer</span> <span class="o">=</span> <span class="n">content_analyzer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recommendation_count</span> <span class="o">=</span> <span class="n">recommendation_count</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filtering_component</span> <span class="o">=</span> <span class="n">NearestNeighbors</span><span class="p">(</span>
-            <span class="n">n_neighbors</span><span class="o">=</span><span class="n">recommendation_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span>
-        <span class="p">)</span>
+            <span class="n">n_neighbors</span><span class="o">=</span><span class="n">recommendation_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ContentBasedRecommendationModel.train"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Prepares feature vectors.</span>
@@ -233,11 +231,8 @@
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content_analyzer</span><span class="o">.</span><span class="n">build_features</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filtering_component</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ContentBasedRecommendationModel.recommend"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-            <span class="n">rec_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="ContentBasedRecommendationModel.recommend"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.cb_recommend_models.ContentBasedRecommendationModel.recommend">[docs]</a>    <span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                  <span class="n">rec_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; Based on the user input in form a dictionary containing</span>
 
 <span class="sd">        The model makes use of tf-idf features calculated using book</span>
@@ -252,9 +247,8 @@
             <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="n">distances</span><span class="p">,</span> <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filtering_component</span><span class="o">.</span><span class="n">kneighbors</span><span class="p">(</span>
-            <span class="n">feature_vec</span><span class="p">,</span> <span class="n">rec_count</span><span class="p">)</span>
-        <span class="n">recommendations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span>
-            <span class="n">ids</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]]</span>
+            <span class="n">feature_vec</span><span class="p">,</span> <span class="n">rec_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">recommendations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_book_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">ids</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]]</span>
 
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">recommendations</span><span class="p">,</span> <span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]))</span></div></div>
 </pre></div>

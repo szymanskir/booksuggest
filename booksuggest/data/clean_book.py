@@ -20,20 +20,21 @@ def extract_book_extra_info(xmls_dir: str) -> List[Tuple[int, str, str]]:
         List[Tuple[int, str, str]]:
             List of ``(work_id, isbn13, description)`` book data.
     """
-    return [_extract_book_info(book)
-            for book in extract_all_book_xml_roots(xmls_dir)]
+    return [
+        _extract_book_info(book)
+        for book in extract_all_book_xml_roots(xmls_dir)
+    ]
 
 
 def _extract_book_info(book: etree.Element) -> Tuple[int, str, str]:
     book_work_id = book.find("work").findtext("id")
-    book_info = (int(book_work_id), book.findtext(
-        "isbn13"), book.findtext("description"))
+    book_info = (int(book_work_id), book.findtext("isbn13"),
+                 book.findtext("description"))
     return book_info
 
 
 def process_book_extra_info(
-        book_extra_info_rows: List[Tuple[int, str, str]]
-) -> pd.DataFrame:
+        book_extra_info_rows: List[Tuple[int, str, str]]) -> pd.DataFrame:
     """Processes books extra data and transforms it to a data frame.
 
     Apart from joining data it also removes HTML tags from
@@ -60,10 +61,8 @@ def process_book_extra_info(
     return book_extra_info_df
 
 
-def merge_book_data(
-        book_df: pd.DataFrame,
-        book_extra_info_df: pd.DataFrame
-) -> pd.DataFrame:
+def merge_book_data(book_df: pd.DataFrame,
+                    book_extra_info_df: pd.DataFrame) -> pd.DataFrame:
     """Merges standard book data with new extra info.
 
     Args:

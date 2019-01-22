@@ -150,10 +150,8 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="switch_to_book_id"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.switch_to_book_id">[docs]</a><span class="k">def</span> <span class="nf">switch_to_book_id</span><span class="p">(</span>
-        <span class="n">book_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">book_tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="switch_to_book_id"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.switch_to_book_id">[docs]</a><span class="k">def</span> <span class="nf">switch_to_book_id</span><span class="p">(</span><span class="n">book_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                      <span class="n">book_tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Changes ids from ``goodreads_book_id`` to abstract ``book_id``,</span>
 <span class="sd">    thus aggregating tags for all books editions.</span>
 
@@ -163,18 +161,15 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pd.DataFrame: Books data frame with switched ids.</span>
-<span class="sd">    &quot;&quot;&quot;</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">book_ids_df</span> <span class="o">=</span> <span class="n">book_df</span><span class="p">[[</span><span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;goodreads_book_id&#39;</span><span class="p">]]</span>
     <span class="n">book_tags_fixed_ids_df</span> <span class="o">=</span> <span class="n">book_tags_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
         <span class="n">book_ids_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;goodreads_book_id&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">book_tags_fixed_ids_df</span><span class="p">[[</span><span class="s1">&#39;tag_id&#39;</span><span class="p">,</span> <span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="filter_non_genres_tags"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.filter_non_genres_tags">[docs]</a><span class="k">def</span> <span class="nf">filter_non_genres_tags</span><span class="p">(</span>
-        <span class="n">tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">genres</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="filter_non_genres_tags"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.filter_non_genres_tags">[docs]</a><span class="k">def</span> <span class="nf">filter_non_genres_tags</span><span class="p">(</span><span class="n">tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">genres</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Filters out the non-genre tags.</span>
 
 <span class="sd">    Args:</span>
@@ -188,10 +183,8 @@
     <span class="k">return</span> <span class="n">tags_filtered_df</span><span class="p">[[</span><span class="s1">&#39;tag_id&#39;</span><span class="p">,</span> <span class="s1">&#39;tag_name&#39;</span><span class="p">]]</span></div>
 
 
-<div class="viewcode-block" id="join_tag_names"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.join_tag_names">[docs]</a><span class="k">def</span> <span class="nf">join_tag_names</span><span class="p">(</span>
-        <span class="n">book_tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="join_tag_names"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book_tags.join_tag_names">[docs]</a><span class="k">def</span> <span class="nf">join_tag_names</span><span class="p">(</span><span class="n">book_tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                   <span class="n">tags_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Replaces ``tag_id`` column with ``tag_name`` data.</span>
 
 <span class="sd">    Args:</span>
@@ -211,13 +204,8 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;tags_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;genres_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
-<span class="k">def</span> <span class="nf">main</span><span class="p">(</span>
-        <span class="n">book_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">book_tags_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">tags_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">genres_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">book_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">book_tags_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+         <span class="n">genres_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Cleans up the book tags data.</span>
 
 <span class="sd">    Aggregates tags for all editions for specific book by switching</span>
@@ -239,8 +227,8 @@
 
     <span class="n">book_tags_fixed_ids_df</span> <span class="o">=</span> <span class="n">switch_to_book_id</span><span class="p">(</span><span class="n">book_df</span><span class="p">,</span> <span class="n">book_tags_df</span><span class="p">)</span>
     <span class="n">tags_filtered_df</span> <span class="o">=</span> <span class="n">filter_non_genres_tags</span><span class="p">(</span><span class="n">tags_df</span><span class="p">,</span> <span class="n">goodreads_genres</span><span class="p">)</span>
-    <span class="n">book_tags_joined_df</span> <span class="o">=</span> <span class="n">join_tag_names</span><span class="p">(</span>
-        <span class="n">book_tags_fixed_ids_df</span><span class="p">,</span> <span class="n">tags_filtered_df</span><span class="p">)</span>
+    <span class="n">book_tags_joined_df</span> <span class="o">=</span> <span class="n">join_tag_names</span><span class="p">(</span><span class="n">book_tags_fixed_ids_df</span><span class="p">,</span>
+                                         <span class="n">tags_filtered_df</span><span class="p">)</span>
     <span class="n">book_tags_joined_df</span> <span class="o">=</span> <span class="n">book_tags_joined_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
         <span class="p">[</span><span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
     <span class="n">book_tags_joined_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

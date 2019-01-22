@@ -14,11 +14,8 @@ from .metrics import precision, recall
 from ..utils.csv_utils import save_csv
 
 
-def calculate_scores(
-        dir_path: str,
-        test_cases: Dict[int, List[int]],
-        rec_count: int
-) -> pd.DataFrame:
+def calculate_scores(dir_path: str, test_cases: Dict[int, List[int]],
+                     rec_count: int) -> pd.DataFrame:
     """Evaluates the precision and accuracy_score for all models
     present in the input directory.
 
@@ -32,17 +29,17 @@ def calculate_scores(
     """
     prediction_files = glob(join(dir_path, '*.csv'))
 
-    scores = [calculate_single_score(prediction_file, test_cases, rec_count)
-              for prediction_file in prediction_files]
+    scores = [
+        calculate_single_score(prediction_file, test_cases, rec_count)
+        for prediction_file in prediction_files
+    ]
 
     return scores
 
 
 def calculate_single_score(
-        prediction_file: str,
-        test_cases: Dict[int, List[int]],
-        rec_count: int
-) -> Dict[str, Union[str, float, int]]:
+        prediction_file: str, test_cases: Dict[int, List[int]],
+        rec_count: int) -> Dict[str, Union[str, float, int]]:
     """Calculates precision, accuracy scores and the amount of correct hits
     for a single prediction file.
 
@@ -101,12 +98,8 @@ def read_similar_books(similar_books_filepath: str) -> Dict[int, List[int]]:
 @click.argument('similar_books_input', type=click.Path(exists=True))
 @click.option('--rec_count', default=1)
 @click.argument('output_filepath', type=click.Path())
-def main(
-        input_directory: str,
-        similar_books_input: str,
-        rec_count: int,
-        output_filepath: str
-):
+def main(input_directory: str, similar_books_input: str, rec_count: int,
+         output_filepath: str):
     """Main function used for summarizing prediction scores.
 
     Args:
@@ -123,10 +116,8 @@ def main(
     logger.info('Preparing test cases...')
     test_cases = read_similar_books(similar_books_input)
 
-    logger.info(
-        'Evaluating scores for predictions from %s...',
-        input_directory
-    )
+    logger.info('Evaluating scores for predictions from %s...',
+                input_directory)
     scores = calculate_scores(input_directory, test_cases, rec_count)
 
     logger.info('Saving results to %s...', output_filepath)

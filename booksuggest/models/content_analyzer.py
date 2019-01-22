@@ -9,11 +9,8 @@ from functools import partial
 from typing import Callable, Dict, List
 import numpy as np
 import pandas as pd
-from sklearn.feature_extraction.text import (
-    CountVectorizer,
-    TfidfVectorizer,
-    VectorizerMixin
-)
+from sklearn.feature_extraction.text import (CountVectorizer, TfidfVectorizer,
+                                             VectorizerMixin)
 
 from scipy.sparse import hstack
 
@@ -24,6 +21,7 @@ class IContentAnalyzer(metaclass=ABCMeta):
     """Interface for content analyzers responsible
     for creating feature vectors for books.
     """
+
     def __init__(self):
         self._book_data = None
 
@@ -59,10 +57,7 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
             Object responsible for extracting text based features.
     """
 
-    def __init__(
-            self,
-            text_feature_extractor: VectorizerMixin
-    ):
+    def __init__(self, text_feature_extractor: VectorizerMixin):
         super().__init__()
         self._text_feature_extractor = text_feature_extractor
 
@@ -87,10 +82,7 @@ class TagBasedContentAnalyzer(IContentAnalyzer):
     feature vectors.
     """
 
-    def __init__(
-            self,
-            tag_features: pd.DataFrame
-    ):
+    def __init__(self, tag_features: pd.DataFrame):
         super().__init__()
         self.tag_features = tag_features
 
@@ -122,25 +114,23 @@ class EnsembledContentAnalyzer(IContentAnalyzer):
 
     def build_features(self, book_data) -> np.ndarray:
         return hstack(
-            tuple(content_analyzer.build_features(book_data)
-                  for content_analyzer in self._content_analyzers)
-        )
+            tuple(
+                content_analyzer.build_features(book_data)
+                for content_analyzer in self._content_analyzers))
 
     def get_feature_vector(self, book_id):
         return hstack(
-            tuple(content_analyzer.get_feature_vector(book_id)
-                  for content_analyzer in self._content_analyzers)
-        )
+            tuple(
+                content_analyzer.get_feature_vector(book_id)
+                for content_analyzer in self._content_analyzers))
 
 
 class TextAndTagBasedContentAnalyzer(EnsembledContentAnalyzer):
     """Content analyzer combining text and tag based features.
     """
-    def __init__(
-            self,
-            text_feature_extractor: VectorizerMixin,
-            tag_features: pd.DataFrame
-    ):
+
+    def __init__(self, text_feature_extractor: VectorizerMixin,
+                 tag_features: pd.DataFrame):
         super().__init__([
             TextBasedContentAnalyzer(text_feature_extractor),
             TagBasedContentAnalyzer(tag_features)
@@ -161,12 +151,11 @@ class ContentAnalyzerBuilder():
         ngram: Maximal number of words in a single feature.
         tag_features: Data frame containing calculated tag features.
     """
-    def __init__(
-            self,
-            name: str,
-            ngrams: int = None,
-            tag_features: pd.DataFrame = None
-    ):
+
+    def __init__(self,
+                 name: str,
+                 ngrams: int = None,
+                 tag_features: pd.DataFrame = None):
         self._name = name
         self._ngrams = ngrams
         self._tag_features = tag_features
@@ -178,14 +167,8 @@ class ContentAnalyzerBuilder():
             'tf-idf': valid_ngram,
             'count': valid_ngram,
             'tag': self._tag_features is not None,
-            'tf-idf-tag': all([
-                valid_ngram,
-                self._tag_features is not None
-            ]),
-            'count-tag': all([
-                valid_ngram,
-                self._tag_features is not None
-            ])
+            'tf-idf-tag': all([valid_ngram, self._tag_features is not None]),
+            'count-tag': all([valid_ngram, self._tag_features is not None])
         }
         valid_model_name = self._name in validation_rules.keys()
 
@@ -200,25 +183,22 @@ class ContentAnalyzerBuilder():
         configuration.
         """
         building_rules: Dict[str, Callable] = {
-            'tf-idf': partial(
-                TextBasedContentAnalyzer,
-                TfidfVectorizer(ngram_range=(1, self._ngrams))
-            ),
-            'count': partial(
-                TextBasedContentAnalyzer,
-                CountVectorizer(ngram_range=(1, self._ngrams))
-            ),
-            'tag': partial(TagBasedContentAnalyzer, self._tag_features),
-            'tf-idf-tag': partial(
-                TextAndTagBasedContentAnalyzer,
-                TfidfVectorizer(ngram_range=(1, self._ngrams)),
-                self._tag_features
-            ),
-            'count-tag': partial(
-                TextAndTagBasedContentAnalyzer,
-                CountVectorizer(ngram_range=(1, self._ngrams)),
-                self._tag_features
-            )
+            'tf-idf':
+            partial(TextBasedContentAnalyzer,
+                    TfidfVectorizer(ngram_range=(1, self._ngrams))),
+            'count':
+            partial(TextBasedContentAnalyzer,
+                    CountVectorizer(ngram_range=(1, self._ngrams))),
+            'tag':
+            partial(TagBasedContentAnalyzer, self._tag_features),
+            'tf-idf-tag':
+            partial(TextAndTagBasedContentAnalyzer,
+                    TfidfVectorizer(ngram_range=(1, self._ngrams)),
+                    self._tag_features),
+            'count-tag':
+            partial(TextAndTagBasedContentAnalyzer,
+                    CountVectorizer(ngram_range=(1, self._ngrams)),
+                    self._tag_features)
         }
 
         constructor = building_rules[self._name]
