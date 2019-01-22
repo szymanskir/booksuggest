@@ -48,11 +48,11 @@ def evaluate_on_predictions(predictions_df: pd.DataFrame,
     help='Treshold for rating to be valid recommendation.')
 @click.option(
     '--n-min',
-    default=10,
+    default=20,
     help='Lower bound of predictions number generated loop.')
 @click.option(
     '--n-max',
-    default=10,
+    default=20,
     help='Upper bound of predictions number generated loop.')
 @click.argument('output_filepath', type=click.Path())
 def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,

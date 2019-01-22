@@ -26,7 +26,7 @@ class ICfRecommendationModel(metaclass=ABCMeta):
         Args:
             user_id (int): Id of the user.
             recommendations_count (int, optional):
-                Defaults to 10. Specifies how many recommendations to return.
+                Defaults to 20. Specifies how many recommendations to return.
 
         Raises:
             UntrainedModelError:
@@ -96,7 +96,7 @@ class SurpriseBasedModel(ICfRecommendationModel):
         return self._algorithm.test(ratings)
 
     def recommend(self, user_id: int,
-                  recommendations_count: int = 10) -> Dict[int, float]:
+                  recommendations_count: int = 20) -> Dict[int, float]:
         if not self._algorithm:
             raise UntrainedModelError
 
