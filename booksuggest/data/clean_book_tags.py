@@ -17,7 +17,6 @@ def switch_to_book_id(book_df: pd.DataFrame,
 
     Returns:
         pd.DataFrame: Books data frame with switched ids.
-    """ """
     """
     book_ids_df = book_df[['book_id', 'goodreads_book_id']]
     book_tags_fixed_ids_df = book_tags_df.merge(

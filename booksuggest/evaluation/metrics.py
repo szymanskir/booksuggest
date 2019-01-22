@@ -7,8 +7,6 @@ from typing import List, Tuple
 def precision(recommendations: List[int], ground_truth: List[int]) -> float:
     """Calculates the precision of the recommendations based on
     the given sets of book ids.
-
-    TODO add latex equation
     """
     relevant_retrieved = len(set(recommendations) & set(ground_truth))
     retrieved = len(recommendations)
@@ -22,8 +20,6 @@ def precision(recommendations: List[int], ground_truth: List[int]) -> float:
 def recall(recommendations: List[int], ground_truth: List[int]) -> float:
     """Calculates the recall of the recommendations based on
     the given sets of book ids.
-
-    TODO add latex equation
     """
     relevant_retrieved = len(set(recommendations) & set(ground_truth))
     relevant = len(ground_truth)
@@ -39,8 +35,6 @@ def precision_thresholded(recommendations: List[Tuple[int, float]],
     """Calculates the precision of the recommendations based on
     the given sets of book ids.
     Filters out recommendations with rating below threshold.
-
-    TODO add latex equation
     """
     valid_recommendations = [
         x[0] for x in recommendations if x[1] >= threshold
@@ -58,8 +52,6 @@ def recall_thresholded(recommendations: List[Tuple[int, float]],
     """Calculates the recall of the recommendations based on
     the given sets of book ids.
     Filters out recommendations with rating below threshold.
-
-    TODO add latex equation
     """
     valid_recommendations = [
         x[0] for x in recommendations if x[1] >= threshold
