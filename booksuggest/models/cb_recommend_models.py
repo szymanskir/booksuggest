@@ -35,12 +35,14 @@ class ICbRecommendationModel(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def recommend(self, book_id: int) -> Dict[int, float]:
+    def recommend(self, book_id: int, rec_count: int) -> Dict[int, float]:
         """Recommends books similar to the given book.
 
         Args:
             book_id (int):
                 Id of the book for which recommendations would be given.
+            rec_int(int):
+                How many recomendations to return.
 
         Returns:
             Dict[int, float]:
@@ -63,7 +65,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
     def __init__(
             self,
             content_analyzer: IContentAnalyzer,
-            recommendation_count: int,
+            recommendation_count: int = 20,
     ):
         """Initializes an instance of the ContentBasedRecommendationModel class.
 
@@ -74,6 +76,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         """
         super().__init__()
         self.content_analyzer = content_analyzer
+        self.recommendation_count = recommendation_count
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
@@ -86,7 +89,11 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         result = self.content_analyzer.build_features(self._book_data)
         self.filtering_component.fit(result)
 
-    def recommend(self, book_id: int) -> Dict[int, float]:
+    def recommend(
+            self,
+            book_id: int,
+            rec_count: int = None
+    ) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
 
         The model makes use of tf-idf features calculated using book
@@ -94,12 +101,14 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         which books are similar.
         """
         self._is_trained()
+        rec_count = rec_count if rec_count else self.recommendation_count
         try:
             feature_vec = self.content_analyzer.get_feature_vector(book_id)
         except KeyError:
             return dict()
 
-        distances, ids = self.filtering_component.kneighbors(feature_vec)
+        distances, ids = self.filtering_component.kneighbors(
+            feature_vec, rec_count)
         recommendations = self._book_data.index[
             ids.flatten()[1:]]
 

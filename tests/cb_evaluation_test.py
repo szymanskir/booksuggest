@@ -33,5 +33,5 @@ def test_calculate_single_score(
         test_cases,
         expected
 ):
-    result = calculate_single_score(prediction_file, test_cases)
+    result = calculate_single_score(prediction_file, test_cases, 3)
     assert result == expected
