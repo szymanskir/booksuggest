@@ -1,19 +1,10 @@
-.. Recommendation-system documentation master file, created by
-   sphinx-quickstart.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Recommendation-system documentation!
-==============================================
-
-Contents:
+.. include:: README.rst
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
+   :caption: Contents:
 
-   getting-started
-   commands
-
+   booksuggest
 
 
 Indices and tables

@@ -1,4 +1,5 @@
-.PHONY: clean data lint requirements sync_data_to_s3 sync_data_from_s3
+
+.PHONY: clean data lint common_requirements requirements app_requirements app tests docs
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -7,64 +8,144 @@
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROFILE = default
 PROJECT_NAME = recommendation-system
-PYTHON_INTERPRETER = python3
+VENV_NAME = rs-venv
+
+
+PYTHON_INTERPRETER = python3.7
+TEST_RUN=0
+SEED = 44
+NLTK_ASSETS = stopwords wordnet averaged_perceptron_tagger
 
 RAW_DATA_FILES = data/raw/book_tags.csv data/raw/book.csv data/raw/ratings.csv data/raw/tags.csv data/raw/to_read.csv data/raw/books_xml.zip
 
-ifeq (,$(shell which conda))
-HAS_CONDA=False
-else
-HAS_CONDA=True
-endif
+include cb-pipeline.mk cf-pipeline.mk
+
+# Unified parts of the pipeline
+APP_MODELS = $(APP_CF_MODELS) $(APP_CB_MODELS)
+MODELS = $(CB_MODELS) $(CF_MODELS)
+PREDICTIONS = $(CB_PREDICTIONS) $(CF_PREDICTIONS)
+SCORES = $(CB_SCORES) $(CF_SCORES)
+
+# Requirements
+common_requirements:
+	$(PYTHON_INTERPRETER) setup.py install
+	pip install numpy==1.15.4 # due to scikit-surprise installation dependency issue: https://github.com/NicolasHug/Surprise/issues/187
+
+
+
+# Notebooks
+PDF_TEMPLATE=$(VENV_NAME)/lib/$(PYTHON_INTERPRETER)/site-packages/nbconvert/templates/latex/better-article.tplx 
+nbs = $(wildcard notebooks/*.ipynb)
+pdfs = $(subst notebooks,reports, $(nbs:%.ipynb=%.pdf))
+
+reports/%.pdf: notebooks/%.ipynb $(PDF_TEMPLATE)
+	jupyter nbconvert --to pdf --output-dir ./reports --exec --ExecutePreprocessor.kernel_name=$(VENV_NAME) --ExecutePreprocessor.timeout=-1 --template reports/better-article $<
+
+$(PDF_TEMPLATE):
+	cp reports/better-article.tplx $(PDF_TEMPLATE)
 
 #################################################################################
 # COMMANDS                                                                      #
-#################################################################################
+################################################################################
 
-## Install Python Dependencies
-requirements: test_environment
-	conda install --yes --file requirements.txt
+## Install all Python dependencies
+requirements: common_requirements
+	pip install -r requirements.txt
+	ipython kernel install --user --name=$(VENV_NAME)
+	nbstripout --install
+	$(PYTHON_INTERPRETER) -m nltk.downloader $(NLTK_ASSETS)
 
-## Make Dataset
-data: requirements $(RAW_DATA_FILES)
+## Install only web application Python dependencies
+app_requirements: common_requirements
+	pip install -r app/requirements.txt
+
+## Download dataset
+data: $(RAW_DATA_FILES)
+
+## Build features
+features: $(TAG_FEATURES)
+
+## Train models
+models: $(MODELS)
+
+## Run all tests
+tests: 
+	pytest tests
+
+## Predict models
+predictions: $(PREDICTIONS)
+
+## Evaluate models
+scores: $(SCORES) 
 
 ## Delete all compiled Python files
 clean:
 	find . -type f -name "*.py[co]" -delete
-	find . -type d -name "__pycache__" -delete
-	rm data/*/*
+	find . -type d -name "__pycache__" -exec rm -r {} +
+	rm -rf .mypy_cache
 
-## Lint using flake8
+## Delete all downloaded and calculated files
+hard_clean: clean
+	rm -rf data/raw/books_xml
+	find data/raw data/interim data/processed ! -name '.gitkeep' -type f -delete
+	find features -type f -name '*.csv' -delete
+	find models -type f -name '*.pkl' -delete
+	find models -type f -name '*.csv' -delete
+	find results -type f -name '*.csv' -delete
+	find app/assets/models -type f -name '*.pkl' -delete
+
+## Lint using flake8 and check types with mypy
 lint:
-	flake8 src
+	flake8 booksuggest
+	pylint booksuggest
+	mypy booksuggest --ignore-missing-imports
 
 ## Set up python interpreter environment
 create_environment:
-ifeq (True,$(HAS_CONDA))
-		@echo ">>> Detected conda, creating conda environment."
-ifeq (3,$(findstring 3,$(PYTHON_INTERPRETER)))
-	conda create --name $(PROJECT_NAME) python=3
-else
-	conda create --name $(PROJECT_NAME) python=2.7
-endif
-		@echo ">>> New conda env created. Activate with:\nsource activate $(PROJECT_NAME)"
-else
-	@pip install -q virtualenv virtualenvwrapper
-	@echo ">>> Installing virtualenvwrapper if not already intalled.\nMake sure the following lines are in shell startup file\n\
-	export WORKON_HOME=$$HOME/.virtualenvs\nexport PROJECT_HOME=$$HOME/Devel\nsource /usr/local/bin/virtualenvwrapper.sh\n"
-	@bash -c "source `which virtualenvwrapper.sh`;mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER)"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
-endif
+	$(PYTHON_INTERPRETER) -m venv ${VENV_NAME}
 
-## Test if python environment is setup correctly
-test_environment:
-	$(PYTHON_INTERPRETER) test_environment.py
+## Start web application
+app: 
+	$(foreach file,$(APP_MODELS),$(if $(wildcard $(file)),,$(info $(file) does not exist! Run `make models` command.) $(eval err:=yes)))
+	$(if $(err),$(error Aborting),)
+	cp --update $(APP_CB_MODELS) app/assets/models/cb
+	cp --update $(APP_CF_MODELS) app/assets/models/cf
+	$(PYTHON_INTERPRETER) app/app.py
+
+## Generate documentation
+docs: 
+	$(PYTHON_INTERPRETER) setup.py install
+	make -C docs/ html
+
+## Convert all notebooks to PDF
+notebooks: $(pdfs)
+
+################################################################################
+#
+# Dataset cleaning rules 
+#
+################################################################################
+
+BOOKS_XML_DIR = data/raw/books_xml
+
+$(BOOKS_XML_DIR): data/raw/books_xml.zip
+	$(PYTHON_INTERPRETER) -m booksuggest.data.extract_xml_files data/raw/books_xml.zip data/raw
+
+data/processed/book.csv: $(RAW_DATA_FILES) $(BOOKS_XML_DIR)
+	$(PYTHON_INTERPRETER) -m booksuggest.data.clean_book data/raw/book.csv $(BOOKS_XML_DIR) $@
+
+data/processed/similar_books.csv: $(BOOKS_XML_DIR) data/processed/book.csv
+	$(PYTHON_INTERPRETER) -m booksuggest.data.prepare_similar_books $(BOOKS_XML_DIR) data/processed/book.csv $@
+
+data/processed/book_tags.csv: $(RAW_DATA_FILES) data/processed/book.csv
+	$(PYTHON_INTERPRETER) -m  booksuggest.data.clean_book_tags data/processed/book.csv data/raw/book_tags.csv data/raw/tags.csv data/external/genres.txt data/processed/book_tags.csv
 
 ################################################################################
 #
 # Dataset downloading rules
 #
 ################################################################################
+
 
 # Provide urls for downloading data
 book_tags_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/book_tags.csv
@@ -75,23 +156,32 @@ to_read_url = https://raw.githubusercontent.com/zygmuntz/goodbooks-10k/master/to
 books_xml_zip = https://github.com/zygmuntz/goodbooks-10k/raw/master/books_xml/books_xml.zip
 
 
-data/raw/book_tags.csv: src/data/download_dataset.py 
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(book_tags_url) $@
+data/raw/book_tags.csv: booksuggest/data/download_dataset.py 
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(book_tags_url) $@
 
-data/raw/book.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_url) $@
+data/raw/book.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(books_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 100
+endif
 
-data/raw/ratings.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(ratings_url) $@
+data/raw/ratings.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(ratings_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 1000
+endif
 
-data/raw/tags.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(tags_url) $@
+data/raw/tags.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(tags_url) $@
 
-data/raw/to_read.csv: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(to_read_url) $@
+data/raw/to_read.csv: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(to_read_url) $@
+ifeq ($(TEST_RUN), 1)
+	$(PYTHON_INTERPRETER) -m booksuggest.data.minify_dataframe $@ --n 100
+endif
 
-data/raw/books_xml.zip: src/data/download_dataset.py
-	$(PYTHON_INTERPRETER) src/data/download_dataset.py $(books_xml_zip) $@
+data/raw/books_xml.zip: booksuggest/data/download_dataset.py
+	$(PYTHON_INTERPRETER) -m booksuggest.data.download_dataset $(books_xml_zip) $@
 
 #################################################################################
 # Self Documenting Commands                                                     #
