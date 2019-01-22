@@ -88,7 +88,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cb_predict_models">cb_predict_models script</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cb_evaluation">cb_evaluation script</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cf_predict_models">cf_predict_models script</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cf-accuracy-evaluation-script">cf_accuracy_evaluation script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cf_accuracy_evaluation">cf_accuracy_evaluation script</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.cf_effectiveness_evaluation">cf_effectiveness_evaluation script</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-booksuggest.evaluation.metrics">metrics module</a></li>
 </ul>
@@ -365,8 +365,51 @@ during parallel processing.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="cf-accuracy-evaluation-script">
-<h2>cf_accuracy_evaluation script<a class="headerlink" href="#cf-accuracy-evaluation-script" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-booksuggest.evaluation.cf_accuracy_evaluation">
+<span id="cf-accuracy-evaluation-script"></span><h2>cf_accuracy_evaluation script<a class="headerlink" href="#module-booksuggest.evaluation.cf_accuracy_evaluation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_accuracy_evaluation.main">
+<code class="descclassname">booksuggest.evaluation.cf_accuracy_evaluation.</code><code class="descname">main</code><span class="sig-paren">(</span><em>models_dir</em>, <em>testset_filepath</em>, <em>output_filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#booksuggest.evaluation.cf_accuracy_evaluation.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates RMSE, MAE and FCP metrics of models on the given testset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>models_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Directory with models to test.</li>
+<li><strong>testset_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file with test data.</li>
+<li><strong>output_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Output filepath.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="booksuggest.evaluation.cf_accuracy_evaluation.test_accuracy">
+<code class="descclassname">booksuggest.evaluation.cf_accuracy_evaluation.</code><code class="descname">test_accuracy</code><span class="sig-paren">(</span><em>model</em>, <em>testset_filepath</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/cf_accuracy_evaluation.html#test_accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.cf_accuracy_evaluation.test_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates RMSE value for the given model and testset.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>model</strong> (<a class="reference internal" href="booksuggest.models.html#booksuggest.models.cf_recommend_models.ICfRecommendationModel" title="booksuggest.models.cf_recommend_models.ICfRecommendationModel"><em>ICfRecommendationModel</em></a>) – Model to test.</li>
+<li><strong>testset_filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path to a file containing testset.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Value of the Root Mean Squared Error metric.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-booksuggest.evaluation.cf_effectiveness_evaluation">
 <span id="cf-effectiveness-evaluation-script"></span><h2>cf_effectiveness_evaluation script<a class="headerlink" href="#module-booksuggest.evaluation.cf_effectiveness_evaluation" title="Permalink to this headline">¶</a></h2>
@@ -430,7 +473,6 @@ evaluation.</p>
 <code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">precision</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#precision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.precision" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the precision of the recommendations based on
 the given sets of book ids.</p>
-<p>TODO add latex equation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -447,7 +489,6 @@ the given sets of book ids.</p>
 <dd><p>Calculates the precision of the recommendations based on
 the given sets of book ids.
 Filters out recommendations with rating below threshold.</p>
-<p>TODO add latex equation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -463,7 +504,6 @@ Filters out recommendations with rating below threshold.</p>
 <code class="descclassname">booksuggest.evaluation.metrics.</code><code class="descname">recall</code><span class="sig-paren">(</span><em>recommendations</em>, <em>ground_truth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/booksuggest/evaluation/metrics.html#recall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#booksuggest.evaluation.metrics.recall" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the recall of the recommendations based on
 the given sets of book ids.</p>
-<p>TODO add latex equation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -480,7 +520,6 @@ the given sets of book ids.</p>
 <dd><p>Calculates the recall of the recommendations based on
 the given sets of book ids.
 Filters out recommendations with rating below threshold.</p>
-<p>TODO add latex equation</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

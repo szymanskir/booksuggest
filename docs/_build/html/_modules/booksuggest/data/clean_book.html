@@ -164,20 +164,21 @@
 <span class="sd">        List[Tuple[int, str, str]]:</span>
 <span class="sd">            List of ``(work_id, isbn13, description)`` book data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">_extract_book_info</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">extract_all_book_xml_roots</span><span class="p">(</span><span class="n">xmls_dir</span><span class="p">)]</span></div>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">_extract_book_info</span><span class="p">(</span><span class="n">book</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">extract_all_book_xml_roots</span><span class="p">(</span><span class="n">xmls_dir</span><span class="p">)</span>
+    <span class="p">]</span></div>
 
 
 <span class="k">def</span> <span class="nf">_extract_book_info</span><span class="p">(</span><span class="n">book</span><span class="p">:</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">book_work_id</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;work&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
-    <span class="n">book_info</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">book_work_id</span><span class="p">),</span> <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span>
-        <span class="s2">&quot;isbn13&quot;</span><span class="p">),</span> <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">))</span>
+    <span class="n">book_info</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">book_work_id</span><span class="p">),</span> <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;isbn13&quot;</span><span class="p">),</span>
+                 <span class="n">book</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">book_info</span>
 
 
 <div class="viewcode-block" id="process_book_extra_info"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.process_book_extra_info">[docs]</a><span class="k">def</span> <span class="nf">process_book_extra_info</span><span class="p">(</span>
-        <span class="n">book_extra_info_rows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">book_extra_info_rows</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Processes books extra data and transforms it to a data frame.</span>
 
 <span class="sd">    Apart from joining data it also removes HTML tags from</span>
@@ -204,10 +205,8 @@
     <span class="k">return</span> <span class="n">book_extra_info_df</span></div>
 
 
-<div class="viewcode-block" id="merge_book_data"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.merge_book_data">[docs]</a><span class="k">def</span> <span class="nf">merge_book_data</span><span class="p">(</span>
-        <span class="n">book_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">book_extra_info_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="merge_book_data"><a class="viewcode-back" href="../../../booksuggest.data.html#booksuggest.data.clean_book.merge_book_data">[docs]</a><span class="k">def</span> <span class="nf">merge_book_data</span><span class="p">(</span><span class="n">book_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                    <span class="n">book_extra_info_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Merges standard book data with new extra info.</span>
 
 <span class="sd">    Args:</span>

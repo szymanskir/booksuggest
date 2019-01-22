@@ -159,8 +159,7 @@
 <div class="viewcode-block" id="predict_model"><a class="viewcode-back" href="../../../booksuggest.evaluation.html#booksuggest.evaluation.cf_predict_models.predict_model">[docs]</a><span class="k">def</span> <span class="nf">predict_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">ICfRecommendationModel</span><span class="p">,</span>
                   <span class="n">recommendation_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                   <span class="n">chunks_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                  <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span>
-                  <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+                  <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates top recommendations for every user in the trainset.</span>
 
 <span class="sd">    Calculations are done in batches to avoid huge memory consumption.</span>
@@ -200,11 +199,9 @@
     <span class="k">return</span> <span class="n">main_df</span>
 
 
-<span class="k">def</span> <span class="nf">_predict_batch</span><span class="p">(</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">ICfRecommendationModel</span><span class="p">,</span>
-        <span class="n">cases_batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-        <span class="n">recommendation_count</span><span class="p">:</span> <span class="nb">int</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_predict_batch</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">ICfRecommendationModel</span><span class="p">,</span>
+                   <span class="n">cases_batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+                   <span class="n">recommendation_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="n">predictions</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">cases_batch</span><span class="p">)</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;book_id&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;est&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">]</span>
     <span class="n">pred_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span>
@@ -222,14 +219,16 @@
             <span class="n">item</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">yield</span> <span class="n">chain</span><span class="p">((</span><span class="n">item</span><span class="p">,),</span> <span class="n">group</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">chain</span><span class="p">((</span><span class="n">item</span><span class="p">,</span> <span class="p">),</span> <span class="n">group</span><span class="p">)</span>
 
 
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;model_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s1">&#39;output_filepath&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">())</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--n&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-              <span class="n">help</span><span class="o">=</span><span class="s1">&#39;How many recommendations should be returned by the model&#39;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s1">&#39;--n&#39;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s1">&#39;How many recommendations should be returned by the model&#39;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s1">&#39;--chunks-count&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Numbers of chunks&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">model_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">chunks_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates and saves predictions for the given model.</span>

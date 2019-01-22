@@ -162,10 +162,8 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="build_all_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_all_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_all_tag_features</span><span class="p">(</span>
-        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="build_all_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_all_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_all_tag_features</span><span class="p">(</span><span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Calculates tag features for all books in the provided book_tags data frame.</span>
 
 <span class="sd">    Each feature represents a single tag, the value if the</span>
@@ -186,10 +184,8 @@
     <span class="k">return</span> <span class="n">tag_features</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;book_id&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="build_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_tag_features</span><span class="p">(</span>
-        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="build_tag_features"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.build_tag_features">[docs]</a><span class="k">def</span> <span class="nf">build_tag_features</span><span class="p">(</span><span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                       <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Builds tags based features for a single book.</span>
 
 <span class="sd">    Args:</span>
@@ -202,14 +198,12 @@
 
     <span class="n">tags_data</span> <span class="o">=</span> <span class="n">tags</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">book_tags</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;tag_name&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
     <span class="n">tags_counts</span> <span class="o">=</span> <span class="n">tags_data</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">feature_vector</span> <span class="o">=</span> <span class="n">tags_counts</span><span class="o">/</span><span class="n">tags_counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">feature_vector</span> <span class="o">=</span> <span class="n">tags_counts</span> <span class="o">/</span> <span class="n">tags_counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">feature_vector</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="check_book_tags_and_tags_compatibility"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.check_book_tags_and_tags_compatibility">[docs]</a><span class="k">def</span> <span class="nf">check_book_tags_and_tags_compatibility</span><span class="p">(</span>
-        <span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="check_book_tags_and_tags_compatibility"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.check_book_tags_and_tags_compatibility">[docs]</a><span class="k">def</span> <span class="nf">check_book_tags_and_tags_compatibility</span><span class="p">(</span><span class="n">book_tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                                           <span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Checks if the book tags and tags data are compatible.</span>
 
 <span class="sd">    Args:</span>
@@ -246,10 +240,7 @@
     <span class="n">concerns_single_book</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">book_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">is_book_relevant</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">book_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="nb">all</span><span class="p">([</span>
-        <span class="n">concerns_single_book</span><span class="p">,</span>
-        <span class="n">is_book_relevant</span>
-    <span class="p">])</span></div>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">([</span><span class="n">concerns_single_book</span><span class="p">,</span> <span class="n">is_book_relevant</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="validate_tags_data"><a class="viewcode-back" href="../../../booksuggest.features.html#booksuggest.features.build_tag_features.validate_tags_data">[docs]</a><span class="k">def</span> <span class="nf">validate_tags_data</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -283,9 +274,7 @@
     <span class="n">book_tags</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">book_tags_filepath</span><span class="p">)</span>
     <span class="n">tags</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;tag_name&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">book_tags</span><span class="p">[</span><span class="s1">&#39;tag_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())})</span>
 
-    <span class="n">tag_features_df</span> <span class="o">=</span> <span class="n">build_all_tag_features</span><span class="p">(</span>
-        <span class="n">book_tags</span><span class="p">,</span> <span class="n">tags</span>
-    <span class="p">)</span>
+    <span class="n">tag_features_df</span> <span class="o">=</span> <span class="n">build_all_tag_features</span><span class="p">(</span><span class="n">book_tags</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
 
     <span class="n">tag_features_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_filepath</span><span class="p">)</span>
 

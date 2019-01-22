@@ -145,7 +145,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;Function used for loading recommendation models.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">errno</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TypeVar</span>
@@ -155,8 +154,7 @@
 <span class="kn">from</span> <span class="nn">.cf_recommend_models</span> <span class="k">import</span> <span class="n">ICfRecommendationModel</span>
 
 <span class="n">IRecommendationModel</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-    <span class="s1">&#39;IRecommendationModel&#39;</span><span class="p">,</span> <span class="s1">&#39;ICbRecommendationModel&#39;</span><span class="p">,</span> <span class="s1">&#39;ICfRecommendationModel&#39;</span>
-<span class="p">)</span>
+    <span class="s1">&#39;IRecommendationModel&#39;</span><span class="p">,</span> <span class="s1">&#39;ICbRecommendationModel&#39;</span><span class="p">,</span> <span class="s1">&#39;ICfRecommendationModel&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="InvalidModelException"><a class="viewcode-back" href="../../../booksuggest.models.html#booksuggest.models.load_models.InvalidModelException">[docs]</a><span class="k">class</span> <span class="nc">InvalidModelException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -179,8 +177,8 @@
 <span class="sd">        IRecommendationModel: Recommendation model object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model_file_path</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span> <span class="n">model_file_path</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">ENOENT</span><span class="p">),</span>
+                                <span class="n">model_file_path</span><span class="p">)</span>
 
     <span class="n">model</span> <span class="o">=</span> <span class="n">read_object</span><span class="p">(</span><span class="n">model_file_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">(</span><span class="n">ICbRecommendationModel</span><span class="p">,</span> <span class="n">ICfRecommendationModel</span><span class="p">)):</span>
