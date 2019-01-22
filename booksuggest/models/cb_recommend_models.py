@@ -108,7 +108,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
             return dict()
 
         distances, ids = self.filtering_component.kneighbors(
-            feature_vec, rec_count)
+            feature_vec, rec_count + 1)
         recommendations = self._book_data.index[
             ids.flatten()[1:]]
 
