@@ -65,7 +65,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
     def __init__(
             self,
             content_analyzer: IContentAnalyzer,
-            recommendation_count: int,
+            recommendation_count: int = 20,
     ):
         """Initializes an instance of the ContentBasedRecommendationModel class.
 
@@ -76,6 +76,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         """
         super().__init__()
         self.content_analyzer = content_analyzer
+        self.recommendation_count = recommendation_count
         self.filtering_component = NearestNeighbors(
             n_neighbors=recommendation_count + 1,
             metric='cosine'
