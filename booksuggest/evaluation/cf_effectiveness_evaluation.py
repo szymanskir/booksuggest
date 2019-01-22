@@ -8,12 +8,9 @@ from typing import Tuple
 from .metrics import precision_thresholded, recall_thresholded
 
 
-def evaluate_on_predictions(
-        predictions_df: pd.DataFrame,
-        test_df: pd.DataFrame,
-        threshold: float,
-        n: int
-) -> Tuple[float, float]:
+def evaluate_on_predictions(predictions_df: pd.DataFrame,
+                            test_df: pd.DataFrame, threshold: float,
+                            n: int) -> Tuple[float, float]:
     """Calculates the precision and recall of predictions using to_read data.
 
     Args:
@@ -25,19 +22,19 @@ def evaluate_on_predictions(
     Returns:
         Tuple[float, float]: Average `(precision, recall)` for all users.
     """
+
     def evaluate(group):
         to_read_ids = group['book_id'].values
         predictions = predictions_grouped_df.get_group(group.name).head(n)
-        pred_tuples = [(x.book_id, x.est)
-                       for x in predictions.itertuples()]
+        pred_tuples = [(x.book_id, x.est) for x in predictions.itertuples()]
         return (precision_thresholded(pred_tuples, to_read_ids, threshold),
                 recall_thresholded(pred_tuples, to_read_ids, threshold))
 
-    predictions_grouped_df = predictions_df.groupby('user_id')[
-        'book_id', 'est']
+    predictions_grouped_df = predictions_df.groupby(
+        'user_id')['book_id', 'est']
     metrics_series = test_df.groupby('user_id').apply(evaluate)
-    df = pd.DataFrame(metrics_series.values.tolist(),
-                      index=metrics_series.index)
+    df = pd.DataFrame(
+        metrics_series.values.tolist(), index=metrics_series.index)
     return tuple(df.mean().values)
 
 
@@ -45,12 +42,18 @@ def evaluate_on_predictions(
 @click.argument('predictions_dir', type=click.Path(exists=True))
 @click.argument('to_read_filepath', type=click.Path(exists=True))
 @click.argument('testset_filepath', type=click.Path(exists=True))
-@click.option('--threshold', default=4.0,
-              help='Treshold for rating to be valid recommendation.')
-@click.option('--n-min', default=10,
-              help='Lower bound of predictions number generated loop.')
-@click.option('--n-max', default=10,
-              help='Upper bound of predictions number generated loop.')
+@click.option(
+    '--threshold',
+    default=4.0,
+    help='Treshold for rating to be valid recommendation.')
+@click.option(
+    '--n-min',
+    default=10,
+    help='Lower bound of predictions number generated loop.')
+@click.option(
+    '--n-max',
+    default=10,
+    help='Upper bound of predictions number generated loop.')
 @click.argument('output_filepath', type=click.Path())
 def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
          threshold: float, n_min: int, n_max: int, output_filepath: str):
@@ -69,8 +72,9 @@ def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
     logger = logging.getLogger(__name__)
 
     predictions_files = listdir(predictions_dir)
-    predictions_files = [filename for filename in predictions_files
-                         if filename.endswith('.csv')]
+    predictions_files = [
+        filename for filename in predictions_files if filename.endswith('.csv')
+    ]
     to_read_df = pd.read_csv(to_read_filepath)
     testset_df = pd.read_csv(testset_filepath)
     logger.info('Evaluating predictions from %s...', predictions_dir)
@@ -86,8 +90,10 @@ def main(predictions_dir: str, to_read_filepath: str, testset_filepath: str,
                             r_to_read, r_testset))
 
     logger.info('Saving results to %s...', output_filepath)
-    labels = ['model', 'n', 'precision-to_read', 'precision-testset',
-              'recall-to_read', 'recall-testset']
+    labels = [
+        'model', 'n', 'precision-to_read', 'precision-testset',
+        'recall-to_read', 'recall-testset'
+    ]
     results_df = pd.DataFrame.from_records(results, columns=labels)
     with open(output_filepath, 'a') as f:
         results_df.to_csv(f, header=f.tell() == 0, index=False)

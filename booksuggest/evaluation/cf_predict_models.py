@@ -15,8 +15,7 @@ logger = logging.getLogger(__name__)
 def predict_model(model: ICfRecommendationModel,
                   recommendation_count: int,
                   chunks_count: int,
-                  batch_size: int = 100000
-                  ) -> pd.DataFrame:
+                  batch_size: int = 100000) -> pd.DataFrame:
     """Calculates top recommendations for every user in the trainset.
 
     Calculations are done in batches to avoid huge memory consumption.
@@ -56,11 +55,9 @@ def _process_chunk(users, model, recommendation_count, batch_size):
     return main_df
 
 
-def _predict_batch(
-        model: ICfRecommendationModel,
-        cases_batch: List[Tuple[int, int, float]],
-        recommendation_count: int
-) -> pd.DataFrame:
+def _predict_batch(model: ICfRecommendationModel,
+                   cases_batch: List[Tuple[int, int, float]],
+                   recommendation_count: int) -> pd.DataFrame:
     predictions = model.test(cases_batch)
     labels = ['user_id', 'book_id', '2', 'est', '4']
     pred_df = pd.DataFrame.from_records(
@@ -78,14 +75,16 @@ def _batch(iterable: Iterable[Any], batch_size: int) -> Iterable[Any]:
             item = next(group)
         except StopIteration:
             return
-        yield chain((item,), group)
+        yield chain((item, ), group)
 
 
 @click.command()
 @click.argument('model_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
-@click.option('--n', default=20,
-              help='How many recommendations should be returned by the model')
+@click.option(
+    '--n',
+    default=20,
+    help='How many recommendations should be returned by the model')
 @click.option('--chunks-count', type=int, help='Numbers of chunks')
 def main(model_filepath: str, output_filepath: str, n: int, chunks_count: int):
     """Calculates and saves predictions for the given model.

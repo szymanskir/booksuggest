@@ -96,7 +96,6 @@ hard_clean: clean
 ## Lint using flake8 and check types with mypy
 lint:
 	flake8 booksuggest
-	pylint booksuggest
 	mypy booksuggest --ignore-missing-imports
 
 ## Set up python interpreter environment

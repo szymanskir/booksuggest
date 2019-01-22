@@ -78,9 +78,7 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         self.content_analyzer = content_analyzer
         self.recommendation_count = recommendation_count
         self.filtering_component = NearestNeighbors(
-            n_neighbors=recommendation_count + 1,
-            metric='cosine'
-        )
+            n_neighbors=recommendation_count + 1, metric='cosine')
 
     def train(self, book_data: pd.DataFrame):
         """Prepares feature vectors.
@@ -89,11 +87,8 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
         result = self.content_analyzer.build_features(self._book_data)
         self.filtering_component.fit(result)
 
-    def recommend(
-            self,
-            book_id: int,
-            rec_count: int = None
-    ) -> Dict[int, float]:
+    def recommend(self, book_id: int,
+                  rec_count: int = None) -> Dict[int, float]:
         """ Based on the user input in form a dictionary containing
 
         The model makes use of tf-idf features calculated using book
@@ -109,7 +104,6 @@ class ContentBasedRecommendationModel(ICbRecommendationModel):
 
         distances, ids = self.filtering_component.kneighbors(
             feature_vec, rec_count + 1)
-        recommendations = self._book_data.index[
-            ids.flatten()[1:]]
+        recommendations = self._book_data.index[ids.flatten()[1:]]
 
         return dict(zip(recommendations, distances.flatten()[1:]))

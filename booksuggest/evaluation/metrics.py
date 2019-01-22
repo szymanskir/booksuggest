@@ -42,13 +42,13 @@ def precision_thresholded(recommendations: List[Tuple[int, float]],
 
     TODO add latex equation
     """
-    valid_recommendations = [x[0] for x in recommendations
-                             if x[1] >= threshold]
+    valid_recommendations = [
+        x[0] for x in recommendations if x[1] >= threshold
+    ]
     relevant_retrieved = len(set(valid_recommendations) & set(ground_truth))
     retrieved = len(recommendations)
     if retrieved == 0:
         return 0
-
     precision_score = relevant_retrieved / retrieved
     return precision_score
 
@@ -61,6 +61,7 @@ def recall_thresholded(recommendations: List[Tuple[int, float]],
 
     TODO add latex equation
     """
-    valid_recommendations = [x[0] for x in recommendations
-                             if x[1] >= threshold]
+    valid_recommendations = [
+        x[0] for x in recommendations if x[1] >= threshold
+    ]
     return recall(valid_recommendations, ground_truth)

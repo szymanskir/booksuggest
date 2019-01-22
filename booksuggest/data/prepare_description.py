@@ -17,10 +17,8 @@ import pandas as pd
 from langdetect import detect
 
 
-def clean_single_description(
-        description: str,
-        remove_proper_nouns: bool
-) -> str:
+def clean_single_description(description: str,
+                             remove_proper_nouns: bool) -> str:
     """Prepares the description for the tf-idf method.
 
     Args:
@@ -40,11 +38,14 @@ def clean_single_description(
     if remove_proper_nouns:
         logging.debug('Removing proper nouns...')
         tagged_words = nltk.tag.pos_tag(word_list)
-        word_list = [word for word, tag in tagged_words
-                     if tag not in {'NNP', 'NNPS'}]
+        word_list = [
+            word for word, tag in tagged_words if tag not in {'NNP', 'NNPS'}
+        ]
 
-    word_list = [word.lower() for word in word_list
-                 if word.isalpha() and word not in stopwords.words('english')]
+    word_list = [
+        word.lower() for word in word_list
+        if word.isalpha() and word not in stopwords.words('english')
+    ]
 
     stemmer = SnowballStemmer('english')
     word_list = [stemmer.stem(word) for word in word_list]
@@ -55,10 +56,8 @@ def clean_single_description(
     return " ".join(word_list)
 
 
-def clean_descriptions(
-        input_filepath: str,
-        remove_proper_nouns: bool
-) -> pd.DataFrame:
+def clean_descriptions(input_filepath: str,
+                       remove_proper_nouns: bool) -> pd.DataFrame:
     """Cleans all descriptions in the data from the input
     file.
 
@@ -76,8 +75,7 @@ def clean_descriptions(
     data = pd.read_csv(input_filepath, index_col='book_id')
     descriptions = data['description'].dropna()
     data['description'] = descriptions.apply(
-        lambda x: clean_single_description(x, remove_proper_nouns)
-    )
+        lambda x: clean_single_description(x, remove_proper_nouns))
 
     return data.dropna()
 

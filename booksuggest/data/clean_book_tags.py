@@ -6,10 +6,8 @@ import click
 import pandas as pd
 
 
-def switch_to_book_id(
-        book_df: pd.DataFrame,
-        book_tags_df: pd.DataFrame
-) -> pd.DataFrame:
+def switch_to_book_id(book_df: pd.DataFrame,
+                      book_tags_df: pd.DataFrame) -> pd.DataFrame:
     """Changes ids from ``goodreads_book_id`` to abstract ``book_id``,
     thus aggregating tags for all books editions.
 
@@ -19,7 +17,7 @@ def switch_to_book_id(
 
     Returns:
         pd.DataFrame: Books data frame with switched ids.
-    """"""
+    """ """
     """
     book_ids_df = book_df[['book_id', 'goodreads_book_id']]
     book_tags_fixed_ids_df = book_tags_df.merge(
@@ -27,10 +25,8 @@ def switch_to_book_id(
     return book_tags_fixed_ids_df[['tag_id', 'book_id', 'count']]
 
 
-def filter_non_genres_tags(
-        tags_df: pd.DataFrame,
-        genres: List[str]
-) -> pd.DataFrame:
+def filter_non_genres_tags(tags_df: pd.DataFrame,
+                           genres: List[str]) -> pd.DataFrame:
     """Filters out the non-genre tags.
 
     Args:
@@ -44,10 +40,8 @@ def filter_non_genres_tags(
     return tags_filtered_df[['tag_id', 'tag_name']]
 
 
-def join_tag_names(
-        book_tags_df: pd.DataFrame,
-        tags_df: pd.DataFrame
-) -> pd.DataFrame:
+def join_tag_names(book_tags_df: pd.DataFrame,
+                   tags_df: pd.DataFrame) -> pd.DataFrame:
     """Replaces ``tag_id`` column with ``tag_name`` data.
 
     Args:
@@ -67,13 +61,8 @@ def join_tag_names(
 @click.argument('tags_filepath', type=click.Path(exists=True))
 @click.argument('genres_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
-def main(
-        book_filepath: str,
-        book_tags_filepath: str,
-        tags_filepath: str,
-        genres_filepath: str,
-        output_filepath: str
-):
+def main(book_filepath: str, book_tags_filepath: str, tags_filepath: str,
+         genres_filepath: str, output_filepath: str):
     """Cleans up the book tags data.
 
     Aggregates tags for all editions for specific book by switching
@@ -95,8 +84,8 @@ def main(
 
     book_tags_fixed_ids_df = switch_to_book_id(book_df, book_tags_df)
     tags_filtered_df = filter_non_genres_tags(tags_df, goodreads_genres)
-    book_tags_joined_df = join_tag_names(
-        book_tags_fixed_ids_df, tags_filtered_df)
+    book_tags_joined_df = join_tag_names(book_tags_fixed_ids_df,
+                                         tags_filtered_df)
     book_tags_joined_df = book_tags_joined_df.sort_values(
         ['book_id', 'count'], ascending=[True, False])
     book_tags_joined_df.to_csv(output_filepath, index=False)

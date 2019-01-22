@@ -14,20 +14,15 @@ from ..utils.serialization import save_object
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
 @click.argument('output_filepath', type=click.Path())
-@click.option('--ngrams', default=1,
-              help='Length of n-grams to be considered')
-@click.option('--rec_count', default=1,
-              help='How many recommendations are returned by the model')
+@click.option('--ngrams', default=1, help='Length of n-grams to be considered')
+@click.option(
+    '--rec_count',
+    default=1,
+    help='How many recommendations are returned by the model')
 @click.option('--name')
 @click.option('--tag_features_filepath', type=click.Path())
-def main(
-        input_filepath: str,
-        output_filepath: str,
-        rec_count: int,
-        ngrams: int,
-        name: str,
-        tag_features_filepath: str
-):
+def main(input_filepath: str, output_filepath: str, rec_count: int,
+         ngrams: int, name: str, tag_features_filepath: str):
     """Main script used for training content based recommendation models.
 
     Args:
@@ -52,15 +47,11 @@ def main(
                     if tag_features_filepath else None)
 
     logger.info('Training %s model...', name)
-    content_analyzer_builder = ContentAnalyzerBuilder(
-        name, ngrams, tag_features
-    )
+    content_analyzer_builder = ContentAnalyzerBuilder(name, ngrams,
+                                                      tag_features)
 
     content_analyzer = content_analyzer_builder.build_content_analyzer()
-    cb_model = ContentBasedRecommendationModel(
-        content_analyzer,
-        rec_count
-    )
+    cb_model = ContentBasedRecommendationModel(content_analyzer, rec_count)
     cb_model.train(book_data[~book_data['description'].isna()])
 
     logger.info('Saving model to %s...', output_filepath)
