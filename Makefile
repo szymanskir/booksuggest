@@ -52,7 +52,6 @@ $(PDF_TEMPLATE):
 requirements: common_requirements
 	pip install -r requirements.txt
 	ipython kernel install --user --name=$(VENV_NAME)
-	nbstripout --install
 	$(PYTHON_INTERPRETER) -m nltk.downloader $(NLTK_ASSETS)
 
 ## Install only web application Python dependencies
