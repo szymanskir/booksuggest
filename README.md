@@ -120,6 +120,7 @@ Comments:
 
 ## Acknowledgments
 
+- Dataset used in the project [goodbooks10k](https://github.com/zygmuntz/goodbooks-10k).
 - Recommendation methods mostly from [surprise library](https://github.com/NicolasHug/Surprise).
 - Project structure based on the [cookiecutter data science project template](https://drivendata.github.io/cookiecutter-data-science/).
 - Thesis based on [latex-mimosis](https://github.com/rzepinskip/latex-mimosis) template by [Bastian Rieck](https://bastian.rieck.me/).
