@@ -4,6 +4,10 @@
 
 Bachelor of Engineering thesis by Paweł Rzepiński and Ryszard Szymański under the supervision of Agnieszka Jastrzębska, Ph.D. Eng. The objective was to develop a recommender system for books using novel dataset. Both collaborative-filtering and content-based approaches were considered. Implemented recommendation models were accessible using web application allowing users to explore the dataset and compare results for both approaches: "Similar books to X" panel presenting items similar to the selected book and "You may also like X, Y, Z" containing recommendations based on books rated by the selected user.
 
+![content-based methods](https://github.com/szymanskir/booksuggest/blob/master/docs/cb-screen.png "Content-based methods")
+
+![collaborative filtering methods](https://github.com/szymanskir/booksuggest/blob/master/docs/cf-screen.png "Collaborative filtering methods")
+
 Full showcase video available at [Google Drive](https://drive.google.com/open?id=1Se6Xu496xKTsYOAvgedjifapsvz2zaTD).
 
 Thesis folder contains both [thesis](thesis/thesis.pdf) and [abstract](thesis/abstract-EN.pdf).
