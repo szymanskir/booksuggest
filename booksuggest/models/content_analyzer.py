@@ -6,8 +6,10 @@ systems.
 """
 from abc import ABCMeta, abstractmethod
 from functools import partial
+from gensim.models import Word2Vec
 from typing import Callable, Dict, List
 import numpy as np
+from nltk.tokenize import sent_tokenize, word_tokenize
 import pandas as pd
 from sklearn.feature_extraction.text import (
     CountVectorizer,
@@ -80,6 +82,43 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
             [book_description])
 
         return feature_vector
+
+
+class Word2VecContentAnalyzer(IContentAnalyzer):
+    """Content analyzer that uses word2vec embeddings to
+    construct feature vectors
+    """
+    def __init__(self):
+        super().__init__()
+
+    def _tokenize_description(self, description: str) -> List[List[str]]:
+        sentences = sent_tokenize(description)
+        sentences_by_words = [word_tokenize(sentence)for sentence in sentences] 
+        return sentences_by_words
+
+    def _train_model(self, book_data: pd.DataFrame):
+        descriptions = book_data['description']
+        sentences_by_words = sum([self._tokenize_description(description) for description in descriptions], [])
+        self._model = Word2Vec(sentences_by_words, size=150, window=5, min_count=1, workers=4, iter=20)
+
+
+    def _build_single_feature(self, description: str):
+        words = word_tokenize(description)
+        word_vectors = [self._model.wv[word] for word in words]
+        feature_vector = np.mean(word_vectors, axis=0)
+        return feature_vector
+
+    def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
+        self._book_data = book_data
+        self._train_model(book_data=book_data)
+        descriptions = book_data['description']
+        features = [self._build_single_feature(description) for description in descriptions]
+        return np.array(features)
+
+    def get_feature_vector(self, book_id: int):
+        descriptions = self._book_data['description']
+        book_description = descriptions[book_id]
+        return np.array([self._build_single_feature(book_description)])
 
 
 class TagBasedContentAnalyzer(IContentAnalyzer):
@@ -185,7 +224,8 @@ class ContentAnalyzerBuilder():
             'count-tag': all([
                 valid_ngram,
                 self._tag_features is not None
-            ])
+            ]),
+            'word2vec': True
         }
         valid_model_name = self._name in validation_rules.keys()
 
@@ -218,7 +258,8 @@ class ContentAnalyzerBuilder():
                 TextAndTagBasedContentAnalyzer,
                 CountVectorizer(ngram_range=(1, self._ngrams)),
                 self._tag_features
-            )
+            ),
+            'word2vec':  Word2VecContentAnalyzer
         }
 
         constructor = building_rules[self._name]
