@@ -8,6 +8,7 @@ from abc import ABCMeta, abstractmethod
 from functools import partial
 from gensim.models import Word2Vec
 from typing import Callable, Dict, List
+import configparser
 import numpy as np
 from nltk.tokenize import sent_tokenize, word_tokenize
 import pandas as pd
@@ -26,6 +27,7 @@ class IContentAnalyzer(metaclass=ABCMeta):
     """Interface for content analyzers responsible
     for creating feature vectors for books.
     """
+
     def __init__(self):
         self._book_data = None
 
@@ -88,19 +90,24 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     """Content analyzer that uses word2vec embeddings to
     construct feature vectors
     """
-    def __init__(self):
+
+    def __init__(self, **kwargs):
         super().__init__()
+        self._feature_size = kwargs.get('feature_size')
+        self._window_size = kwargs.get('window_size')
+        self._iter_num = kwargs.get('iter_num')
 
     def _tokenize_description(self, description: str) -> List[List[str]]:
         sentences = sent_tokenize(description)
-        sentences_by_words = [word_tokenize(sentence)for sentence in sentences] 
+        sentences_by_words = [word_tokenize(sentence)for sentence in sentences]
         return sentences_by_words
 
     def _train_model(self, book_data: pd.DataFrame):
         descriptions = book_data['description']
-        sentences_by_words = sum([self._tokenize_description(description) for description in descriptions], [])
-        self._model = Word2Vec(sentences_by_words, size=150, window=5, min_count=1, workers=4, iter=20)
-
+        sentences_by_words = sum([self._tokenize_description(
+            description) for description in descriptions], [])
+        self._model = Word2Vec(sentences_by_words, size=self._feature_size,
+                               window=self._window_size, min_count=1, workers=4, iter=self._iter_num)
 
     def _build_single_feature(self, description: str):
         words = word_tokenize(description)
@@ -112,13 +119,22 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         self._book_data = book_data
         self._train_model(book_data=book_data)
         descriptions = book_data['description']
-        features = [self._build_single_feature(description) for description in descriptions]
+        features = [self._build_single_feature(
+            description) for description in descriptions]
         return np.array(features)
 
     def get_feature_vector(self, book_id: int):
         descriptions = self._book_data['description']
         book_description = descriptions[book_id]
         return np.array([self._build_single_feature(book_description)])
+
+    @classmethod
+    def create_from_config(cls, config):
+        return cls(
+            feature_size = config.getint("feature_size"),
+            window_size = config.getint("window_size"),
+            iter_num = config.getint("iter_num")
+        )
 
 
 class TagBasedContentAnalyzer(IContentAnalyzer):
@@ -175,6 +191,7 @@ class EnsembledContentAnalyzer(IContentAnalyzer):
 class TextAndTagBasedContentAnalyzer(EnsembledContentAnalyzer):
     """Content analyzer combining text and tag based features.
     """
+
     def __init__(
             self,
             text_feature_extractor: VectorizerMixin,
@@ -200,68 +217,40 @@ class ContentAnalyzerBuilder():
         ngram: Maximal number of words in a single feature.
         tag_features: Data frame containing calculated tag features.
     """
+
     def __init__(
             self,
-            name: str,
-            ngrams: int = None,
-            tag_features: pd.DataFrame = None
+            config: configparser.ConfigParser 
     ):
-        self._name = name
-        self._ngrams = ngrams
-        self._tag_features = tag_features
-        self._validate_config()
-
-    def _validate_config(self):
-        valid_ngram = isinstance(self._ngrams, int) and self._ngrams > 0
-        validation_rules = {
-            'tf-idf': valid_ngram,
-            'count': valid_ngram,
-            'tag': self._tag_features is not None,
-            'tf-idf-tag': all([
-                valid_ngram,
-                self._tag_features is not None
-            ]),
-            'count-tag': all([
-                valid_ngram,
-                self._tag_features is not None
-            ]),
-            'word2vec': True
-        }
-        valid_model_name = self._name in validation_rules.keys()
-
-        if not valid_model_name:
-            raise InvalidBuilderConfigError(f'Invalid model name {self._name}')
-
-        if not validation_rules[self._name]:
-            raise InvalidBuilderConfigError()
+        self._config = config
 
     def build_content_analyzer(self) -> IContentAnalyzer:
         """Build a content analyzer based on the object
         configuration.
         """
         building_rules: Dict[str, Callable] = {
-            'tf-idf': partial(
-                TextBasedContentAnalyzer,
-                TfidfVectorizer(ngram_range=(1, self._ngrams))
-            ),
-            'count': partial(
-                TextBasedContentAnalyzer,
-                CountVectorizer(ngram_range=(1, self._ngrams))
-            ),
-            'tag': partial(TagBasedContentAnalyzer, self._tag_features),
-            'tf-idf-tag': partial(
-                TextAndTagBasedContentAnalyzer,
-                TfidfVectorizer(ngram_range=(1, self._ngrams)),
-                self._tag_features
-            ),
-            'count-tag': partial(
-                TextAndTagBasedContentAnalyzer,
-                CountVectorizer(ngram_range=(1, self._ngrams)),
-                self._tag_features
-            ),
-            'word2vec':  Word2VecContentAnalyzer
+            # 'tf-idf': partial(
+            #     TextBasedContentAnalyzer,
+            #     TfidfVectorizer(ngram_range=(1, self._ngrams))
+            # ),
+            # 'count': partial(
+            #     TextBasedContentAnalyzer,
+            #     CountVectorizer(ngram_range=(1, self._ngrams))
+            # ),
+            # 'tag': partial(TagBasedContentAnalyzer, self._tag_features),
+            # 'tf-idf-tag': partial(
+            #     TextAndTagBasedContentAnalyzer,
+            #     TfidfVectorizer(ngram_range=(1, self._ngrams)),
+            #     self._tag_features
+            # ),
+            # 'count-tag': partial(
+            #     TextAndTagBasedContentAnalyzer,
+            #     CountVectorizer(ngram_range=(1, self._ngrams)),
+            #     self._tag_features
+            # ),
+            'word2vec':  Word2VecContentAnalyzer.create_from_config
         }
 
-        constructor = building_rules[self._name]
+        constructor = building_rules[self._config.get('BASE', 'model_type')]
 
-        return constructor()
+        return constructor(self._config['PARAMETERS'])

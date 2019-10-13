@@ -17,3 +17,4 @@ models/**/*.pkl
 models/**/*.csv
 notebooks/.ipynb_checkpoints
 results/*.csv
+.snakemake/*

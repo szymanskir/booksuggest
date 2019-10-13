@@ -44,27 +44,27 @@ def main(
         tag_features_filepath:
         Path to file containing precalculated tag features.
     """
-    logger = logging.getLogger(__name__)
+    # logger = logging.getLogger(__name__)
 
-    logger.info('Reading data...')
-    book_data = pd.read_csv(input_filepath, index_col='book_id')
-    tag_features = (pd.read_csv(tag_features_filepath, index_col='book_id')
-                    if tag_features_filepath else None)
+    # logger.info('Reading data...')
+    # book_data = pd.read_csv(input_filepath, index_col='book_id')
+    # tag_features = (pd.read_csv(tag_features_filepath, index_col='book_id')
+    #                 if tag_features_filepath else None)
 
-    logger.info('Training %s model...', name)
-    content_analyzer_builder = ContentAnalyzerBuilder(
-        name, ngrams, tag_features
-    )
+    # logger.info('Training %s model...', name)
+    # content_analyzer_builder = ContentAnalyzerBuilder(
+    #     name, ngrams, tag_features
+    # )
 
-    content_analyzer = content_analyzer_builder.build_content_analyzer()
-    cb_model = ContentBasedRecommendationModel(
-        content_analyzer,
-        rec_count
-    )
-    cb_model.train(book_data[~book_data['description'].isna()])
+    # content_analyzer = content_analyzer_builder.build_content_analyzer()
+    # cb_model = ContentBasedRecommendationModel(
+    #     content_analyzer,
+    #     rec_count
+    # )
+    # cb_model.train(book_data[~book_data['description'].isna()])
 
-    logger.info('Saving model to %s...', output_filepath)
-    save_object(cb_model, output_filepath)
+    # logger.info('Saving model to %s...', output_filepath)
+    # save_object(cb_model, output_filepath)
 
 
 if __name__ == '__main__':
