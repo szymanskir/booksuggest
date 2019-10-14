@@ -97,7 +97,7 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         self._feature_size = kwargs.get('feature_size')
         self._window_size = kwargs.get('window_size')
         self._iter_num = kwargs.get('iter_num')
-        self._feature_aggregator = FeatureAggregatorFactory.create(kwarge.('aggregator_type'))
+        self._feature_aggregator = FeatureAggregatorFactory.create(kwargs.get('aggregator_type'))
 
     def _tokenize_description(self, description: str) -> List[List[str]]:
         sentences = sent_tokenize(description)
@@ -135,7 +135,8 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         return cls(
             feature_size = config.getint("feature_size"),
             window_size = config.getint("window_size"),
-            iter_num = config.getint("iter_num")
+            iter_num = config.getint("iter_num"),
+            aggregator_type = config.get("aggregator_type")
         )
 
 
