@@ -21,6 +21,7 @@ from sklearn.feature_extraction.text import (
 from scipy.sparse import hstack
 
 from .model_exceptions import UnbuiltFeaturesError
+from ..features.feature_aggregator import FeatureAggregatorFactory
 
 
 class IContentAnalyzer(metaclass=ABCMeta):
@@ -96,6 +97,7 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         self._feature_size = kwargs.get('feature_size')
         self._window_size = kwargs.get('window_size')
         self._iter_num = kwargs.get('iter_num')
+        self._feature_aggregator = FeatureAggregatorFactory.create(kwarge.('aggregator_type'))
 
     def _tokenize_description(self, description: str) -> List[List[str]]:
         sentences = sent_tokenize(description)
@@ -112,7 +114,7 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     def _build_single_feature(self, description: str):
         words = word_tokenize(description)
         word_vectors = [self._model.wv[word] for word in words]
-        feature_vector = np.mean(word_vectors, axis=0)
+        feature_vector = self._feature_aggregator.aggregate_features(word_vectors)
         return feature_vector
 
     def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
