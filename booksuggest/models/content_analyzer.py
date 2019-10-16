@@ -9,6 +9,7 @@ from functools import partial
 from gensim.models import Word2Vec
 from typing import Callable, Dict, List
 import configparser
+from flair.embeddings import FlairEmbeddings, Sentence, StackedEmbeddings
 import numpy as np
 from nltk.tokenize import sent_tokenize, word_tokenize
 import pandas as pd
@@ -97,7 +98,8 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         self._feature_size = kwargs.get('feature_size')
         self._window_size = kwargs.get('window_size')
         self._iter_num = kwargs.get('iter_num')
-        self._feature_aggregator = FeatureAggregatorFactory.create(kwargs.get('aggregator_type'))
+        self._feature_aggregator = FeatureAggregatorFactory.create(
+            kwargs.get('aggregator_type'))
 
     def _tokenize_description(self, description: str) -> List[List[str]]:
         sentences = sent_tokenize(description)
@@ -114,7 +116,8 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     def _build_single_feature(self, description: str):
         words = word_tokenize(description)
         word_vectors = [self._model.wv[word] for word in words]
-        feature_vector = self._feature_aggregator.aggregate_features(word_vectors)
+        feature_vector = self._feature_aggregator.aggregate_features(
+            word_vectors)
         return feature_vector
 
     def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
@@ -133,10 +136,69 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     @classmethod
     def create_from_config(cls, config):
         return cls(
-            feature_size = config.getint("feature_size"),
-            window_size = config.getint("window_size"),
-            iter_num = config.getint("iter_num"),
-            aggregator_type = config.get("aggregator_type")
+            feature_size=config.getint("feature_size"),
+            window_size=config.getint("window_size"),
+            iter_num=config.getint("iter_num"),
+            aggregator_type=config.get("aggregator_type")
+        )
+
+
+class FlairContentAnalyzer(IContentAnalyzer):
+    """Content analyzer that uses flair embeddings to
+    construct feature vectors
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__()
+        self._stack_type = kwargs.get('stack_type')
+        self._feature_aggregator = FeatureAggregatorFactory.create(
+            kwargs.get('aggregator_type'))
+        self._model = self._create_model(self._stack_type)
+
+    def _retrieve_sentences(self, description: str) -> List[List[str]]:
+        sentences = sent_tokenize(description)
+        return [Sentence(sentence) for sentence in sentences]
+
+    def _create_model(self, stack_type: str):
+        stack_type_mapping = {
+            'forward': FlairEmbeddings('en-forward'),
+            'backward': FlairEmbeddings('en-backward'),
+            'stacked': StackedEmbeddings([
+                FlairEmbeddings('en-forward'),
+                FlairEmbeddings('en-backward')
+            ])
+        }
+
+        return stack_type_mapping[stack_type]
+
+    def _build_single_feature(self, description: str):
+        sentences = self._retrieve_sentences(description)
+        word_vectors = []
+        for sentence in sentences:
+            self._model.embed(sentence)
+            for token in sentence:
+                word_vectors.append(token.embedding.numpy())
+        feature_vector = self._feature_aggregator.aggregate_features(
+            word_vectors)
+        return feature_vector
+
+    def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
+        self._book_data = book_data
+        descriptions = book_data['description']
+        features = [self._build_single_feature(
+            description) for description in descriptions]
+        return np.array(features)
+
+    def get_feature_vector(self, book_id: int):
+        descriptions = self._book_data['description']
+        book_description = descriptions[book_id]
+        return np.array([self._build_single_feature(book_description)])
+
+    @classmethod
+    def create_from_config(cls, config):
+        return cls(
+            stack_type=config.get('stack_type'),
+            aggregator_type=config.get("aggregator_type")
         )
 
 
@@ -223,7 +285,7 @@ class ContentAnalyzerBuilder():
 
     def __init__(
             self,
-            config: configparser.ConfigParser 
+            config: configparser.ConfigParser
     ):
         self._config = config
 
@@ -251,7 +313,8 @@ class ContentAnalyzerBuilder():
             #     CountVectorizer(ngram_range=(1, self._ngrams)),
             #     self._tag_features
             # ),
-            'word2vec':  Word2VecContentAnalyzer.create_from_config
+            'word2vec':  Word2VecContentAnalyzer.create_from_config,
+            'flair':  FlairContentAnalyzer.create_from_config
         }
 
         constructor = building_rules[self._config.get('BASE', 'model_type')]
