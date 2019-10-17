@@ -141,6 +141,9 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     def get_feature_vector(self, book_id: int):
         descriptions = self._book_data["description"]
         book_description = descriptions.get(book_id, "")
+        if book_description == "":
+            required_shape = self._build_single_feature(descriptions.values[0]).shape
+            return np.zeros(required_shape)
         return np.array([self._build_single_feature(book_description)])
 
     @classmethod
@@ -189,7 +192,10 @@ class GloveContentAnalyzer(IContentAnalyzer):
 
     def get_feature_vector(self, book_id: int):
         descriptions = self._book_data["description"]
-        book_description = descriptions[book_id]
+        book_description = descriptions.get(book_id, "")
+        if book_description == "":
+            required_shape = self._build_single_feature(book_description.values[0]).shape
+            return np.zeros(required_shape)
         return np.array([self._build_single_feature(book_description)])
 
     @classmethod
@@ -245,7 +251,10 @@ class FlairContentAnalyzer(IContentAnalyzer):
 
     def get_feature_vector(self, book_id: int):
         descriptions = self._book_data["description"]
-        book_description = descriptions[book_id]
+        book_description = descriptions.get(book_id, "")
+        if book_description == "":
+            required_shape = self._build_single_feature(descriptions.values[0]).shape
+            return np.zeros(required_shape)
         return np.array([self._build_single_feature(book_description)])
 
     @classmethod
