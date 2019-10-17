@@ -20,6 +20,20 @@ rule all:
     input:
         CB_SCORES
 
+rule embedding_tsv:
+    input:
+        expand("embeddings-tsv/{config_name}.tsv", config_name=CONFIG_NAMES)
+
+
+rule model_to_tsv:
+    input:
+        "models/content-based-models/{config_name}_model.pkl"
+    output:
+        "embeddings-tsv/{config_name}.tsv"
+    shell:
+        "python -m booksuggest.features.extract_feature_vectors {input} {output}"
+
+
 rule clean_description_with_nouns:
     input:
         "data/processed/book.csv"
