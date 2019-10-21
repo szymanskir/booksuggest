@@ -28,7 +28,7 @@ def test_build_all_tag_features(book_tags, tags, expected):
 def test_build_tag_features(book_tags, tags, expected):
     tag_features = btf.build_tag_features(pd.read_csv(book_tags),
                                           pd.read_csv(tags))
-    assert tag_features == expected
+    assert tag_features.tolist() == expected
 
 
 validate_book_tags_simple = join(

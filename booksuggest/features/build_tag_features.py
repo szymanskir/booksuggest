@@ -34,9 +34,8 @@ def build_all_tag_features(
     """
     book_tags_grouped = book_tags.groupby(by='book_id')
     tag_features = book_tags_grouped.apply(
-        lambda single_book_tags: pd.Series(
+        lambda single_book_tags: 
             build_tag_features(single_book_tags, tags)
-        )
     )
 
     return tag_features.reset_index().set_index('book_id')
@@ -45,7 +44,7 @@ def build_all_tag_features(
 def build_tag_features(
         book_tags: pd.DataFrame,
         tags: pd.DataFrame
-) -> List[float]:
+) -> pd.Series:
     """Builds tags based features for a single book.
 
     Args:
@@ -59,7 +58,8 @@ def build_tag_features(
     tags_data = tags.merge(book_tags, on='tag_name', how='left')
     tags_counts = tags_data['count'].fillna(0)
     feature_vector = tags_counts/tags_counts.sum()
-    return feature_vector.tolist()
+    feature_vector.index = tags_data['tag_name']
+    return feature_vector
 
 
 def check_book_tags_and_tags_compatibility(
