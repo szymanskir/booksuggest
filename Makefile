@@ -11,7 +11,7 @@ PROJECT_NAME = recommendation-system
 VENV_NAME = rs-venv
 
 
-PYTHON_INTERPRETER = python3.7
+PYTHON_INTERPRETER = python3
 TEST_RUN=0
 SEED = 44
 NLTK_ASSETS = stopwords wordnet averaged_perceptron_tagger punkt

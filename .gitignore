@@ -18,3 +18,5 @@ models/**/*.csv
 notebooks/.ipynb_checkpoints
 results/*.csv
 .snakemake/*
+.env/*
+booksuggest/data/.mypy_cache

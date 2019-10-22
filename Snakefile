@@ -1,7 +1,7 @@
 import os
 
 CONFIG_NAMES = [os.path.splitext(os.path.basename(config))[0] for config in os.listdir('configs')]
-PYTHON_INTERPRETER = "python3.7"
+PYTHON_INTERPRETER = "python3"
 
 print(expand("{config}", config = CONFIG_NAMES))
 
