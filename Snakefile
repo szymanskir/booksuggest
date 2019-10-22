@@ -27,11 +27,14 @@ rule embedding_tsv:
 
 rule model_to_tsv:
     input:
-        "models/content-based-models/{config_name}_model.pkl"
+        model="models/content-based-models/{config_name}_model.pkl",
+        books="data/processed/book.csv",
+        book_tags="data/processed/book_tags.csv"
     output:
-        "embeddings-tsv/{config_name}.tsv"
+        features="embeddings-tsv/{config_name}.tsv",
+        labels="embeddings-tsv/{config_name}-labels.tsv"
     shell:
-        "python -m booksuggest.features.extract_feature_vectors {input} {output}"
+        "python -m booksuggest.features.extract_feature_vectors {input.model} {input.books} {input.book_tags} {output.features} {output.labels}"
 
 
 rule clean_description_with_nouns:

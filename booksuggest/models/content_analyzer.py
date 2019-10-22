@@ -84,8 +84,7 @@ class TextBasedContentAnalyzer(IContentAnalyzer):
         self._has_built_features()
         descriptions = self._book_data["description"]
         book_description = descriptions[book_id]
-        feature_vector = self._text_feature_extractor.transform(
-            [book_description])
+        feature_vector = self._text_feature_extractor.transform([book_description])
 
         return feature_vector
 
@@ -106,15 +105,13 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
 
     def _tokenize_description(self, description: str) -> List[List[str]]:
         sentences = sent_tokenize(description)
-        sentences_by_words = [word_tokenize(
-            sentence) for sentence in sentences]
+        sentences_by_words = [word_tokenize(sentence) for sentence in sentences]
         return sentences_by_words
 
     def _train_model(self, book_data: pd.DataFrame):
         descriptions = book_data["description"]
         sentences_by_words = sum(
-            [self._tokenize_description(description)
-             for description in descriptions],
+            [self._tokenize_description(description) for description in descriptions],
             [],
         )
         self._model = Word2Vec(
@@ -129,8 +126,7 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
     def _build_single_feature(self, description: str):
         words = word_tokenize(description)
         word_vectors = [self._model.wv[word] for word in words]
-        feature_vector = self._feature_aggregator.aggregate_features(
-            word_vectors)
+        feature_vector = self._feature_aggregator.aggregate_features(word_vectors)
         return feature_vector
 
     def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
@@ -146,9 +142,7 @@ class Word2VecContentAnalyzer(IContentAnalyzer):
         descriptions = self._book_data["description"]
         book_description = descriptions.get(book_id, "")
         if book_description == "":
-            required_shape = self._build_single_feature(
-                descriptions.values[0]).shape
-            return np.zeros(required_shape).reshape(1, -1)
+            return None
         return np.array([self._build_single_feature(book_description)])
 
     @classmethod
@@ -184,8 +178,7 @@ class GloveContentAnalyzer(IContentAnalyzer):
             self._model.embed(sentence)
             for token in sentence:
                 word_vectors.append(token.embedding.numpy())
-        feature_vector = self._feature_aggregator.aggregate_features(
-            word_vectors)
+        feature_vector = self._feature_aggregator.aggregate_features(word_vectors)
         return feature_vector
 
     def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
@@ -200,8 +193,7 @@ class GloveContentAnalyzer(IContentAnalyzer):
         descriptions = self._book_data["description"]
         book_description = descriptions.get(book_id, "")
         if book_description == "":
-            required_shape = self._build_single_feature(
-                descriptions.values[0]).shape
+            required_shape = self._build_single_feature(descriptions.values[0]).shape
             return np.zeros(required_shape).reshape(1, -1)
         return np.array([self._build_single_feature(book_description)])
 
@@ -245,8 +237,7 @@ class FlairContentAnalyzer(IContentAnalyzer):
             self._model.embed(sentence)
             for token in sentence:
                 word_vectors.append(token.embedding.numpy())
-        feature_vector = self._feature_aggregator.aggregate_features(
-            word_vectors)
+        feature_vector = self._feature_aggregator.aggregate_features(word_vectors)
         return feature_vector
 
     def build_features(self, book_data: pd.DataFrame) -> np.ndarray:
@@ -261,8 +252,7 @@ class FlairContentAnalyzer(IContentAnalyzer):
         descriptions = self._book_data["description"]
         book_description = descriptions.get(book_id, "")
         if book_description == "":
-            required_shape = self._build_single_feature(
-                descriptions.values[0]).shape
+            required_shape = self._build_single_feature(descriptions.values[0]).shape
             return np.zeros(required_shape).reshape(1, -1)
         return np.array([self._build_single_feature(book_description)])
 
@@ -281,7 +271,7 @@ class TagEmbeddingContentAnalyzer(IContentAnalyzer):
 
     def __init__(self, **kwargs):
         super().__init__()
-        self._tag_features = pd.read_csv(kwargs.get('tag_features'))
+        self._tag_features = pd.read_csv(kwargs.get("tag_features"))
         self._model = WordEmbeddings("glove")
         self._feature_aggregator = FeatureAggregatorFactory.create(
             kwargs.get("aggregator_type")
@@ -296,13 +286,18 @@ class TagEmbeddingContentAnalyzer(IContentAnalyzer):
         tag_feature = self._tag_features.loc[book_id]
         tag_feature = tag_feature[tag_feature != 0]
         tag_names = tag_feature.index[1:]
-        embeddings = np.array([self._embed_word(
-            tag_name) * tag_feature[tag_name] for tag_name in tag_names])
+        embeddings = np.array(
+            [
+                self._embed_word(tag_name) * tag_feature[tag_name]
+                for tag_name in tag_names
+            ]
+        )
         return self._feature_aggregator.aggregate_features(embeddings)
 
     def build_features(self, book_data) -> np.array:
-        features = np.array([self._build_single_feature(book_id)
-                             for book_id in book_data.index])
+        features = np.array(
+            [self._build_single_feature(book_id) for book_id in book_data.index]
+        )
         return features
 
     def get_feature_vector(self, book_id: int):
@@ -312,7 +307,7 @@ class TagEmbeddingContentAnalyzer(IContentAnalyzer):
     def create_from_config(cls, config):
         return cls(
             tag_features=config.get("tag_features"),
-            aggregator_type=config.get("aggregator_type")
+            aggregator_type=config.get("aggregator_type"),
         )
 
 
@@ -541,7 +536,7 @@ class ContentAnalyzerBuilder:
             "word2vec": Word2VecContentAnalyzer.create_from_config,
             "flair": FlairContentAnalyzer.create_from_config,
             "glove": GloveContentAnalyzer.create_from_config,
-            "tag-embedding": TagEmbeddingContentAnalyzer.create_from_config
+            "tag-embedding": TagEmbeddingContentAnalyzer.create_from_config,
         }
 
         constructor = building_rules[self._config.get("BASE", "model_type")]
