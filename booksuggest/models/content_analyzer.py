@@ -271,7 +271,7 @@ class TagEmbeddingContentAnalyzer(IContentAnalyzer):
 
     def __init__(self, **kwargs):
         super().__init__()
-        self._tag_features = pd.read_csv(kwargs.get("tag_features"))
+        self._tag_features = pd.read_csv(kwargs.get("tag_features"), index_col="book_id")
         self._model = WordEmbeddings("glove")
         self._feature_aggregator = FeatureAggregatorFactory.create(
             kwargs.get("aggregator_type")
