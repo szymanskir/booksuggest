@@ -37,6 +37,9 @@ def get_metadata(book, book_tags):
     )
     df2 = df2.reset_index()
     book_tags_top_listed_split = df2[["book_id", "title", "label1", "label2", "label3"]]
+    book_tags_top_listed_split["labels_concatenated"] = (
+        df2["label1"] + " " + df2["label2"] + " " + df2["label3"]
+    )
     return book_tags_top_listed_split
 
 
